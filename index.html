@@ -1,0 +1,2066 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>Çay Ocağı</title>
+<meta name="description" content="A low-poly 3D tea house time-management game. Brew, serve, collect tips.">
+<meta property="og:title" content="Çay Ocağı · Tea House Rush">
+<meta property="og:description" content="Run a tiny Istanbul tea house for 7 busy days: brew tea, warm simit, cook Turkish coffee and serve before patience runs out.">
+<meta property="og:image" content="https://furkiozknn.github.io/cay-ocagi/docs/busy_d6_en.png">
+<meta property="og:url" content="https://furkiozknn.github.io/cay-ocagi/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6.5 3.5h11c0 5.200-1.600 8.400-3.300 9.800v2.200h-4.400v-2.200C8.100 11.900 6.500 8.700 6.500 3.500z' fill='%23c2410c'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}
+</script>
+<style>
+:root{--amber:#C2410C;--amber2:#ea6a24;--ink:#3a2314;--ink2:#7a5a44;--glass:rgba(255,248,235,.64);--glassb:rgba(255,255,255,.6);--r:16px;--ok:#3f8f4a;--bad:#c0392b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--ink);user-select:none;-webkit-user-select:none;touch-action:none;
+background:radial-gradient(circle at 78% 14%,#fff3c9 0,#ffd58f 9%,rgba(255,190,110,0) 30%),linear-gradient(#f39a5d,#fbc98c 40%,#ffe6c4)}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none}
+.glass{background:var(--glass);backdrop-filter:blur(10px) saturate(1.3);-webkit-backdrop-filter:blur(10px) saturate(1.3);border:1px solid var(--glassb);box-shadow:0 6px 22px rgba(90,40,10,.18),inset 0 1px 0 rgba(255,255,255,.65);border-radius:var(--r)}
+body.low .glass{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(255,246,230,.86)}
+svg{display:block}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;padding:0}
+#wl{position:fixed;inset:0;pointer-events:none;overflow:hidden}
+/* top bar */
+#top{position:fixed;left:8px;right:8px;top:8px;display:flex;align-items:center;gap:10px;padding:6px 10px;z-index:5;flex-wrap:wrap}
+#top .logo{display:flex;align-items:center;gap:6px;font-weight:900;font-size:19px;letter-spacing:.2px;color:var(--amber)}
+#top .logo svg{width:26px;height:26px}
+.chip{display:flex;align-items:center;gap:6px;font-weight:800;font-size:15px;white-space:nowrap}
+.chip svg{width:22px;height:22px;flex:none}
+.chip small{font-weight:700;color:var(--ink2);font-size:12px}
+.bar{position:relative;width:96px;height:8px;border-radius:6px;background:rgba(80,40,10,.16);overflow:hidden}
+.bar i{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#e8863d,var(--amber));border-radius:6px}
+.bar.clock i{background:linear-gradient(90deg,#f3c14f,#e8863d)}
+.sp{flex:1}
+.ibtn{min-width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-weight:900;font-size:13px;padding:0 6px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.7)}
+.ibtn:hover{background:#fff}.ibtn:active{transform:scale(.94)}
+.ibtn svg{width:20px;height:20px}
+.ibtn.on{background:var(--amber);color:#fff}
+.btns{display:flex;gap:6px}
+/* dock */
+#dock{position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));display:flex;justify-content:center;align-items:flex-end;gap:10px;flex-wrap:wrap;z-index:5;pointer-events:none}
+#dock>*{pointer-events:auto}
+#tray{display:flex;align-items:center;gap:8px;padding:8px 10px}
+#tray .lbl{font-weight:900;font-size:12px;text-transform:uppercase;letter-spacing:.8px;color:var(--ink2)}
+.slots{display:flex;gap:5px}
+.slot{width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.55);border:2px dashed rgba(120,70,30,.28);display:grid;place-items:center;position:relative}
+.slot svg{width:28px;height:28px}
+.slot.full{border:2px solid rgba(255,255,255,.9);background:#fff;cursor:pointer}
+.slot.lock{opacity:.28;border-style:dotted}
+.slot.full:hover::after{content:"×";position:absolute;right:-5px;top:-7px;width:17px;height:17px;border-radius:50%;background:var(--bad);color:#fff;font-size:13px;line-height:17px;text-align:center;font-weight:900}
+#queue{display:flex;gap:4px;align-items:center;min-width:0}
+#queue .q{width:22px;height:22px;border-radius:7px;background:var(--amber);color:#fff;font-size:12px;font-weight:900;display:grid;place-items:center}
+#queue .qx{font-size:11px;font-weight:900;color:var(--ink2);text-decoration:underline;cursor:pointer;padding:2px 4px}
+#stations{display:flex;gap:6px;padding:6px}
+.st{position:relative;width:78px;padding:6px 4px 7px;border-radius:13px;background:rgba(255,255,255,.55);border:2px solid transparent;display:flex;flex-direction:column;align-items:center;gap:2px;transition:transform .08s,background .15s}
+.st:hover,.st.hov{background:#fff;border-color:var(--amber)}
+.st:active{transform:scale(.95)}
+.st svg{width:30px;height:30px}
+.st b{font-size:12px;font-weight:900;line-height:1}
+.st .key{position:absolute;left:5px;top:4px;font-size:10px;font-weight:900;color:#fff;background:var(--ink2);border-radius:5px;padding:1px 5px}
+.st .units{display:flex;gap:3px;width:100%;margin-top:2px}
+.st .u{flex:1;height:8px;border-radius:5px;background:rgba(80,40,10,.17);position:relative;overflow:hidden}
+.st .u i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:5px;background:#e8863d}
+.st .u.ready i{background:var(--ok);width:100%!important}
+.st .u.warn i{background:#d4a017}
+.st .u.bad i{background:var(--bad);width:100%!important}
+.st .u.blink{animation:blink .35s steps(2) infinite}
+.st .cnt{position:absolute;right:3px;top:2px;min-width:20px;height:20px;border-radius:10px;background:var(--ok);color:#fff;font-size:12px;font-weight:900;display:none;place-items:center;padding:0 4px}
+.st.lock{opacity:.35;pointer-events:none;filter:grayscale(.8)}
+.st.ready{animation:pulse 1.2s ease-in-out infinite}
+@keyframes blink{50%{opacity:.25}}
+@keyframes pulse{50%{box-shadow:0 0 0 4px rgba(194,65,12,.35)}}
+/* bubbles */
+.bub{position:absolute;left:0;top:0;display:none;align-items:center;gap:5px;padding:4px 8px 4px 4px;border-radius:30px;background:rgba(255,252,244,.94);box-shadow:0 4px 12px rgba(80,40,10,.28);pointer-events:auto;cursor:pointer;will-change:transform;white-space:nowrap}
+.bub::after{content:"";position:absolute;left:50%;bottom:-6px;width:12px;height:12px;background:rgba(255,252,244,.94);transform:translateX(-50%) rotate(45deg);border-radius:2px;z-index:-1}
+.bub .ring{position:relative;width:38px;height:38px;flex:none}
+.bub .ring svg.r{position:absolute;inset:0;width:38px;height:38px;transform:rotate(-90deg)}
+.bub .ring .av{position:absolute;inset:7px;display:grid;place-items:center}
+.bub .ring .av svg{width:24px;height:24px}
+.bub .it{display:flex;gap:3px}
+.bub .it span{position:relative;width:26px;height:26px;border-radius:8px;background:#fff;display:grid;place-items:center;box-shadow:inset 0 0 0 1.5px rgba(120,70,30,.2)}
+.bub .it span svg{width:21px;height:21px}
+.bub .it span.done{opacity:.35;background:#dff3e0}
+.bub .it span.done::after{content:"✓";position:absolute;color:var(--ok);font-weight:900;font-size:19px;line-height:1}
+.bub.think{padding:6px 12px;font-weight:900;font-size:18px;letter-spacing:2px}
+.bub.mini{padding:4px 6px}
+.bub.mini svg{width:26px;height:26px}
+.bub.dirty{animation:bob 1s ease-in-out infinite}
+@keyframes bob{50%{margin-top:-5px}}
+.bub.urgent .ring{animation:shake .5s linear infinite}
+@keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+.sbadge{position:absolute;left:0;top:0;pointer-events:none;will-change:transform;display:none}
+.fl{position:absolute;left:0;top:0;font-weight:900;font-size:24px;color:#fff;text-shadow:0 2px 0 #7c2d12,0 0 8px rgba(124,45,18,.6);animation:rise 1.3s ease-out forwards;white-space:nowrap}
+.fl small{font-size:14px;color:#ffe08a}
+.fl.bad{color:#ffd0c0}
+@keyframes rise{0%{opacity:0;margin-top:0;scale:.6}15%{opacity:1;scale:1.15}100%{opacity:0;margin-top:-56px;scale:1}}
+#toasts{position:fixed;left:50%;top:76px;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;align-items:center;z-index:6;pointer-events:none}
+.toast{padding:8px 16px;border-radius:20px;background:rgba(58,35,20,.88);color:#fff6e5;font-weight:800;font-size:14px;animation:tin 2.4s ease forwards;white-space:nowrap}
+.toast.bad{background:rgba(160,40,25,.92)}.toast.good{background:rgba(52,120,62,.93)}
+@keyframes tin{0%{opacity:0;transform:translateY(-8px)}8%{opacity:1;transform:none}85%{opacity:1}100%{opacity:0}}
+#pausebanner{position:fixed;left:50%;top:42%;transform:translate(-50%,-50%);padding:14px 28px;font-weight:900;font-size:26px;display:none;z-index:6;text-align:center}
+#pausebanner small{display:block;font-size:13px;color:var(--ink2);font-weight:700;margin-top:4px}
+/* screens */
+#screen{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:8;background:rgba(70,30,10,.34);backdrop-filter:blur(3px);padding:12px;overflow:auto}
+body.low #screen{backdrop-filter:none}
+.card{width:min(620px,100%);max-height:100%;overflow:auto;padding:22px 24px;text-align:center;animation:cin .35s cubic-bezier(.2,1.2,.4,1)}
+@keyframes cin{from{opacity:0;transform:translateY(14px) scale(.96)}}
+.card h1{margin:4px 0 2px;font-size:46px;line-height:1;color:var(--amber);font-weight:900;letter-spacing:.5px;text-shadow:0 2px 0 rgba(255,255,255,.6)}
+.card h2{margin:0 0 6px;font-size:28px;font-weight:900}
+.card p{margin:6px 0;font-weight:700;color:#5a3d2a;line-height:1.35}
+.card .big{width:76px;height:76px;margin:0 auto}
+.how{list-style:none;padding:0;margin:12px 0;text-align:left;display:grid;gap:7px}
+.how li{display:flex;gap:10px;align-items:flex-start;font-weight:700;font-size:14px;line-height:1.3;background:rgba(255,255,255,.5);border-radius:12px;padding:8px 10px}
+.how li b{flex:none;width:22px;height:22px;border-radius:50%;background:var(--amber);color:#fff;display:grid;place-items:center;font-size:12px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 26px;border-radius:14px;background:linear-gradient(#ee7a34,var(--amber));color:#fff;font-weight:900;font-size:18px;box-shadow:0 4px 0 #8a2d08,0 8px 16px rgba(120,40,10,.3);margin:6px 4px;transition:transform .08s}
+.btn:hover{filter:brightness(1.06)}.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #8a2d08}
+.btn.alt{background:rgba(255,255,255,.7);color:var(--ink);box-shadow:0 4px 0 rgba(120,70,30,.25)}
+.btn.sm{padding:8px 16px;font-size:14px}
+.btn[disabled]{opacity:.45;pointer-events:none;filter:grayscale(.6)}
+.rowk{display:flex;justify-content:space-between;align-items:center;gap:10px;font-weight:800;padding:6px 12px;border-radius:10px;background:rgba(255,255,255,.5);margin:5px 0}
+.rowk span:last-child{font-weight:900}
+.stars{display:flex;justify-content:center;gap:6px;margin:8px 0}
+.stars svg{width:54px;height:54px}
+.stars svg.pop{animation:starpop .6s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes starpop{from{transform:scale(0) rotate(-40deg)}}
+.chipnew{display:inline-flex;align-items:center;gap:8px;background:var(--amber);color:#fff;border-radius:30px;padding:6px 16px 6px 8px;font-weight:900;margin:8px 0}
+.chipnew svg{width:30px;height:30px;background:#fff;border-radius:50%;padding:3px}
+.menurow{display:flex;gap:8px;justify-content:center;margin:8px 0}
+.menurow span{width:42px;height:42px;border-radius:12px;background:#fff;display:grid;place-items:center}
+.menurow span svg{width:30px;height:30px}
+.shop{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;margin:10px 0;text-align:left}
+.up{display:flex;gap:10px;align-items:center;padding:10px;border-radius:14px;background:rgba(255,255,255,.58);border:2px solid transparent}
+.up.can{border-color:rgba(194,65,12,.55)}
+.up .ic{width:46px;height:46px;border-radius:12px;background:#fff;display:grid;place-items:center;flex:none}
+.up .ic svg{width:32px;height:32px}
+.up .tx{flex:1;min-width:0}
+.up .tx b{display:block;font-size:15px;font-weight:900}
+.up .tx small{display:block;font-size:12px;font-weight:700;color:var(--ink2);line-height:1.2}
+.pips{display:flex;gap:3px;margin-top:4px}.pips i{width:14px;height:6px;border-radius:3px;background:rgba(80,40,10,.2)}.pips i.on{background:var(--amber)}
+.buy{min-width:70px;padding:7px 8px;border-radius:11px;background:var(--amber);color:#fff;font-weight:900;font-size:14px;display:flex;align-items:center;justify-content:center;gap:4px;box-shadow:0 3px 0 #8a2d08}
+.buy svg{width:16px;height:16px}
+.buy[disabled]{background:#b9a99a;box-shadow:0 3px 0 #8d7b6c;pointer-events:none}
+.buy.max{background:var(--ok);box-shadow:0 3px 0 #2c6a35}
+.wallet{display:inline-flex;gap:8px;align-items:center;font-size:22px;font-weight:900;background:rgba(255,255,255,.6);padding:6px 16px;border-radius:30px}
+.wallet svg{width:26px;height:26px}
+.lang{position:absolute;right:14px;top:12px}
+.conf{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9}
+.conf i{position:absolute;top:-20px;width:10px;height:16px;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
+#dbg{position:fixed;left:8px;top:84px;z-index:20;font:12px/1.35 ui-monospace,Consolas,monospace;color:#102;background:rgba(255,255,255,.82);padding:5px 8px;border-radius:8px;display:none;max-width:60vw;white-space:pre-wrap;pointer-events:none}
+#dbg .err{color:#c00;font-weight:700}
+#fatal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:30px;font-weight:800;background:#fbe3c3;z-index:50}
+@media (max-width:700px){
+ #top{gap:6px 10px;padding:6px 8px;top:6px;left:6px;right:6px}
+ #top .logo{display:none}
+ .btns{order:1;margin-left:auto}
+ .sp{display:none}
+ .chip.cc{order:2}
+ .bar{width:56px}
+ .chip{font-size:14px}
+ #dock{left:4px;right:4px;bottom:calc(4px + env(safe-area-inset-bottom));gap:5px}
+ #tray{padding:5px 8px;gap:6px;width:100%;justify-content:center}
+ #tray .lbl{display:none}
+ .slot{width:34px;height:34px}.slot svg{width:25px;height:25px}
+ #stations{width:100%;justify-content:space-between;gap:3px;padding:4px}
+ .st{width:auto;flex:1;padding:5px 2px 6px}
+ .st svg{width:26px;height:26px}
+ .st b{font-size:11px}
+ .st .key{display:none}
+ .bub{transform-origin:0 0;padding:3px 6px 3px 3px;gap:3px}
+ .bub .ring,.bub .ring svg.r{width:30px;height:30px}
+ .bub .ring .av{inset:5px}.bub .ring .av svg{width:20px;height:20px}
+ .bub .it span{width:21px;height:21px;border-radius:6px}.bub .it span svg{width:17px;height:17px}
+ .card{padding:16px 14px}.card h1{font-size:36px}.card h2{font-size:23px}
+ .stars svg{width:44px;height:44px}
+ #toasts{top:100px}
+ #dbg{top:100px}
+}
+@media (max-width:420px){#top .hide-s{display:none}}
+</style>
+</head>
+<body>
+<canvas id="c" tabindex="0"></canvas>
+<div id="wl"></div>
+<header id="top" class="glass"></header>
+<div id="toasts"></div>
+<div id="dock"></div>
+<div id="pausebanner" class="glass"></div>
+<div id="screen"></div>
+<div id="dbg"></div>
+<div id="fatal">Three.js could not be loaded (internet connection needed for the CDN). Please reload when online.</div>
+<script type="module">
+/* ============================================================
+   Çay Ocağı - single file 3D tea house time-management game
+   ============================================================ */
+let THREE;
+try { THREE = await import('three'); }
+catch (e) { document.getElementById('fatal').style.display = 'flex'; throw e; }
+
+const Q = new URLSearchParams(location.search);
+const FLAG = {
+  auto: Q.has('auto'), debug: Q.has('debug'), low: Q.has('low'),
+  sim: parseFloat(Q.get('sim')) || 0,
+  stop: Q.get('stop') || '', stopDay: parseInt(Q.get('stopday')) || 0,
+  day: parseInt(Q.get('day')) || 0,
+  bench: parseInt(Q.get('bench')) || 0,
+  skill: Q.has('skill') ? parseFloat(Q.get('skill')) : 1
+};
+if (FLAG.low) document.body.classList.add('low');
+
+const $ = (s, el = document) => el.querySelector(s);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } }
+};
+
+/* seeded RNG for the simulation (visual randomness uses Math.random) */
+let _seed = Q.get('seed') ? parseInt(Q.get('seed')) : (Math.random() * 1e9) | 0;
+function rnd() {
+  _seed |= 0; _seed = _seed + 0x6D2B79F5 | 0;
+  let t = Math.imul(_seed ^ _seed >>> 15, 1 | _seed);
+  t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+  return ((t ^ t >>> 14) >>> 0) / 4294967296;
+}
+const rr = (a, b) => a + (b - a) * rnd();
+
+/* ---------------- icons ---------------- */
+const ICON = {
+  tea: `<svg viewBox="0 0 24 24"><path d="M6.4 3.2h11.2c0 5.4-1.7 8.6-3.4 10v2.1H9.8v-2.1C8.1 11.8 6.4 8.6 6.4 3.2z" fill="#c2410c" stroke="#7c2d12" stroke-width="1.2" stroke-linejoin="round"/><path d="M6.8 4.6h10.4" stroke="#fff" stroke-opacity=".55" stroke-width="1.6"/><ellipse cx="12" cy="19" rx="6.6" ry="1.9" fill="#f1e1c4" stroke="#7c2d12" stroke-width="1"/></svg>`,
+  simit: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.6" fill="none" stroke="#a9691f" stroke-width="6"/><circle cx="12" cy="12" r="6.6" fill="none" stroke="#e0a448" stroke-width="4.4"/><circle cx="12" cy="12" r="6.6" fill="none" stroke="#fff3cf" stroke-width="3.6" stroke-dasharray=".7 2.4" stroke-linecap="round"/></svg>`,
+  coffee: `<svg viewBox="0 0 24 24"><path d="M7 3c-1 1.600 1 2.400 0 4M11 3c-1 1.600 1 2.400 0 4" fill="none" stroke="#a89888" stroke-width="1.3" stroke-linecap="round"/><path d="M4.500 9h11v3.600a5.500 5.500 0 0 1-5.500 5.500h0a5.500 5.500 0 0 1-5.500-5.500z" fill="#6b4226" stroke="#3b2210" stroke-width="1.2"/><path d="M15.500 10.200h1.300a2.300 2.300 0 0 1 0 4.600h-1.800" fill="none" stroke="#3b2210" stroke-width="1.500"/><ellipse cx="10" cy="19.500" rx="7.500" ry="1.800" fill="#f1e1c4" stroke="#3b2210" stroke-width="1"/></svg>`,
+  ayran: `<svg viewBox="0 0 24 24"><path d="M6 6.500h12l-1.500 13a1.500 1.500 0 0 1-1.500 1.300H9a1.500 1.500 0 0 1-1.500-1.300z" fill="#fbfaf4" stroke="#587486" stroke-width="1.300" stroke-linejoin="round"/><path d="M6.600 10.500h10.800l-.5 4.500H7.100z" fill="#9cc7de"/><path d="M5.500 6.500h13" stroke="#587486" stroke-width="1.600" stroke-linecap="round"/><path d="M8 4.800q4-2.500 8 0" fill="#fff" stroke="#c9d6dd" stroke-width="1.100"/></svg>`,
+  dirty: `<svg viewBox="0 0 24 24"><path d="M6.400 3.200h11.200c0 5.400-1.700 8.600-3.400 10v2.100H9.800v-2.100C8.100 11.800 6.400 8.600 6.400 3.200z" fill="#a49a90" stroke="#5f554c" stroke-width="1.200" stroke-linejoin="round"/><circle cx="10" cy="7" r="1.200" fill="#6e655c"/><circle cx="14" cy="9.500" r="1" fill="#6e655c"/><ellipse cx="12" cy="19" rx="6.600" ry="1.900" fill="#cfc6bb" stroke="#5f554c" stroke-width="1"/><path d="M18 2l.8 1.700L20.500 4l-1.700.8L18 6.500l-.8-1.700L15.500 4l1.700-.3z" fill="#fff" stroke="#e0b64a" stroke-width=".6"/></svg>`,
+  sink: `<svg viewBox="0 0 24 24"><path d="M3 11h18v3.500a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5z" fill="#8fb4c8" stroke="#46687c" stroke-width="1.300"/><path d="M8 11V6.500a2.500 2.500 0 0 1 5 0" fill="none" stroke="#46687c" stroke-width="1.800" stroke-linecap="round"/><circle cx="17" cy="6" r="1.200" fill="#8fb4c8"/><circle cx="19" cy="8.500" r=".9" fill="#8fb4c8"/></svg>`,
+  coin: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.500" fill="#f2b632" stroke="#a96e0c" stroke-width="1.400"/><circle cx="12" cy="12" r="6.500" fill="none" stroke="#ffe08a" stroke-width="1.400"/><path d="M12 7.500v9M9.500 10.200c.6-1.300 4.400-1.500 5 0 .5 1.600-4.600 1.200-5 2.800-.3 1.600 4 1.500 5 .1" fill="none" stroke="#a96e0c" stroke-width="1.300" stroke-linecap="round"/></svg>`,
+  happy: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.500" fill="#ffd45a" stroke="#a96e0c" stroke-width="1.300"/><circle cx="8.800" cy="10" r="1.300" fill="#5a3410"/><circle cx="15.200" cy="10" r="1.300" fill="#5a3410"/><path d="M7.500 14q4.500 4.500 9 0" fill="none" stroke="#5a3410" stroke-width="1.600" stroke-linecap="round"/></svg>`,
+  angry: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.500" fill="#f08a6a" stroke="#8c2a12" stroke-width="1.300"/><path d="M6.500 8l4 1.600M17.500 8l-4 1.600" stroke="#4a1608" stroke-width="1.700" stroke-linecap="round"/><circle cx="9" cy="11.200" r="1.200" fill="#4a1608"/><circle cx="15" cy="11.200" r="1.200" fill="#4a1608"/><path d="M8 17q4-3.500 8 0" fill="none" stroke="#4a1608" stroke-width="1.600" stroke-linecap="round"/></svg>`,
+  star: `<svg viewBox="0 0 24 24"><path d="M12 2.500l2.900 6 6.600.9-4.800 4.600 1.200 6.500L12 17.300 6.100 20.500l1.200-6.500L2.500 9.400l6.600-.9z" fill="#f2b632" stroke="#a96e0c" stroke-width="1.200" stroke-linejoin="round"/></svg>`,
+  starOff: `<svg viewBox="0 0 24 24"><path d="M12 2.500l2.900 6 6.600.9-4.800 4.600 1.200 6.500L12 17.300 6.100 20.500l1.200-6.500L2.500 9.400l6.600-.9z" fill="rgba(80,40,10,.15)" stroke="rgba(80,40,10,.3)" stroke-width="1.200" stroke-linejoin="round"/></svg>`,
+  pause: `<svg viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1.200" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1.200" fill="currentColor"/></svg>`,
+  play: `<svg viewBox="0 0 24 24"><path d="M7 4.500v15l12-7.500z" fill="currentColor" stroke="currentColor" stroke-width="1.500" stroke-linejoin="round"/></svg>`,
+  snd: `<svg viewBox="0 0 24 24"><path d="M4 9.500h3.500L12 5.500v13l-4.500-4H4z" fill="currentColor"/><path d="M15 9q2.500 3 0 6M17.500 6.500q5 5.500 0 11" fill="none" stroke="currentColor" stroke-width="1.700" stroke-linecap="round"/></svg>`,
+  mute: `<svg viewBox="0 0 24 24"><path d="M4 9.500h3.500L12 5.500v13l-4.500-4H4z" fill="currentColor"/><path d="M15.500 9.500l5 5M20.500 9.500l-5 5" stroke="currentColor" stroke-width="1.800" stroke-linecap="round"/></svg>`,
+  person: `<svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" fill="#c9805a"/><path d="M4.500 21c0-5 3-7.500 7.500-7.500s7.500 2.500 7.500 7.500z" fill="#4c8a8e"/></svg>`,
+  office: `<svg viewBox="0 0 24 24"><circle cx="12" cy="7.500" r="3.800" fill="#d79a74"/><path d="M5 21c0-5 3-7.500 7-7.500s7 2.500 7 7.500z" fill="#35465a"/><path d="M12 13.500l-1.600 1.800 1.200 3.200h.8l1.200-3.200z" fill="#c2410c"/><path d="M9.500 13.700L12 16l2.500-2.300" fill="#fff"/></svg>`,
+  group: `<svg viewBox="0 0 24 24"><circle cx="6.500" cy="9" r="3" fill="#d79a74"/><circle cx="17.500" cy="9" r="3" fill="#c9805a"/><circle cx="12" cy="6.500" r="3.300" fill="#e0aa84"/><path d="M1 20c0-4 2.500-6 5.500-6s5.500 2 5.500 6zM12 20c0-4 2.500-6 5.500-6s5.500 2 5.500 6z" fill="#8a6bb0"/><path d="M6.500 20c0-4 2.500-6.500 5.500-6.500s5.500 2.500 5.500 6.500z" fill="#4c8a8e"/></svg>`,
+  regular: `<svg viewBox="0 0 24 24"><circle cx="12" cy="9" r="4" fill="#d79a74"/><path d="M7 7.500q5-6 10 0z" fill="#eee"/><path d="M8.500 11.500q3.500 2.500 7 0q-1 2.300-3.500 2.300T8.500 11.500z" fill="#eee"/><path d="M4.500 21c0-5 3-7 7.500-7s7.500 2 7.500 7z" fill="#a0522d"/><path d="M19.500 2l.9 1.800 2 .3-1.450 1.400.35 2L19.500 6.600 17.700 7.500l.35-2L16.600 4.100l2-.3z" fill="#f2b632"/></svg>`,
+  kettle: `<svg viewBox="0 0 24 24"><path d="M7 11h10l1 9H6z" fill="#b8742e" stroke="#6e3f12" stroke-width="1.200" stroke-linejoin="round"/><path d="M8.500 11V8.500a3.500 3.500 0 0 1 7 0V11" fill="#f4efe6" stroke="#6e3f12" stroke-width="1.200"/><circle cx="12" cy="4.500" r="1" fill="#6e3f12"/></svg>`,
+  tray: `<svg viewBox="0 0 24 24"><ellipse cx="12" cy="15" rx="10" ry="4" fill="#c9cdd2" stroke="#6a7078" stroke-width="1.200"/><ellipse cx="12" cy="14" rx="7" ry="2.300" fill="#e6e9ec"/><rect x="7" y="5" width="3" height="7" rx="1" fill="#c2410c"/><circle cx="15.500" cy="9" r="3" fill="none" stroke="#c98a2e" stroke-width="2.400"/></svg>`,
+  oven: `<svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="13" rx="2" fill="#a0673a" stroke="#5a3418" stroke-width="1.200"/><path d="M7 21v-6a5 5 0 0 1 10 0v6z" fill="#2a1810"/><path d="M9 21v-5a3 3 0 0 1 6 0v5z" fill="#ff9a2f"/><rect x="15" y="2" width="4" height="6" fill="#7a4a28"/></svg>`,
+  apprentice: `<svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4" fill="#e0aa84"/><path d="M8.200 5.500q3.800-3.800 7.600 0z" fill="#3a2314"/><path d="M5 21c0-5 3-7.500 7-7.500s7 2.500 7 7.500z" fill="#fff" stroke="#c9b9a4" stroke-width="1"/><path d="M8.500 21l1-6.500h5l1 6.500z" fill="#c2410c"/></svg>`,
+  table: `<svg viewBox="0 0 24 24"><ellipse cx="12" cy="9" rx="9.500" ry="4" fill="#e9825a" stroke="#8a3a1a" stroke-width="1.200"/><path d="M12 13v7M8 21h8" stroke="#6a3a1a" stroke-width="2" stroke-linecap="round"/></svg>`,
+  stool: `<svg viewBox="0 0 24 24"><ellipse cx="12" cy="8" rx="7.500" ry="3.300" fill="#f19b4a" stroke="#8a4a14" stroke-width="1.200"/><path d="M7 10l-2 10M17 10l2 10M12 11v9" stroke="#6a3a1a" stroke-width="1.800" stroke-linecap="round"/></svg>`,
+  tulip: `<svg viewBox="0 0 24 24"><path d="M6.500 3.500h11c0 5.200-1.600 8.400-3.300 9.800v2.200h-4.400v-2.200C8.100 11.900 6.500 8.700 6.500 3.500z" fill="#c2410c"/></svg>`
+};
+const itemIcon = k => ICON[k] || '';
+
+/* ---------------- text ---------------- */
+const TXT = {
+  tr: {
+    tagline: 'Boğaz kıyısında küçük bir çay ocağı. Demle, servis et, bahşişi topla.',
+    play: 'Oyuna başla', best: 'En iyi: Gün {0} · {1} altın', noBest: 'Henüz rekor yok',
+    how1: 'Bir istasyona tıkla (1-4): çay demle, simit ısıt, kahve pişir. Hazır olunca tekrar tıkla, tepsine girsin.',
+    how2: 'Bir masaya tıkla: istenenleri servis et. Kirli bardakları topla, lavaboya (5) götür.',
+    how3: 'Müşterilerin sabrı tükenmeden servis yap. Hızlı servis daha çok bahşiş getirir.',
+    how4: 'Boşluk: duraklat · Esc: kuyruğu temizle · Sürükle: kaydır · Tekerlek: yakınlaştır.',
+    day: 'Gün', dayOf: 'Gün {0}/7', dayEndless: 'Gün {0} ∞', target: 'Hedef', newThing: 'Yeni', menuToday: 'Bugünün menüsü',
+    startDay: 'Günü başlat', today: 'Bugün', tray: 'Tepsi', queue: 'Sıra', clearQ: 'temizle',
+    tea: 'Çay', simit: 'Simit', coffee: 'Kahve', ayran: 'Ayran', sink: 'Lavabo', dirty: 'Kirli bardak',
+    n_tea: 'Çay', n_simit: 'Simit', n_coffee: 'Türk kahvesi', n_ayran: 'Ayran',
+    c_normal: 'Müşteri', c_office: 'Aceleci memur', c_group: '3 kişilik grup', c_regular: 'Müdavim (bahşiş x2)',
+    new1: 'Demli çay', new2: 'Sıcak simit', new3: 'Türk kahvesi', new4: 'Soğuk ayran',
+    new5: 'Aceleci ofis çalışanı: sabrı kısa', new6: '3 kişilik grup: büyük sipariş', new7: 'Müdavim: bahşişi iki katı',
+    newE: 'Sonsuz vardiya: her gün biraz daha kalabalık',
+    tip1: 'Önce çayı demle: demlenirken simit ısıtabilirsin.', tip2: 'Sırayı akıllı kur: tepsiye 3 şey sığar.',
+    tip3: 'Kahveyi hazır olunca hemen al, yoksa taşar!', tip4: 'Boş dururken kirli bardakları topla.', tip5: 'Dükkandan yardımcı ve masa al.',
+    paused: 'Duraklatıldı', pausedSub: 'Devam etmek için Boşluk tuşu ya da ▶',
+    toastTray: 'Tepsi dolu!', toastBrewing: 'Henüz hazır değil', toastNothing: 'Burada yapacak bir şey yok', toastQueue: 'Sıra dolu',
+    toastWrong: 'Bu masa onu istemedi', toastNoOrder: 'Henüz sipariş vermedi', toastTeaReady: 'Çay hazır!', toastSimitReady: 'Simit sıcak!',
+    toastCoffeeReady: 'Kahve hazır, taşmadan al!', toastSpill: 'Kahve taştı!', toastAngry: 'Müşteri kızıp gitti!', toastClean: 'Kahve ocağı temizlendi',
+    toastWash: 'Bardaklar yıkandı', toastMeow: 'Miyav!', toastApprentice: 'Çırak masayı topladı', toastBrewStart: 'Demleniyor...',
+    toastCook: 'Kahve pişiyor...', toastWarm: 'Simit ısınıyor...', toastNothingToWash: 'Yıkanacak bardak yok',
+    dayDone: 'Gün tamamlandı!', dayFail: 'Hedef tutmadı', earned: 'Kazanılan', tips: 'Bahşiş', happyC: 'Memnun', angryC: 'Kızgın',
+    cont: 'Devam', toShop: 'Dükkana git', shop: 'Dükkan', wallet: 'Cüzdan', nextDay: 'Sonraki gün', buy: 'Al', maxed: 'Tamam',
+    retry: 'Günü tekrar dene', menu: 'Ana menü', victory: 'Tebrikler!', victoryTxt: 'Yedi günü tamamladın. Çay ocağı artık mahallenin gözdesi!',
+    endless: 'Sonsuz vardiya', total: 'Toplam altın', gameover: 'Vardiya bitti', goTxt: 'Bu gün hedefe ulaşamadın. Dükkandaki geliştirmeler bir dahaki denemede işine yarar.',
+    reached: 'Ulaşılan gün', ratingStars: 'Yıldız',
+    u_kettle: 'İkinci semaver', u_kettle_d: 'İki çaydanlık aynı anda demlenir.',
+    u_tray: 'Büyük tepsi', u_tray_d: 'Tepsiye taşıdığın ürün sayısı artar (3 → 5).',
+    u_oven: 'Hızlı fırın', u_oven_d: 'Simitler daha çabuk ısınır.',
+    u_apprentice: 'Çırak', u_apprentice_d: 'Boş masaları toplayıp bardakları yıkar.',
+    u_table: 'Ek masa', u_table_d: 'Bir masa daha: daha çok müşteri.',
+    u_stool: 'Rahat tabure', u_stool_d: 'Müşteriler daha sabırlı (+%20 sabır).',
+    langBtn: 'EN', speedT: 'Hız', pauseT: 'Duraklat', soundT: 'Ses', hint: 'İpucu', stars3: 'Harika!', stars2: 'Güzel gün', stars1: 'Idare eder',
+    welcome: 'Hoş geldin! Önce çay istasyonuna (1) tıkla.',
+    full: 'dolu', passByWait: 'Masa yok'
+  },
+  en: {
+    tagline: 'A tiny tea house by the Bosphorus. Brew, serve, collect tips.',
+    play: 'Start game', best: 'Best: Day {0} · {1} coins', noBest: 'No record yet',
+    how1: 'Click a station (1-4): brew tea, warm simit, cook coffee. Click again when ready to grab it onto your tray.',
+    how2: 'Click a table to serve what they ordered. Collect dirty glasses and bring them to the sink (5).',
+    how3: 'Serve before patience runs out. Fast service earns bigger tips.',
+    how4: 'Space: pause · Esc: clear queue · Drag: pan · Wheel: zoom.',
+    day: 'Day', dayOf: 'Day {0}/7', dayEndless: 'Day {0} ∞', target: 'Target', newThing: 'New', menuToday: "Today's menu",
+    startDay: 'Start the day', today: 'Today', tray: 'Tray', queue: 'Queue', clearQ: 'clear',
+    tea: 'Tea', simit: 'Simit', coffee: 'Coffee', ayran: 'Ayran', sink: 'Sink', dirty: 'Dirty glass',
+    n_tea: 'Tea', n_simit: 'Simit', n_coffee: 'Turkish coffee', n_ayran: 'Ayran',
+    c_normal: 'Customer', c_office: 'Hurried clerk', c_group: 'Group of 3', c_regular: 'Regular (tips x2)',
+    new1: 'Fresh brewed tea', new2: 'Warm simit', new3: 'Turkish coffee', new4: 'Cold ayran',
+    new5: 'Hurried office worker: short patience', new6: 'Group of 3: big orders', new7: 'Regular: tips double',
+    newE: 'Endless shift: a bit busier every day',
+    tip1: 'Start the tea first: warm simit while it brews.', tip2: 'Plan your route: the tray holds only 3 items.',
+    tip3: 'Grab the coffee as soon as it is ready, or it boils over!', tip4: 'Clear dirty glasses when idle.', tip5: 'Buy an apprentice and extra tables in the shop.',
+    paused: 'Paused', pausedSub: 'Press Space or ▶ to resume',
+    toastTray: 'Tray is full!', toastBrewing: 'Not ready yet', toastNothing: 'Nothing to do here', toastQueue: 'Queue is full',
+    toastWrong: "That table didn't order it", toastNoOrder: 'No order yet', toastTeaReady: 'Tea is ready!', toastSimitReady: 'Simit is warm!',
+    toastCoffeeReady: 'Coffee is ready, grab it!', toastSpill: 'Coffee boiled over!', toastAngry: 'A customer left angry!', toastClean: 'Coffee pot cleaned',
+    toastWash: 'Glasses washed', toastMeow: 'Meow!', toastApprentice: 'Apprentice cleared a table', toastBrewStart: 'Brewing...',
+    toastCook: 'Cooking coffee...', toastWarm: 'Warming simit...', toastNothingToWash: 'No dirty glasses to wash',
+    dayDone: 'Day complete!', dayFail: 'Target missed', earned: 'Earned', tips: 'Tips', happyC: 'Happy', angryC: 'Angry',
+    cont: 'Continue', toShop: 'Go to shop', shop: 'Shop', wallet: 'Wallet', nextDay: 'Next day', buy: 'Buy', maxed: 'Maxed',
+    retry: 'Retry the day', menu: 'Main menu', victory: 'Congratulations!', victoryTxt: 'You finished all seven days. The tea house is now the pride of the neighbourhood!',
+    endless: 'Endless shift', total: 'Total coins', gameover: 'Shift over', goTxt: "You missed the target today. Upgrades from the shop will help next time.",
+    reached: 'Day reached', ratingStars: 'Stars',
+    u_kettle: 'Second samovar', u_kettle_d: 'Two kettles brew at the same time.',
+    u_tray: 'Bigger tray', u_tray_d: 'Carry more items at once (3 → 5).',
+    u_oven: 'Faster oven', u_oven_d: 'Simit warms up quicker.',
+    u_apprentice: 'Apprentice', u_apprentice_d: 'Clears tables and washes the glasses.',
+    u_table: 'Extra table', u_table_d: 'One more table: more customers.',
+    u_stool: 'Comfy stools', u_stool_d: 'Customers are more patient (+20%).',
+    langBtn: 'TR', speedT: 'Speed', pauseT: 'Pause', soundT: 'Sound', hint: 'Hint', stars3: 'Brilliant!', stars2: 'Nice day', stars1: 'Good enough',
+    welcome: 'Welcome! Click the tea station (1) first.',
+    full: 'full', passByWait: 'No table'
+  }
+};
+
+/* ---------------- state ---------------- */
+const prefs = store.get('cay_prefs', {});
+const G = window.cay = {
+  state: 'title', day: 1, endless: false, won: false,
+  clock: 0, dayLen: 180, coins: 0, dayCoins: 0, dayTips: 0, totalEarned: 0, target: 40,
+  happy: 0, angry: 0, served: 0, missed: 0,
+  speed: FLAG.auto ? 3 : 1, paused: false, autoPaused: false,
+  lang: Q.get('lang') || prefs.lang || ((navigator.language || 'tr').toLowerCase().startsWith('tr') ? 'tr' : 'en'),
+  muted: !!prefs.muted,
+  up: { kettle: 0, tray: 0, oven: 0, apprentice: 0, table: 0, stool: 0 },
+  tables: [], parties: [], waiter: null, apprentice: null, stations: null,
+  vt: 0, simming: false, halt: false, botHold: false,
+  drawCalls: 0, maxDrawCalls: 0, fps: 0, errors: [], log: [], stars: 0,
+  flags: FLAG, version: 1
+};
+function t(k, ...a) {
+  let s = (TXT[G.lang] && TXT[G.lang][k]); if (s == null) s = TXT.tr[k]; if (s == null) s = k;
+  a.forEach((v, i) => { s = s.split('{' + i + '}').join(v); });
+  return s;
+}
+
+/* ---------------- balance data ---------------- */
+const ITEMS = ['tea', 'simit', 'coffee', 'ayran'];
+const PRICE = { tea: 3, simit: 5, coffee: 8, ayran: 5 };
+const ITEM_W = { tea: 3, simit: 2.2, coffee: 2, ayran: 1.6 };
+const BREW_T = 7, TEA_N = 4;
+const OVEN_T = [6.5, 4.6, 3.3], OVEN_N = 3;
+const COOK_T = 4.2, COOK_WIN = 3.6;
+const WALK = 5.4;
+const CUST = {
+  normal: { patience: 42, items: [1, 3], size: 1, tip: 1.0, eat: 5 },
+  office: { patience: 25, items: [1, 2], size: 1, tip: 1.4, eat: 3.2 },
+  group: { patience: 56, items: [3, 5], size: 3, tip: 1.0, eat: 6.5 },
+  regular: { patience: 46, items: [1, 3], size: 1, tip: 2.0, eat: 5.5 }
+};
+const DAYS = [
+  { menu: ['tea'], types: { normal: 1 }, gap: 10.5, target: 65, nk: 'new1', ni: 'tea' },
+  { menu: ['tea', 'simit'], types: { normal: 1 }, gap: 9.0, target: 95, nk: 'new2', ni: 'simit' },
+  { menu: ['tea', 'simit', 'coffee'], types: { normal: 1 }, gap: 7.8, target: 135, nk: 'new3', ni: 'coffee' },
+  { menu: ITEMS, types: { normal: 1 }, gap: 6.8, target: 160, nk: 'new4', ni: 'ayran' },
+  { menu: ITEMS, types: { normal: 70, office: 30 }, gap: 6.0, target: 195, nk: 'new5', ni: 'office' },
+  { menu: ITEMS, types: { normal: 60, office: 22, group: 18 }, gap: 5.4, target: 225, nk: 'new6', ni: 'group' },
+  { menu: ITEMS, types: { normal: 48, office: 20, group: 16, regular: 16 }, gap: 4.9, target: 250, nk: 'new7', ni: 'regular' }
+];
+function dayCfg(d) {
+  if (d <= 7) return DAYS[d - 1];
+  const k = d - 7;
+  return { menu: ITEMS, types: { normal: 44, office: 22, group: 17, regular: 17 }, gap: Math.max(3.4, 4.8 - 0.25 * k), target: Math.round(250 + 35 * k), nk: 'newE', ni: 'star' };
+}
+const UPG = [
+  { id: 'kettle', max: 1, cost: [60], icon: 'kettle' },
+  { id: 'tray', max: 2, cost: [45, 90], icon: 'tray' },
+  { id: 'oven', max: 2, cost: [50, 90], icon: 'oven' },
+  { id: 'table', max: 3, cost: [45, 85, 130], icon: 'table' },
+  { id: 'apprentice', max: 1, cost: [120], icon: 'apprentice' },
+  { id: 'stool', max: 2, cost: [50, 95], icon: 'stool' }
+];
+const trayCap = () => 3 + G.up.tray;
+const ovenTime = () => OVEN_T[G.up.oven];
+const stoolMul = () => 1 + 0.2 * G.up.stool;
+const tableCount = () => 3 + G.up.table;
+
+/* ---------------- layout constants ---------------- */
+const LANE_X = -5.1, CNT_X = -6.75;
+const STATION_Z = { tea: -4.45, simit: -1.9, coffee: 0.5, ayran: 2.7, sink: 4.9 };
+const STATION_KEYS = ['tea', 'simit', 'coffee', 'ayran', 'sink'];
+const TABLE_POS = [[-1.0, -0.5], [-1.0, 3.5], [-1.0, -4.5], [3.6, -0.5], [3.6, 3.5], [3.6, -4.5]];
+const SPAWN = { x: 14.2, z: 9.2 }, EXIT = { x: 14.2, z: -7.4 };
+const SEAT_ANG = [Math.PI, Math.PI / 2, Math.PI * 1.5, 0];
+
+/* ---------------- navigation grid + A* ---------------- */
+const GX0 = -9, GZ0 = -9.5, CS = 0.5, GW = 48, GH = 40;
+const blocked = new Uint8Array(GW * GH);
+const _g = new Float32Array(GW * GH), _came = new Int32Array(GW * GH), _closed = new Uint8Array(GW * GH), _open = new Uint8Array(GW * GH);
+const cellX = x => Math.floor((x - GX0) / CS), cellZ = z => Math.floor((z - GZ0) / CS);
+const cellFree = (ix, iz) => ix >= 0 && iz >= 0 && ix < GW && iz < GH && !blocked[iz * GW + ix];
+const blockedAt = (x, z) => !cellFree(cellX(x), cellZ(z));
+function rebuildGrid() {
+  const n = tableCount();
+  for (let iz = 0; iz < GH; iz++) for (let ix = 0; ix < GW; ix++) {
+    const x = GX0 + (ix + .5) * CS, z = GZ0 + (iz + .5) * CS;
+    let b = x < -5.7 || z < -8.2;
+    for (let i = 0; i < n && !b; i++) { if (Math.hypot(x - TABLE_POS[i][0], z - TABLE_POS[i][1]) < 1.25) b = true; }
+    blocked[iz * GW + ix] = b ? 1 : 0;
+  }
+}
+function nearestFree(ix, iz) {
+  ix = clamp(ix, 0, GW - 1); iz = clamp(iz, 0, GH - 1);
+  if (cellFree(ix, iz)) return [ix, iz];
+  let best = null, bd = 1e9;
+  for (let r = 1; r < 12 && !best; r++) {
+    for (let dz = -r; dz <= r; dz++) for (let dx = -r; dx <= r; dx++) {
+      if (Math.max(Math.abs(dx), Math.abs(dz)) !== r) continue;
+      if (cellFree(ix + dx, iz + dz)) { const d = dx * dx + dz * dz; if (d < bd) { bd = d; best = [ix + dx, iz + dz]; } }
+    }
+  }
+  return best || [ix, iz];
+}
+function los(ax, az, bx, bz) {
+  const d = Math.hypot(bx - ax, bz - az), n = Math.max(1, Math.ceil(d / 0.2));
+  for (let i = 1; i <= n; i++) { const f = i / n; if (blockedAt(ax + (bx - ax) * f, az + (bz - az) * f)) return false; }
+  return true;
+}
+function findPath(sx, sz, tx, tz) {
+  const [sxi, szi] = nearestFree(cellX(sx), cellZ(sz)), [txi, tzi] = nearestFree(cellX(tx), cellZ(tz));
+  const S = szi * GW + sxi, T = tzi * GW + txi;
+  if (S === T) return [{ x: tx, z: tz }];
+  _g.fill(1e9); _closed.fill(0); _open.fill(0);
+  const open = [S]; _g[S] = 0; _came[S] = -1; _open[S] = 1;
+  const h = (i) => { const dx = Math.abs((i % GW) - txi), dz = Math.abs(((i / GW) | 0) - tzi); return (dx + dz) + (1.4142 - 2) * Math.min(dx, dz); };
+  const f = new Map(); f.set(S, h(S));
+  let found = false, guard = 0;
+  while (open.length && guard++ < 4000) {
+    let bi = 0, bf = 1e9;
+    for (let k = 0; k < open.length; k++) { const v = f.get(open[k]); if (v < bf) { bf = v; bi = k; } }
+    const cur = open[bi]; open[bi] = open[open.length - 1]; open.pop(); _open[cur] = 0;
+    if (cur === T) { found = true; break; }
+    _closed[cur] = 1;
+    const cx = cur % GW, cz = (cur / GW) | 0;
+    for (let dz = -1; dz <= 1; dz++) for (let dx = -1; dx <= 1; dx++) {
+      if (!dx && !dz) continue;
+      const nx = cx + dx, nz = cz + dz;
+      if (!cellFree(nx, nz)) continue;
+      if (dx && dz && (!cellFree(cx + dx, cz) || !cellFree(cx, cz + dz))) continue;
+      const ni = nz * GW + nx; if (_closed[ni]) continue;
+      const ng = _g[cur] + (dx && dz ? 1.4142 : 1);
+      if (ng < _g[ni]) { _g[ni] = ng; _came[ni] = cur; f.set(ni, ng + h(ni)); if (!_open[ni]) { _open[ni] = 1; open.push(ni); } }
+    }
+  }
+  if (!found) return [{ x: tx, z: tz }];
+  const cells = []; for (let c = T; c !== -1; c = _came[c]) cells.push(c);
+  cells.reverse();
+  const pts = [{ x: sx, z: sz }];
+  for (let i = 1; i < cells.length - 1; i++) pts.push({ x: GX0 + ((cells[i] % GW) + .5) * CS, z: GZ0 + (((cells[i] / GW) | 0) + .5) * CS });
+  pts.push({ x: tx, z: tz });
+  const out = []; let i = 0;
+  while (i < pts.length - 1) {
+    let j = pts.length - 1;
+    while (j > i + 1 && !los(pts[i].x, pts[i].z, pts[j].x, pts[j].z)) j--;
+    out.push(pts[j]); i = j;
+  }
+  return out;
+}
+function followPath(o, speed, dt) {
+  let move = speed * dt, moved = false;
+  while (move > 0 && o.path.length) {
+    const n = o.path[0], dx = n.x - o.x, dz = n.z - o.z, d = Math.hypot(dx, dz);
+    if (d <= move) { o.x = n.x; o.z = n.z; o.path.shift(); move -= d; if (d > 0.001) { o.face = Math.atan2(dx, dz); moved = true; } }
+    else { o.x += dx / d * move; o.z += dz / d * move; o.face = Math.atan2(dx, dz); move = 0; moved = true; }
+  }
+  o.moving = moved;
+  return o.path.length === 0;
+}
+
+/* ---------------- toasts / hooks (defined in UI part) ---------------- */
+function tableApproach(i) { const p = TABLE_POS[i]; return i < 3 ? { x: p[0] - 2.0, z: p[1] } : { x: p[0] - 2.2, z: p[1] }; }
+function seatPos(i, k) { const p = TABLE_POS[i], a = SEAT_ANG[k]; return { x: p[0] + Math.cos(a) * 0.98, z: p[1] + Math.sin(a) * 0.98 }; }
+
+/* ---------------- day lifecycle ---------------- */
+function newTables() {
+  G.tables = TABLE_POS.map((p, i) => ({
+    i, x: p[0], z: p[1], unlocked: i < tableCount(), party: null, dirty: false, claimed: false,
+    slots: [] // {kind:'glass'|'plate', item, dirty}
+  }));
+}
+function resetStations() {
+  G.stations = {
+    kettles: [{ st: 'empty', t: 0, n: 0 }, { st: 'empty', t: 0, n: 0 }],
+    oven: { st: 'empty', t: 0, n: 0 },
+    pots: [{ st: 'empty', t: 0 }, { st: 'empty', t: 0 }]
+  };
+}
+function resetWorldForDay() {
+  for (const p of G.parties) for (const pe of p.persons) freePerson(pe);
+  G.parties = [];
+  newTables(); resetStations(); rebuildGrid();
+  G.waiter = { x: LANE_X, z: 0.5, face: -Math.PI / 2, path: [], q: [], cur: null, state: 'idle', workT: 0, tray: [], moving: false, sx: 0, sz: 0 };
+  G.apprentice = G.up.apprentice ? { x: -4.3, z: 5.9, face: 0, path: [], state: 'idle', t: 0, tb: null, moving: false } : null;
+  G.clock = 0; G.dayCoins = 0; G.dayTips = 0; G.happy = 0; G.angry = 0; G.served = 0; G.missed = 0;
+  G.spawnT = 2.2; G.spawnCount = 0; G.blockedT = 0; G.walkby = 0;
+}
+let _snap = null;
+function beginDay() {
+  const cfg = dayCfg(G.day);
+  _snap = { coins: G.coins, up: { ...G.up }, total: G.totalEarned };
+  G.target = cfg.target;
+  resetWorldForDay();
+  G.state = 'play'; G.paused = false;
+  uiScreen(); uiRefreshAll();
+  if (G.day === 1 && !G.won) toast(t('welcome'), 'good');
+}
+function ratingStars() {
+  const c = G.dayCoins, T = G.target, tot = G.happy + G.angry, ratio = tot ? G.happy / tot : 1;
+  if (c < T) return 0;
+  let s = 1;
+  if (c >= T * 1.25 && ratio >= 0.7) s = 2;
+  if (s === 2 && c >= T * 1.5 && ratio >= 0.88) s = 3;
+  return s;
+}
+function endDay() {
+  const stars = ratingStars(); G.stars = stars;
+  const rec = { day: G.day, coins: G.dayCoins, target: G.target, tips: G.dayTips, happy: G.happy, angry: G.angry, stars, passed: stars > 0, served: G.served, spawned: G.spawnCount, blocked: G.walkby | 0 };
+  G.log.push(rec);
+  G.lastResult = rec;
+  for (const p of G.parties) for (const pe of p.persons) freePerson(pe);
+  G.parties = [];
+  const best = store.get('cay_best', { day: 0, total: 0 });
+  const reached = rec.passed ? G.day : G.day - 1;
+  if (reached > 0 && (reached > best.day || (reached === best.day && G.totalEarned > best.total))) store.set('cay_best', { day: reached, total: G.totalEarned });
+  if (rec.passed) { G.state = 'summary'; sfxFanfare(); } else { G.state = 'gameover'; sfxLose(); }
+  G.paused = false; G.waiter.q.length = 0;
+  uiScreen(); checkStop();
+}
+const A = G.act = {
+  start() { sfxInit(); G.retrying = false; G.coins = 0; G.totalEarned = 0; G.log = []; G.won = false; G.endless = false; G.up = { kettle: 0, tray: 0, oven: 0, apprentice: 0, table: 0, stool: 0 }; G.day = FLAG.day || 1; if (G.day > 1) { G.coins = 150 * (G.day - 1); } A.intro(); },
+  intro() { G.state = 'intro'; resetWorldForDay(); G.target = dayCfg(G.day).target; uiScreen(); checkStop(); },
+  begin() { beginDay(); },
+  afterSummary() { if (G.day === 7 && !G.won) { G.won = true; G.state = 'victory'; uiScreen(); sfxFanfare(); confetti(); checkStop(); } else { A.shop(); } },
+  shop() { G.state = 'shop'; uiScreen(); checkStop(); },
+  buy(id) {
+    const u = UPG.find(x => x.id === id); if (!u) return false;
+    const lv = G.up[id]; if (lv >= u.max) return false; const c = u.cost[lv];
+    if (G.coins < c) return false;
+    G.coins -= c; G.up[id]++; sfxCash(); if (G.state === 'shop') uiScreen(true); return true;
+  },
+  next() { G.day++; A.intro(); },
+  retry() { if (_snap) { G.coins = _snap.coins; G.up = { ..._snap.up }; G.totalEarned = _snap.total; } G.log.pop(); A.intro(); },
+  endlessMode() { G.endless = true; A.shop(); },
+  menu() { G.state = 'title'; G.endless = false; G.won = false; uiScreen(); }
+};
+function checkStop() {
+  if (FLAG.stop && G.state === FLAG.stop && (!FLAG.stopDay || FLAG.stopDay === G.day)) { G.halt = true; G.botHold = true; }
+}
+function addCoins(n, wx, wz, tip) {
+  G.coins += n; G.dayCoins += n; G.totalEarned += n; G.dayTips += tip;
+  sfxCash(); floatText(wx, 2.4, wz, '+' + n + (tip ? ` <small>(${tip})</small>` : ''));
+  burst('spark', wx, 1.8, wz, 8);
+}
+
+/* ---------------- people pool ---------------- */
+const MAXP = 40;
+const personFree = []; for (let i = 0; i < 37; i++) personFree.push(i);
+const persons = new Array(MAXP).fill(null);
+function allocPerson() { return personFree.length ? personFree.pop() : -1; }
+function freePerson(pe) { if (pe && pe.idx >= 0 && persons[pe.idx] === pe) { persons[pe.idx] = null; personFree.push(pe.idx); } }
+const SKIN = [0xf0c6a0, 0xd9a07a, 0xb9794f, 0x8d5a3a, 0xe8b88e];
+const HAIR = [0x2a1a10, 0x4a2c18, 0x1c1c1c, 0x6b4426, 0x8a5a2a];
+const SHIRT = [0x4c8a8e, 0xc2602a, 0x7a9a4a, 0x8a6bb0, 0xd9a43c, 0xb85a6a, 0x5a7fb0];
+const pick = a => a[(rnd() * a.length) | 0];
+
+/* ---------------- customers ---------------- */
+function pickType(cfg) {
+  const e = Object.entries(cfg.types); let sum = 0; e.forEach(x => sum += x[1]);
+  let r = rnd() * sum; for (const [k, w] of e) { r -= w; if (r <= 0) return k; }
+  return e[0][0];
+}
+function pickItem(menu) {
+  let sum = 0; menu.forEach(i => sum += ITEM_W[i]); let r = rnd() * sum;
+  for (const i of menu) { r -= ITEM_W[i]; if (r <= 0) return i; }
+  return menu[0];
+}
+function spawnParty() {
+  const cfg = dayCfg(G.day);
+  const free = G.tables.filter(tb => tb.unlocked && !tb.party && !tb.dirty && !tb.claimed);
+  if (!free.length) return false;
+  const type = pickType(cfg), cc = CUST[type];
+  if (personFree.length < cc.size) return false;
+  const tb = free[(rnd() * free.length) | 0];
+  const n = cc.items[0] + ((rnd() * (cc.items[1] - cc.items[0] + 1)) | 0);
+  const order = []; for (let i = 0; i < n; i++) order.push({ item: pickItem(cfg.menu), done: false });
+  const dm = Math.max(0.78, 1 - 0.03 * (G.day - 1));
+  const maxP = cc.patience * stoolMul() * dm;
+  const party = { id: ++G.spawnCount, type, tb: tb.i, persons: [], order, state: 'enter', timer: 0, patience: maxP, maxP, finalFrac: 1, cc, sig: '' };
+  const ap = tableApproach(tb.i);
+  const base = findPath(SPAWN.x, SPAWN.z, ap.x, ap.z);
+  for (let k = 0; k < cc.size; k++) {
+    const seat = seatPos(tb.i, k);
+    const body = type === 'office' ? 0x3a4656 : type === 'regular' ? 0x9a6a44 : pick(SHIRT);
+    const pe = {
+      idx: allocPerson(), x: SPAWN.x + k * 0.5, z: SPAWN.z + k * 0.3, y: 0, face: -Math.PI / 2, path: base.map(p => ({ ...p })).concat([seat]),
+      delay: k * 0.85, seat, sitting: false, arrived: false, moving: false, body, skin: pick(SKIN),
+      hair: type === 'regular' ? 0xe8e8e8 : pick(HAIR), cap: type === 'regular', big: type === 'regular' ? 1.12 : 1, type, mood: 0, speed: type === 'office' ? 3.2 : 2.6, flash: 0, leaving: false, done: false
+    };
+    persons[pe.idx] = pe; party.persons.push(pe);
+  }
+  tb.party = party; tb.slots = [];
+  G.parties.push(party);
+  sfxBell();
+  return true;
+}
+function slotFor(tb, item) {
+  const kind = item === 'simit' ? 'plate' : 'glass';
+  tb.slots.push({ kind, item, dirty: false });
+}
+function finishLeave(p, angry) {
+  const tb = G.tables[p.tb];
+  p.state = 'leave'; tb.party = null;
+  tb.dirty = tb.slots.length > 0;
+  if (!tb.dirty) tb.slots = [];
+  tb.slots.forEach(s => s.dirty = true);
+  for (const pe of p.persons) {
+    pe.leaving = true; pe.sitting = false; pe.arrived = false;
+    pe.path = findPath(pe.x, pe.z, EXIT.x, EXIT.z);
+    pe.delay = 0.15 * p.persons.indexOf(pe);
+    pe.speed = angry ? 3.6 : 2.7; pe.mood = angry ? -1 : 1; pe.flash = angry ? 1 : 0;
+  }
+}
+function payParty(p) {
+  let base = 0; p.order.forEach(o => base += PRICE[o.item]);
+  const tip = Math.round(base * 0.4 * p.finalFrac * p.cc.tip);
+  const tb = G.tables[p.tb];
+  addCoins(base + tip, tb.x, tb.z, tip);
+  G.happy++; G.served += p.persons.length;
+}
+function partiesUpdate(dt) {
+  for (let i = G.parties.length - 1; i >= 0; i--) {
+    const p = G.parties[i];
+    if (p.state === 'enter') {
+      if (p.persons.every(pe => pe.sitting)) { p.state = 'think'; p.timer = rr(1.0, 2.0); }
+    } else if (p.state === 'think') {
+      p.timer -= dt; if (p.timer <= 0) { p.state = 'wait'; sfxPip(); }
+    } else if (p.state === 'wait') {
+      p.patience -= dt;
+      if (p.patience <= 0) {
+        G.angry += 1; G.missed += p.persons.length; toast(t('toastAngry'), 'bad'); sfxGrumble();
+        const tb = G.tables[p.tb]; burst('anger', tb.x, 1.6, tb.z, 10);
+        finishLeave(p, true);
+      }
+    } else if (p.state === 'eat') {
+      p.timer -= dt;
+      if (p.timer <= 0) { payParty(p); finishLeave(p, false); }
+    } else if (p.state === 'leave') {
+      if (p.persons.every(pe => pe.done)) { p.persons.forEach(freePerson); G.parties.splice(i, 1); }
+    }
+  }
+}
+function peopleUpdate(dt) {
+  for (const pe of persons) {
+    if (!pe) continue;
+    if (pe.delay > 0) { pe.delay -= dt; pe.moving = false; continue; }
+    if (pe.flash > 0) pe.flash = Math.max(0, pe.flash - dt * 0.5);
+    if (!pe.sitting && !pe.done) {
+      const arrived = followPath(pe, pe.speed, dt);
+      if (arrived) {
+        if (pe.leaving) pe.done = true;
+        else if (!pe.sitting) { pe.sitting = true; pe.arrived = true; const tb = G.tables[G.parties.find(p => p.persons.includes(pe)).tb]; pe.face = Math.atan2(tb.x - pe.x, tb.z - pe.z); }
+      }
+    }
+  }
+}
+
+/* ---------------- stations ---------------- */
+function stationsUpdate(dt) {
+  const S = G.stations;
+  S.kettles.forEach((k, i) => {
+    if (k.st === 'brewing') { k.t += dt; if (k.t >= BREW_T) { k.st = 'ready'; k.t = 0; k.n = TEA_N; sfxWhistle(); toast(t('toastTeaReady'), 'good'); } }
+  });
+  const o = S.oven;
+  if (o.st === 'baking') { o.t += dt; if (o.t >= ovenTime()) { o.st = 'ready'; o.t = 0; o.n = OVEN_N; sfxPing(); toast(t('toastSimitReady'), 'good'); } }
+  S.pots.forEach(p => {
+    if (p.st === 'cook') { p.t += dt; if (p.t >= COOK_T) { p.st = 'ready'; p.t = 0; sfxPing(); toast(t('toastCoffeeReady'), 'good'); } }
+    else if (p.st === 'ready') { p.t += dt; if (p.t >= COOK_WIN) { p.st = 'spilled'; p.t = 0; sfxHiss(); toast(t('toastSpill'), 'bad'); burst('steam', CNT_X, 1.5, STATION_Z.coffee, 10); } }
+  });
+}
+function doStation(id) {
+  const w = G.waiter, S = G.stations, cap = trayCap();
+  const full = w.tray.length >= cap;
+  if (id === 'tea') {
+    const kr = S.kettles.slice(0, 1 + G.up.kettle);
+    const ready = kr.find(k => k.st === 'ready' && k.n > 0);
+    if (ready) { if (full) return toast(t('toastTray'), 'bad'); ready.n--; if (ready.n <= 0) { ready.st = 'empty'; ready.t = 0; } w.tray.push('tea'); sfxPour(); return true; }
+    const empty = kr.find(k => k.st === 'empty');
+    if (empty) { empty.st = 'brewing'; empty.t = 0; sfxPour(); toast(t('toastBrewStart')); return true; }
+    return toast(t('toastBrewing'));
+  }
+  if (id === 'simit') {
+    const o = S.oven;
+    if (o.st === 'ready' && o.n > 0) { if (full) return toast(t('toastTray'), 'bad'); o.n--; if (o.n <= 0) { o.st = 'empty'; o.t = 0; } w.tray.push('simit'); sfxClink(); return true; }
+    if (o.st === 'empty') { o.st = 'baking'; o.t = 0; sfxClink(); toast(t('toastWarm')); return true; }
+    return toast(t('toastBrewing'));
+  }
+  if (id === 'coffee') {
+    const rd = S.pots.find(p => p.st === 'ready');
+    if (rd) { if (full) return toast(t('toastTray'), 'bad'); rd.st = 'empty'; rd.t = 0; w.tray.push('coffee'); sfxClink(); return true; }
+    const sp = S.pots.find(p => p.st === 'spilled');
+    if (sp) { sp.st = 'empty'; sp.t = 0; toast(t('toastClean')); sfxClink(); return true; }
+    const em = S.pots.find(p => p.st === 'empty');
+    if (em) { em.st = 'cook'; em.t = 0; sfxClink(); toast(t('toastCook')); return true; }
+    return toast(t('toastBrewing'));
+  }
+  if (id === 'ayran') {
+    if (full) return toast(t('toastTray'), 'bad');
+    w.tray.push('ayran'); sfxPour(); return true;
+  }
+  if (id === 'sink') {
+    const before = w.tray.length; w.tray = w.tray.filter(x => x !== 'dirty');
+    if (w.tray.length === before) return toast(t('toastNothingToWash'));
+    sfxWash(); burst('spark', CNT_X, 1.8, STATION_Z.sink, 6); toast(t('toastWash')); return true;
+  }
+}
+function deliverMask(p) { return p.order.map(o => o.done ? 1 : 0).join(''); }
+function doTable(i) {
+  const w = G.waiter, tb = G.tables[i], p = tb.party; let did = false;
+  if (p && p.state === 'think') return toast(t('toastNoOrder'));
+  if (p && p.state === 'wait') {
+    for (let k = w.tray.length - 1; k >= 0; k--) {
+      const it = w.tray[k]; if (it === 'dirty') continue;
+      const o = p.order.find(o => !o.done && o.item === it);
+      if (o) {
+        o.done = true; w.tray.splice(k, 1); did = true; slotFor(tb, it);
+        p.patience = Math.min(p.maxP, p.patience + p.maxP * 0.08);
+        sfxClink(); burst('spark', tb.x, 1.4, tb.z, 3);
+      }
+    }
+    if (did && p.order.every(o => o.done)) { p.state = 'eat'; p.timer = p.cc.eat * rr(0.8, 1.2); p.finalFrac = clamp(p.patience / p.maxP, 0, 1); }
+    if (!did) return toast(t('toastWrong'), 'bad');
+  }
+  if (!p && tb.dirty) {
+    if (w.tray.length >= trayCap()) return toast(t('toastTray'), 'bad');
+    w.tray.push('dirty'); tb.dirty = false; tb.slots = []; did = true; sfxClink();
+  }
+  if (!did) return toast(t('toastNothing'));
+  return true;
+}
+function enqueue(a) {
+  const w = G.waiter; if (!w || G.state !== 'play') return false;
+  if (w.q.length >= 6) { toast(t('toastQueue'), 'bad'); return false; }
+  w.q.push(a); sfxTick(); return true;
+}
+function stationLocked(id) { const m = dayCfg(G.day).menu; return (id === 'simit' || id === 'coffee' || id === 'ayran') && !m.includes(id); }
+function clickStation(id) { if (G.state === 'play' && stationLocked(id)) return toast(t('toastNothing')); return enqueue({ type: 'station', id }); }
+function clickTable(i) { return G.tables[i] && G.tables[i].unlocked && enqueue({ type: 'table', id: i }); }
+function dropTray(k) { const w = G.waiter; if (w && w.tray[k] != null) { w.tray.splice(k, 1); sfxTick(); } }
+function clearQueue() { if (G.waiter) G.waiter.q.length = 0; }
+function actTarget(a) {
+  if (a.type === 'station') return { x: LANE_X, z: STATION_Z[a.id], face: -Math.PI / 2 };
+  const ap = tableApproach(a.id), tb = G.tables[a.id];
+  return { x: ap.x, z: ap.z, face: Math.atan2(tb.x - ap.x, tb.z - ap.z) };
+}
+function waiterUpdate(dt) {
+  const w = G.waiter;
+  if (!w.cur && w.q.length) {
+    w.cur = w.q.shift(); const tg = actTarget(w.cur); w.tgt = tg;
+    w.path = findPath(w.x, w.z, tg.x, tg.z); w.state = 'walk';
+  }
+  if (w.state === 'walk') {
+    const arrived = followPath(w, WALK, dt);
+    if (arrived) { w.state = 'work'; w.workT = 0.32; w.face = w.tgt.face; w.moving = false; }
+  } else if (w.state === 'work') {
+    w.workT -= dt; w.moving = false;
+    if (w.workT <= 0) {
+      const a = w.cur; w.cur = null; w.state = 'idle';
+      if (a.type === 'station') doStation(a.id); else doTable(a.id);
+    }
+  } else { w.moving = false; }
+}
+/* apprentice clears dirty tables and washes the glasses */
+function apprenticeUpdate(dt) {
+  const a = G.apprentice; if (!a) return;
+  if (a.state === 'idle') {
+    const tb = G.tables.find(x => x.unlocked && x.dirty && !x.claimed);
+    if (tb) { tb.claimed = true; a.tb = tb; const ap = tableApproach(tb.i); a.path = findPath(a.x, a.z, ap.x, ap.z + 0.4); a.state = 'goto'; }
+    else a.moving = false;
+  } else if (a.state === 'goto') {
+    if (followPath(a, WALK * 0.85, dt)) { a.state = 'clear'; a.t = 0.7; a.face = Math.atan2(a.tb.x - a.x, a.tb.z - a.z); }
+  } else if (a.state === 'clear') {
+    a.moving = false; a.t -= dt;
+    if (a.t <= 0) {
+      a.tb.dirty = false; a.tb.slots = []; a.tb.claimed = false; a.tb = null; a.carry = true;
+      a.path = findPath(a.x, a.z, -4.35, STATION_Z.sink - 0.1); a.state = 'sink'; sfxClink();
+    }
+  } else if (a.state === 'sink') {
+    if (followPath(a, WALK * 0.85, dt)) { a.state = 'wash'; a.t = 0.8; a.face = -Math.PI / 2; }
+  } else if (a.state === 'wash') {
+    a.moving = false; a.t -= dt;
+    if (a.t <= 0) { a.carry = false; sfxWash(); a.path = findPath(a.x, a.z, -4.3, 5.9); a.state = 'back'; }
+  } else if (a.state === 'back') {
+    if (followPath(a, WALK * 0.7, dt)) a.state = 'idle';
+  }
+}
+function spawnUpdate(dt) {
+  if (G.clock > G.dayLen - 20) return;
+  G.spawnT -= dt;
+  if (G.spawnT <= 0) {
+    const cfg = dayCfg(G.day);
+    // rush hours: a bit busier in the middle of the day
+    const rush = 1 - 0.22 * Math.sin(Math.PI * clamp(G.clock / G.dayLen, 0, 1));
+    G.spawnT = cfg.gap * rush * rr(0.7, 1.3);
+    if (!spawnParty()) { G.walkby++; floatText(11.5, 1.8, 6.5, t('passByWait'), 'bad'); }
+  }
+}
+
+/* ---------------- main sim step ---------------- */
+function simStep(dt) {
+  G.vt += dt;
+  ambientUpdate(dt);
+  if (G.state === 'play') {
+    G.clock += dt;
+    stationsUpdate(dt);
+    spawnUpdate(dt);
+    partiesUpdate(dt);
+    waiterUpdate(dt);
+    apprenticeUpdate(dt);
+    peopleUpdate(dt);
+    if (G.clock >= G.dayLen) endDay();
+  }
+  botUpdate(dt);
+}
+
+/* ---------------- auto player (?auto) ---------------- */
+const bot = { t: 0, scr: 0, think: 0 };
+function unmetFor(p) { return p.order.filter(o => !o.done).map(o => o.item); }
+function botDecide() {
+  const w = G.waiter, S = G.stations, cap = trayCap();
+  if (w.q.length >= 2) return;
+  const queued = w.q.map(x => x);
+  const qStation = id => queued.filter(a => a.type === 'station' && a.id === id).length;
+  const qTable = i => queued.some(a => a.type === 'table' && a.id === i);
+  if (w.cur) queued.push(w.cur);
+  const tray = w.tray;
+  const trayCount = it => tray.filter(x => x === it).length;
+  const waiting = G.parties.filter(p => p.state === 'wait');
+  // 1. can we serve someone with what we carry?
+  let best = null, bestP = 1e9, bestFull = false;
+  for (const p of waiting) {
+    if (qTable(p.tb)) continue;
+    const un = unmetFor(p), have = {};
+    tray.forEach(x => { have[x] = (have[x] || 0) + 1; });
+    let matched = 0; const un2 = un.slice();
+    for (const it of Object.keys(have)) { for (let k = 0; k < have[it]; k++) { const ix = un2.indexOf(it); if (ix >= 0) { un2.splice(ix, 1); matched++; } } }
+    if (!matched) continue;
+    if (p.patience < bestP) { bestP = p.patience; best = p; bestFull = un2.length === 0; }
+  }
+  const usefulInTray = tray.filter(x => x !== 'dirty').length;
+  // demand still to fetch
+  const need = {};
+  for (const p of waiting) { unmetFor(p).forEach(it => { need[it] = (need[it] || 0) + 1; }); }
+  ITEMS.forEach(it => { if (need[it]) need[it] -= trayCount(it); });
+  const pendingStation = id => qStation(id);
+  let fetch = null, fp = 1e9;
+  for (const it of ITEMS) {
+    if ((need[it] || 0) - pendingStation(it) <= 0) continue;
+    // urgency = min patience of a table needing it
+    let urg = 1e9; waiting.forEach(p => { if (unmetFor(p).includes(it)) urg = Math.min(urg, p.patience); });
+    let can = false;
+    if (it === 'tea') { const ks = S.kettles.slice(0, 1 + G.up.kettle); can = ks.some(k => k.st === 'ready' && k.n > 0) || (ks.some(k => k.st === 'empty') && !ks.some(k => k.st === 'brewing') ); }
+    if (it === 'simit') { can = (S.oven.st === 'ready' && S.oven.n > 0) || S.oven.st === 'empty'; }
+    if (it === 'coffee') { can = S.pots.some(p => p.st === 'ready') || S.pots.some(p => p.st === 'empty'); }
+    if (it === 'ayran') can = true;
+    if (!can) continue;
+    if (tray.length + queued.filter(a => a.type === 'station' && a.id !== 'sink').length >= cap && it !== 'tea' && it !== 'simit' && it !== 'coffee') continue;
+    if (urg < fp) { fp = urg; fetch = it; }
+  }
+  const trayRoom = cap - tray.length - queued.filter(a => a.type === 'station' && a.id !== 'sink').length;
+  // decide
+  if (best && (bestFull || trayRoom <= 0 || !fetch || usefulInTray >= 2)) { clickTable(best.tb); return; }
+  if (fetch && trayRoom > 0) {
+    // do not hoard: tea start when kettle empty counts as a station click that does not use tray
+    clickStation(fetch); return;
+  }
+  if (best) { clickTable(best.tb); return; }
+  // dirty tables
+  const dirtyT = G.tables.filter(tb => tb.unlocked && tb.dirty && !tb.claimed && !qTable(tb.i));
+  if (G.apprentice && dirtyT.length) { /* apprentice handles it */ }
+  else if (dirtyT.length && trayRoom > 0) { clickTable(dirtyT[0].i); return; }
+  if (tray.includes('dirty') && !queued.some(a => a.id === 'sink')) { clickStation('sink'); return; }
+  // pre-warm: start idle stations when customers are around
+  if (G.parties.length && G.day >= 1) {
+    const menu = dayCfg(G.day).menu;
+    const ks = S.kettles.slice(0, 1 + G.up.kettle);
+    if (ks.some(k => k.st === 'empty') && !ks.some(k => k.st === 'brewing') && !ks.some(k => k.st === 'ready') && qStation('tea') === 0) { clickStation('tea'); return; }
+    if (menu.includes('simit') && S.oven.st === 'empty' && qStation('simit') === 0 && G.parties.length >= 2) { clickStation('simit'); return; }
+  }
+  // clean spilled coffee pot
+  if (S.pots.some(p => p.st === 'spilled') && qStation('coffee') === 0) { clickStation('coffee'); return; }
+  // wrong items sitting in the tray when nobody wants them: drop
+  if (tray.length >= cap && !best && !fetch) { const bad = tray.findIndex(x => x !== 'dirty'); if (bad >= 0 && waiting.length === 0) dropTray(bad); }
+}
+function botUpdate(dt) {
+  if (!FLAG.auto || G.botHold) return;
+  bot.t += dt;
+  if (G.state === 'play') {
+    bot.scr = 0;
+    bot.think -= dt;
+    if (bot.think <= 0) {
+      bot.think = rr(0.55, 0.95) / Math.max(0.3, FLAG.skill);
+      if (rnd() > 0.1 * (2 - Math.min(FLAG.skill, 1.5))) botDecide();
+    }
+    // coffee: grab ready pot quickly (handled by demand logic)
+    return;
+  }
+  bot.scr += dt;
+  if (G.state === 'title' && bot.scr > 0.4) { A.start(); bot.scr = 0; }
+  else if (G.state === 'intro' && bot.scr > 0.8) { A.begin(); bot.scr = 0; }
+  else if (G.state === 'summary' && bot.scr > 1.2) { A.afterSummary(); bot.scr = 0; }
+  else if (G.state === 'shop') {
+    if (bot.scr > 0.6) {
+      const order = ['tray', 'kettle', 'table', 'oven', 'apprentice', 'stool', 'tray', 'table', 'oven', 'stool', 'table'];
+      let bought = false;
+      for (const id of order) { const u = UPG.find(x => x.id === id); if (G.up[id] < u.max && G.coins >= u.cost[G.up[id]]) { A.buy(id); bought = true; break; } }
+      bot.scr = bought ? 0.4 : 1.5;
+      if (!bought) { A.next(); bot.scr = 0; }
+    }
+  }
+  else if (G.state === 'victory' && bot.scr > 2.5) { A.endlessMode(); bot.scr = 0; }
+  else if (G.state === 'gameover' && bot.scr > 2) { G.botHold = true; }
+}
+
+/* simulation fast-forward hook (no rendering) */
+window.caySim = function (seconds) {
+  G.simming = true; G.halt = false;
+  const n = Math.round(seconds / STEP);
+  try { for (let i = 0; i < n && !G.halt; i++) simStep(STEP); }
+  finally { G.simming = false; }
+  uiRefreshAll(); uiScreen(true);
+  return { state: G.state, day: G.day, coins: G.coins, dayCoins: G.dayCoins, log: G.log };
+};
+const STEP = 1 / 60;
+
+/* ============================================================
+   AUDIO (all synthesised with Web Audio)
+   ============================================================ */
+const Aud = { ctx: null, master: null, last: {}, ambOn: false };
+function sfxInit() {
+  if (Aud.ctx) { if (Aud.ctx.state === 'suspended') Aud.ctx.resume().catch(() => { }); return; }
+  try {
+    const C = window.AudioContext || window.webkitAudioContext; if (!C) return;
+    Aud.ctx = new C(); Aud.master = Aud.ctx.createGain(); Aud.master.gain.value = G.muted ? 0 : 0.85; Aud.master.connect(Aud.ctx.destination);
+    startAmbience();
+  } catch (e) { }
+}
+function sfxMute(m) { G.muted = m; if (Aud.master) Aud.master.gain.value = m ? 0 : 0.85; store.set('cay_prefs', { lang: G.lang, muted: G.muted }); }
+function sOK(name, gap = 0.04) {
+  if (!Aud.ctx || G.muted || G.simming || Aud.ctx.state !== 'running') return false;
+  const n = performance.now(); if (Aud.last[name] && n - Aud.last[name] < gap * 1000) return false; Aud.last[name] = n; return true;
+}
+function tone(f, d, type = 'sine', v = 0.15, slide = 0, delay = 0, dest) {
+  const c = Aud.ctx, t0 = c.currentTime + delay, o = c.createOscillator(), g = c.createGain();
+  o.type = type; o.frequency.setValueAtTime(f, t0); if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(20, f + slide), t0 + d);
+  g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(v, t0 + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+  o.connect(g); g.connect(dest || Aud.master); o.start(t0); o.stop(t0 + d + 0.05);
+}
+let _noiseBuf = null;
+function noiseBuf() {
+  if (_noiseBuf) return _noiseBuf; const c = Aud.ctx, n = c.sampleRate * 2, b = c.createBuffer(1, n, c.sampleRate), d = b.getChannelData(0);
+  let l = 0; for (let i = 0; i < n; i++) { const w = Math.random() * 2 - 1; l = (l + 0.04 * w) / 1.04; d[i] = l * 12; } _noiseBuf = b; return b;
+}
+function noise(d, v, ftype, f0, f1, delay = 0) {
+  const c = Aud.ctx, t0 = c.currentTime + delay, s = c.createBufferSource(), fl = c.createBiquadFilter(), g = c.createGain();
+  s.buffer = noiseBuf(); fl.type = ftype; fl.frequency.setValueAtTime(f0, t0); if (f1) fl.frequency.exponentialRampToValueAtTime(f1, t0 + d);
+  g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(v, t0 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
+  s.connect(fl); fl.connect(g); g.connect(Aud.master); s.start(t0, Math.random()); s.stop(t0 + d + 0.05);
+}
+function sfxBell() { if (!sOK('bell', .2)) return; tone(1568, .9, 'sine', .09); tone(2093, .8, 'sine', .06, 0, .02); tone(1568, .7, 'sine', .06, 0, .22); tone(2349, .6, 'sine', .04, 0, .24); }
+function sfxClink() { if (!sOK('clink')) return; tone(2600 + Math.random() * 300, .16, 'triangle', .1); tone(3900, .1, 'sine', .05, 0, .02); }
+function sfxCash() { if (!sOK('cash', .08)) return; noise(.06, .08, 'highpass', 4000); tone(988, .12, 'square', .045, 0, .02); tone(1319, .22, 'square', .045, 0, .09); tone(1976, .3, 'triangle', .05, 0, .16); }
+function sfxPip() { if (!sOK('pip', .1)) return; tone(880, .1, 'sine', .07); tone(1175, .12, 'sine', .06, 0, .07); }
+function sfxPing() { if (!sOK('ping', .1)) return; tone(1760, .35, 'sine', .08); tone(2217, .3, 'sine', .05, 0, .1); }
+function sfxTick() { if (!sOK('tick')) return; tone(620, .05, 'triangle', .06); }
+function sfxPour() { if (!sOK('pour', .1)) return; noise(.35, .12, 'bandpass', 900, 1800); tone(1900, .06, 'sine', .03, 0, .25); }
+function sfxWash() { if (!sOK('wash', .1)) return; noise(.5, .1, 'bandpass', 1800, 900); tone(2400, .08, 'triangle', .05, 0, .3); }
+function sfxHiss() { if (!sOK('hiss', .2)) return; noise(.6, .14, 'highpass', 2500, 5000); }
+function sfxWhistle() { if (!sOK('whistle', .5)) return; const c = Aud.ctx, t0 = c.currentTime, o = c.createOscillator(), l = c.createOscillator(), lg = c.createGain(), g = c.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(1250, t0); o.frequency.linearRampToValueAtTime(1550, t0 + .15); o.frequency.linearRampToValueAtTime(1500, t0 + 1.0); l.frequency.value = 9; lg.gain.value = 40; l.connect(lg); lg.connect(o.frequency); g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(.07, t0 + .08); g.gain.setValueAtTime(.07, t0 + .8); g.gain.exponentialRampToValueAtTime(.0001, t0 + 1.1); o.connect(g); g.connect(Aud.master); o.start(t0); l.start(t0); o.stop(t0 + 1.2); l.stop(t0 + 1.2); }
+function sfxGrumble() { if (!sOK('grumble', .3)) return; const c = Aud.ctx, t0 = c.currentTime, o = c.createOscillator(), f = c.createBiquadFilter(), g = c.createGain(); o.type = 'sawtooth'; o.frequency.setValueAtTime(170, t0); o.frequency.exponentialRampToValueAtTime(80, t0 + .5); f.type = 'lowpass'; f.frequency.value = 420; g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(.16, t0 + .06); g.gain.exponentialRampToValueAtTime(.0001, t0 + .55); o.connect(f); f.connect(g); g.connect(Aud.master); o.start(t0); o.stop(t0 + .6); tone(120, .4, 'sawtooth', .06, -30, .18); }
+function sfxFanfare() { if (!sOK('fan', .5)) return;[523, 659, 784, 1047].forEach((f, i) => tone(f, .4, 'triangle', .09, 0, i * .13)); tone(1319, .7, 'sine', .07, 0, .55); }
+function sfxLose() { if (!sOK('lose', .5)) return;[392, 349, 311, 262].forEach((f, i) => tone(f, .4, 'triangle', .09, 0, i * .18)); }
+function sfxGull() { if (!sOK('gull', 1)) return; const d = Math.random() * .1; tone(1500, .22, 'sawtooth', .02, 700, 0); tone(1100, .2, 'sawtooth', .02, 900, .24 + d); tone(1700, .3, 'sawtooth', .018, -800, .5 + d); }
+function sfxHorn() { if (!sOK('horn', 2)) return; tone(98, 1.4, 'sawtooth', .05); tone(147, 1.4, 'sawtooth', .035); }
+function sfxMeow() { if (!sOK('meow', .5)) return; tone(700, .35, 'triangle', .07, 400); tone(1000, .2, 'sine', .03, -300, .05); }
+function startAmbience() {
+  const c = Aud.ctx; if (Aud.ambOn) return; Aud.ambOn = true;
+  const s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain(), lfo = c.createOscillator(), lg = c.createGain();
+  s.buffer = noiseBuf(); s.loop = true; f.type = 'lowpass'; f.frequency.value = 520; g.gain.value = .07;
+  lfo.frequency.value = .13; lg.gain.value = .03; lfo.connect(lg); lg.connect(g.gain);
+  s.connect(f); f.connect(g); g.connect(Aud.master); s.start(); lfo.start();
+  const loop = () => {
+    if (Aud.ctx && !G.muted && Aud.ctx.state === 'running' && !document.hidden && !G.paused) { const r = Math.random(); if (r < .45) sfxGull(); else if (r < .6) { tone(330, .5, 'sine', .01); } }
+    setTimeout(loop, 5000 + Math.random() * 9000);
+  };
+  setTimeout(loop, 4000);
+}
+
+/* ============================================================
+   THREE: renderer, camera, lights
+   ============================================================ */
+const canvas = $('#c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+const PR = Math.min(window.devicePixelRatio || 1, FLAG.low ? 1 : 1.5);
+renderer.setPixelRatio(PR);
+renderer.shadowMap.enabled = !FLAG.low;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.setClearColor(0x000000, 0);
+const scene = new THREE.Scene();
+const cam = new THREE.OrthographicCamera(-10, 10, 10, -10, 1, 500);
+const CAM_T = new THREE.Vector3(-4.0, 0, -1.95);
+const _pz = (Q.get('pan') || '0,0').split(',').map(parseFloat);
+const VIEW = { zoom: clamp(parseFloat(Q.get('zoom')) || 1, .8, 1.8), panX: _pz[0] || 0, panY: _pz[1] || 0, w: 1, h: 1, halfH: 8 };
+
+const hemi = new THREE.HemisphereLight(0xffe2b8, 0x7a5c4c, 1.55);
+scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xffc27a, 2.35);
+sun.position.set(CAM_T.x + 8, 15, CAM_T.z + 11);
+sun.target.position.copy(CAM_T);
+sun.castShadow = !FLAG.low;
+sun.shadow.mapSize.set(1024, 1024);
+{ const sc = sun.shadow.camera; sc.left = -15; sc.right = 15; sc.top = 14; sc.bottom = -14; sc.near = 1; sc.far = 50; sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.035; }
+scene.add(sun, sun.target);
+
+function layoutCamera() {
+  const w = window.innerWidth, h = window.innerHeight, asp = w / h;
+  VIEW.w = w; VIEW.h = h;
+  const needHalfW = 9.6; // world half-width (screen units) we want visible at zoom 1
+  VIEW.halfH = Math.max(8.2, needHalfW / asp);
+  const hh = VIEW.halfH / VIEW.zoom, hw = hh * asp;
+  cam.left = -hw; cam.right = hw; cam.top = hh; cam.bottom = -hh;
+  cam.updateProjectionMatrix();
+  renderer.setSize(w, h, false);
+  placeCamera();
+}
+const _fwd = new THREE.Vector3(-0.7071, 0, -0.7071), _rgt = new THREE.Vector3(0.7071, 0, -0.7071);
+function placeCamera() {
+  const asp = VIEW.w / VIEW.h;
+  // keep the play area above the bottom dock: shift view centre a little on tall screens
+  const shift = asp < 1 ? -0.6 : 0.0;
+  const px = VIEW.panX, py = VIEW.panY;
+  const tx = CAM_T.x + _rgt.x * px + _fwd.x * (py + shift), tz = CAM_T.z + _rgt.z * px + _fwd.z * (py + shift);
+  cam.position.set(tx + 70, 70, tz + 70);
+  cam.lookAt(tx, 0, tz);
+  cam.updateMatrixWorld();
+}
+window.addEventListener('resize', layoutCamera);
+
+/* ============================================================
+   geometry helpers
+   ============================================================ */
+const _m4 = new THREE.Matrix4(), _q = new THREE.Quaternion(), _v3 = new THREE.Vector3(), _s3 = new THREE.Vector3(), _eu = new THREE.Euler();
+function mat(x, y, z, sx = 1, sy = 1, sz = 1, ry = 0, rx = 0, rz = 0) {
+  _eu.set(rx, ry, rz, 'YXZ'); _q.setFromEuler(_eu); return _m4.compose(_v3.set(x, y, z), _q, _s3.set(sx, sy, sz));
+}
+const GEO = { box: new THREE.BoxGeometry(1, 1, 1) };
+const _gc = {};
+function cylGeo(rt, rb, seg) { const k = rt + '|' + rb + '|' + seg; return _gc[k] || (_gc[k] = new THREE.CylinderGeometry(rt, rb, 1, seg)); }
+const SPH = {};
+function sphGeo(ws, hs) { const k = ws + 'x' + hs; return SPH[k] || (SPH[k] = new THREE.SphereGeometry(1, ws, hs)); }
+const coneGeos = {};
+function coneGeo(seg) { return coneGeos[seg] || (coneGeos[seg] = new THREE.ConeGeometry(1, 1, seg)); }
+class Merger {
+  constructor() { this.p = []; this.n = []; this.c = []; }
+  add(geo, m, color, jit = 0.045) {
+    const g = geo.index ? geo.toNonIndexed() : geo.clone(); g.applyMatrix4(m);
+    const pos = g.attributes.position.array, nor = g.attributes.normal.array, col = new THREE.Color(color), f = 1 + (Math.random() - .5) * 2 * jit;
+    for (let i = 0; i < pos.length; i++) { this.p.push(pos[i]); this.n.push(nor[i]); }
+    for (let i = 0; i < pos.length / 3; i++) this.c.push(col.r * f, col.g * f, col.b * f);
+    g.dispose();
+  }
+  box(x, y, z, w, h, d, col, ry = 0, rx = 0, rz = 0, jit) { this.add(GEO.box, mat(x, y + h / 2, z, w, h, d, ry, rx, rz), col, jit); }
+  cyl(x, y, z, rt, rb, h, col, seg = 10, jit) { this.add(cylGeo(rt, rb, seg), mat(x, y + h / 2, z, 1, h, 1), col, jit); }
+  sph(x, y, z, r, col, sx = 1, sy = 1, sz = 1, ws = 8, hs = 6, jit) { this.add(sphGeo(ws, hs), mat(x, y, z, r * sx, r * sy, r * sz), col, jit); }
+  cone(x, y, z, r, h, col, seg = 8, ry = 0, rx = 0, rz = 0) { this.add(coneGeo(seg), mat(x, y + h / 2, z, r, h, r, ry, rx, rz), col); }
+  quad(x0, z0, x1, z1, y, col, jit = 0.05) {
+    const c = new THREE.Color(col), f = 1 + (Math.random() - .5) * 2 * jit;
+    const v = [x0, y, z0, x0, y, z1, x1, y, z1, x0, y, z0, x1, y, z1, x1, y, z0];
+    for (let i = 0; i < 6; i++) { this.p.push(v[i * 3], v[i * 3 + 1], v[i * 3 + 2]); this.n.push(0, 1, 0); this.c.push(c.r * f, c.g * f, c.b * f); }
+  }
+  geometry() {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(this.p, 3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(this.n, 3));
+    g.setAttribute('color', new THREE.Float32BufferAttribute(this.c, 3));
+    g.computeBoundingSphere(); return g;
+  }
+}
+const matV = () => new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true });
+const matI = () => new THREE.MeshLambertMaterial({ flatShading: true });
+const matIV = () => new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true });
+
+const C = {
+  wall: 0xeed7ac, wallD: 0xd8b987, roof: 0xb4552f, wood: 0x8b5a36, woodL: 0xc2915f, stone: 0xbdb09c, stoneD: 0x8e8070, bronze: 0xb9772f, gold: 0xe0aa45,
+  teal: 0x3f7f86, tealD: 0x2d5b62, red: 0xc2410c, cream: 0xf8eed8, amber: 0xdc8a3c, green: 0x5e8c3e, greenD: 0x40702f, white: 0xf5f0e6, dark: 0x2b2018, sand: 0xe3c88c,
+  sea: 0x4a97a6, seaD: 0x3b8091
+};
+
+/* ============================================================
+   build the static world
+   ============================================================ */
+const world = new THREE.Group(); scene.add(world);
+const pickables = []; // {mesh, kind, id}
+const DYN = {}; // dynamic meshes by name
+function addSemaver(m, zc) {
+  const x = CNT_X;
+  m.cyl(x, 1.12, zc, .52, .56, .12, C.stoneD, 12);
+  m.cyl(x, 1.24, zc, .46, .52, .95, C.bronze, 12);
+  m.cyl(x, 1.9, zc, .5, .5, .07, C.gold, 12);
+  m.cyl(x, 2.19, zc, .5, .5, .07, C.gold, 12);
+  m.cyl(x, 2.26, zc, .3, .46, .18, C.bronze, 12);
+  m.cyl(x, 2.44, zc, .09, .09, .38, C.gold, 8);
+  m.cyl(x, 2.84, zc, .25, .31, .3, C.cream, 12);
+  m.cyl(x, 2.9, zc, .32, .32, .05, C.red, 12);
+  m.sph(x, 3.14, zc, .24, C.cream, 1, .62, 1, 10, 6);
+  m.sph(x, 3.3, zc, .06, C.gold, 1, 1, 1, 6, 4);
+  m.box(x + .5, 1.45, zc - .08, .22, .08, .16, C.gold); m.box(x + .6, 1.35, zc - .08, .06, .16, .06, C.gold);
+  m.box(x - .08, 2.86, zc + .36, .34, .06, .09, C.cream, 0, 0, .3);
+  m.box(x - .05, 3.0, zc - .38, .16, .22, .07, C.cream);
+}
+function buildWorld() {
+  const W = new Merger(), Gd = new Merger(), K = W;
+  /* ground */
+  Gd.quad(-200, -9.3, 200, 200, 0, 0x8c7a66, 0);
+  Gd.quad(-200, -300, 200, -9.3, -0.32, C.sea, 0);
+  for (let x = -14; x < 17; x++) for (let z = -9; z < 14; z++) {
+    const tones = [0xc9b79a, 0xbfae92, 0xd2c1a3, 0xb7a68b, 0xc4b296];
+    const o = (z & 1) ? 0.45 : 0;
+    Gd.quad(x + o + .04, z + .04, x + o + .96, z + .96, 0.015, tones[(Math.random() * tones.length) | 0], 0.06);
+  }
+  // sea sparkles stripes (static darker)
+  for (let i = 0; i < 40; i++) { const x = -60 + Math.random() * 120, z = -12 - Math.random() * 60; Gd.quad(x, z, x + 2 + Math.random() * 4, z + .18, -0.3, C.seaD, .05); }
+  /* quay */
+  K.box(0, -.32, -9.55, 90, .9, .7, C.stone, 0, 0, 0, .02);
+  K.box(0, .55, -9.55, 90, .08, .8, C.stoneD, 0, 0, 0, .02);
+  for (let x = -8; x <= 30; x += 2) K.box(x, .6, -9.4, .14, .85, .14, C.tealD);
+  K.box(10, 1.4, -9.4, 76, .09, .12, C.teal); K.box(10, 1.0, -9.4, 76, .05, .08, C.teal);
+  /* tea house building */
+  const BX = -11.4;
+  K.box(BX, 0, -1, 6.6, .4, 16, C.stoneD);
+  K.box(BX + .1, .4, -1, 6.4, 5.9, 15.4, C.wall);
+  K.box(BX + .1, 6.3, -1, 6.9, .22, 15.9, C.roof);
+  K.box(-8.35, 6.4, -1, .3, .45, 15.9, C.roof); // front parapet
+  K.box(-9.8, 6.5, -5.5, 1.0, 1.9, 1.0, C.stoneD); K.box(-9.8, 8.3, -5.5, 1.2, .25, 1.2, C.stone);
+  K.box(-8.3, 4.35, -1, .14, .16, 15.4, C.wallD); // cornice
+  K.box(-8.3, 5.45, -1, .12, .12, 15.4, C.wallD);
+  // upper windows
+  for (let z = -7; z <= 6; z += 3.25) {
+    K.box(-8.21, 5.45, z, .1, .72, 1.3, C.dark); K.box(-8.2, 5.4, z, .08, .08, 1.45, C.cream); K.box(-8.2, 6.12, z, .08, .08, 1.45, C.cream);
+    K.box(-8.18, 5.45, z - .84, .1, .7, .3, C.teal); K.box(-8.18, 5.45, z + .84, .1, .7, .3, C.teal);
+    K.box(-8.0, 5.25, z, .3, .22, 1.5, C.wood);
+    for (let k = -2; k <= 2; k++) { K.sph(-7.95, 5.55, z + k * .27, .13, C.green, 1, .8, 1, 6, 4); K.sph(-7.95 + .02, 5.64, z + k * .27, .075, k % 2 ? 0xe23b4a : 0xf06a8a, 1, 1, 1, 6, 4); }
+  }
+  // door + step
+  K.box(-8.15, 0.3, -7.6, .12, 2.4, 1.2, C.tealD); K.box(-8.12, .3, -7.6, .08, 2.55, 1.45, C.cream, 0, 0, 0, 0);
+  K.box(-8.1, .45, -7.6, .1, 2.3, 1.0, C.teal); K.sph(-8.0, 1.5, -7.25, .06, C.gold, 1, 1, 1, 6, 4);
+  K.box(-7.55, 0, -7.6, 1.3, .3, 1.5, C.stone);
+  // sign backing
+  K.box(-8.18, 4.7, 0, .2, .7, 7.8, C.wood); K.box(-8.1, 4.72, 0, .08, .66, 7.6, 0x2d3d3f, 0, 0, 0, 0);
+  // wall shelves + tulip glasses
+  K.box(-7.95, 1.85, -.2, .5, .08, 12.8, C.woodL); K.box(-7.95, 2.55, -.2, .5, .08, 12.8, C.woodL);
+  for (let z = -6.2; z <= 5.9; z += .46) {
+    K.cyl(-7.95, 1.93, z, .15, .09, .26, C.amber, 8); K.cyl(-7.95, 2.19, z, .16, .16, .03, 0xf6dcc0, 8);
+    if (Math.random() < .6) K.cyl(-7.95, 2.63, z, .07, .1, .24, 0xf0e4d2, 8); else { K.cyl(-7.95, 2.63, z, .15, .09, .26, C.amber, 8); }
+    if (Math.random() < .25) K.sph(-7.95, 2.9, z, .1, C.red, 1, 1, 1, 6, 4);
+  }
+  // counter
+  K.box(CNT_X, 0, -.2, 1.7, 1.0, 12.8, C.wood);
+  K.box(CNT_X + .03, 1.0, -.2, 1.95, .12, 13.0, C.woodL);
+  for (let z = -5.6; z <= 5.8; z += 1.6) K.box(CNT_X + .86, .18, z, .06, .64, 1.3, 0x6e4528);
+  K.box(CNT_X + .9, .02, -.2, .08, .1, 12.9, C.dark);
+  // awning (striped, sloped) + poles
+  const slope = Math.atan2(0.5, 2.3);
+  for (let i = 0, z = -6.55; z < 6.4; z += .65, i++) {
+    const col = i % 2 ? C.cream : C.red;
+    K.box(-7.05, 4.22, z + .325, 2.45, .08, .65, col, 0, 0, -slope, 0.02);
+    K.box(-5.9, 3.84, z + .325, .08, .3, .65, col, 0, 0, 0, 0.02);
+  }
+  K.box(-5.9, 0, -6.45, .1, 3.95, .1, C.cream); K.box(-5.9, 0, 6.3, .1, 3.95, .1, C.cream);
+  // semaver (first)
+  addSemaver(K, -5.05);
+  // simit oven
+  { const zc = STATION_Z.simit, x = CNT_X;
+    K.box(x, 1.12, zc, 1.55, .45, 1.7, C.stoneD);
+    K.box(x, 1.57, zc, 1.5, 1.15, 1.65, 0xa0673a);
+    K.box(x, 2.72, zc, 1.62, .12, 1.78, C.roof);
+    K.cyl(x - .45, 2.84, zc - .5, .16, .2, .8, C.stoneD, 8);
+    K.box(x + .77, 1.78, zc, .08, .85, 1.05, 0x2a1810);
+    K.box(x + .79, 2.64, zc, .1, .1, 1.2, C.cream);
+    K.box(x + .78, 1.68, zc - .62, .06, 1.0, .12, C.cream); K.box(x + .78, 1.68, zc + .62, .06, 1.0, .12, C.cream);
+    K.box(x + .6, 1.4, zc, .5, .06, 1.5, C.wood);
+  }
+  // coffee station
+  { const zc = STATION_Z.coffee, x = CNT_X;
+    K.box(x, 1.12, zc, 1.5, .1, 1.9, C.dark);
+    K.box(x, 1.2, zc, 1.34, .08, 1.74, C.sand, 0, 0, 0, .02);
+    K.box(x - .62, 1.12, zc, .08, .3, 1.9, C.wood); K.box(x + .62, 1.12, zc, .08, .3, 1.9, C.wood);
+    K.box(x, 1.12, zc - .93, 1.5, .3, .08, C.wood); K.box(x, 1.12, zc + .93, 1.5, .3, .08, C.wood);
+    K.box(x - .5, 1.22, zc, .5, 1.1, 1.0, 0x4b4038); // stove back
+    K.box(x - .5, 2.32, zc, .56, .08, 1.1, C.bronze);
+    [-1, 1].forEach(s => {
+      const z = zc + s * .45;
+      K.cyl(x + .05, 1.28, z, .09, .19, .34, 0xc67a3a, 10); K.cyl(x + .05, 1.62, z, .13, .1, .06, 0xc67a3a, 10);
+      K.box(x + .38, 1.5, z, .4, .05, .06, C.dark, 0, 0, .25);
+    });
+  }
+  // ayran cooler
+  { const zc = STATION_Z.ayran, x = CNT_X;
+    K.box(x, 1.12, zc, 1.45, 1.75, 1.55, 0xe2eaef);
+    K.box(x + .74, 1.3, zc, .06, 1.25, 1.25, 0x89b1c6);
+    K.box(x + .76, 2.5, zc, .08, .3, 1.35, 0x3b6f94);
+    for (let r = 0; r < 3; r++) for (let k = -1; k <= 1; k++) { K.cyl(x + .66, 1.45 + r * .38, zc + k * .38, .13, .1, .22, r === 1 ? 0xfaf6ee : 0xf2ecd9, 8); }
+    K.box(x + .76, 1.15, zc, .08, .1, 1.3, C.dark);
+    K.cyl(x - .3, 2.87, zc + .3, .17, .13, .3, 0xfbfaf4, 8); K.cyl(x - .3, 2.87, zc - .3, .17, .13, .3, 0xfbfaf4, 8);
+  }
+  // sink
+  { const zc = STATION_Z.sink, x = CNT_X;
+    K.box(x, 1.12, zc, 1.5, .5, 1.6, 0x8aa6b4);
+    K.box(x + .05, 1.58, zc, 1.15, .06, 1.25, 0x5e94b0, 0, 0, 0, 0);
+    K.cyl(x - .5, 1.62, zc, .06, .06, .85, 0xc9ccd0, 8); K.box(x - .3, 2.4, zc, .55, .07, .07, 0xc9ccd0);
+    K.box(x - .6, 1.62, zc + .74, .4, .06, .5, 0xa0b0b8);
+    for (let k = 0; k < 4; k++) K.cyl(x - .62 + (k % 2) * .2, 1.68 + (k > 1 ? .24 : 0), zc + .66 + (k % 2) * .1, .09, .07, .22, 0xcfd6d4, 6);
+  }
+  // lamp posts + bunting
+  [[6.0, -8.7], [-3.6, -8.7]].forEach(([lx, lz]) => {
+    K.cyl(lx, 0, lz, .26, .32, .4, C.tealD, 8); K.cyl(lx, .4, lz, .07, .09, 3.7, C.tealD, 8);
+    K.box(lx, 4.05, lz, .56, .08, .56, C.tealD); K.cone(lx, 4.35, lz, .4, .35, C.tealD, 4);
+  });
+  const bunt = (ax, ay, az, bx, by, bz, n) => {
+    const cols = [C.red, C.cream, C.teal, C.gold, 0xe05a7a];
+    for (let i = 0; i <= n; i++) {
+      const f = i / n, x = lerp(ax, bx, f), z = lerp(az, bz, f), y = lerp(ay, by, f) - Math.sin(Math.PI * f) * .7;
+      K.add(coneGeo(3), mat(x, y - .17, z, .17, .34, .17, Math.PI / 2, Math.PI, 0), cols[i % cols.length], .02);
+      K.box(x, y, z, Math.abs(bx - ax) / n + .05, .03, Math.abs(bz - az) / n + .05, C.dark, Math.atan2(-(bz - az), bx - ax), 0, 0);
+    }
+  };
+  bunt(6.0, 4.0, -8.7, -3.6, 4.0, -8.7, 18);
+  bunt(-3.6, 4.0, -8.7, -5.9, 3.9, -6.45, 6);
+  // geraniums + crates near quay
+  const pot = (x, z, s = 1) => {
+    K.cyl(x, 0, z, .26 * s, .19 * s, .34 * s, 0xc4683a, 8); K.cyl(x, .32 * s, z, .29 * s, .29 * s, .06 * s, 0xa9552d, 8);
+    K.sph(x, .55 * s, z, .34 * s, C.green, 1, .7, 1, 7, 5);
+    for (let k = 0; k < 5; k++) { const a = k * 1.3; K.sph(x + Math.cos(a) * .2 * s, .7 * s + (k % 2) * .06, z + Math.sin(a) * .2 * s, .1 * s, k % 2 ? 0xdf3b4b : 0xf26a88, 1, 1, 1, 6, 4); }
+  };
+  [-1.5, 2.2, 9.2, 12.5].forEach(x => pot(x, -8.55)); pot(-5.1, -7.7, .9); pot(-5.1, 6.9, .9); pot(12.2, 4.6, 1);
+  K.box(10.0, 0, -8.6, .9, .6, .8, C.woodL); K.box(10.1, .6, -8.55, .8, .5, .7, C.wood); K.box(11.2, 0, -8.6, .8, .5, .8, C.woodL);
+  // sailboats in the strait
+  const boat = (x, z, s, col) => {
+    K.box(x, -.3, z, 2.2 * s, .45 * s, .8 * s, C.white); K.box(x, -.1, z, 2.3 * s, .12 * s, .9 * s, col);
+    K.cyl(x, .1, z, .04, .04, 2.6 * s, C.wood, 5);
+    K.add(coneGeo(3), mat(x + .05, .1 + 1.4 * s, z - .02, 1.1 * s, 2.3 * s, .06, 0, 0, 0), col === C.red ? C.cream : C.cream, .02);
+  };
+  boat(1.5, -17.5, 1, C.red); boat(-7.5, -23, 1.2, C.teal); boat(9, -25, .9, C.gold);
+  // far shore silhouette (hazy)
+  const hz = 0xa89cb4, hz2 = 0x9a8cae, hz3 = 0xb9aac0;
+  const mosque = (x, z, s) => {
+    K.box(x, -.3, z, 5 * s, 1.3 * s, 3.4 * s, hz); K.sph(x, 1.0 * s, z, 1.9 * s, hz3, 1, .8, 1, 10, 6);
+    K.sph(x + 2.3 * s, .8 * s, z + 1.2 * s, .8 * s, hz3, 1, .8, 1, 8, 5); K.sph(x - 2.3 * s, .8 * s, z + 1.2 * s, .8 * s, hz3, 1, .8, 1, 8, 5);
+    [[-3.1, -1.6], [3.1, -1.6], [-3.1, 1.6], [3.1, 1.6]].forEach(([a, b]) => { K.cyl(x + a * s, 0, z + b * s, .12 * s, .17 * s, 4.2 * s, hz2, 6); K.cone(x + a * s, 4.2 * s, z + b * s, .22 * s, .8 * s, hz2, 6); });
+  };
+  mosque(-3, -29, 1.5); mosque(13, -33, 1.3);
+  for (let i = 0; i < 26; i++) { const x = -22 + i * 1.9 + Math.random(); const z = -29.5 - Math.random() * 2; const h = 1 + Math.random() * 1.8; K.box(x - 6, -.3, z + 3, 1.6, h + .3, 1.5, i % 3 ? hz : hz2); K.box(x - 6, h, z + 3, 1.8, .16, 1.7, 0xa9795f, 0, 0, 0, .02); }
+  // low hills far
+  K.sph(-4, -2, -42, 20, 0xb6aebe, 1, .32, .5, 12, 6); K.sph(24, -2, -46, 22, 0xbfb2bf, 1, .3, .5, 12, 6);
+
+  const wm = new THREE.Mesh(W.geometry(), matV()); wm.castShadow = !FLAG.low; wm.receiveShadow = !FLAG.low;
+  const gm = new THREE.Mesh(Gd.geometry(), matV()); gm.receiveShadow = !FLAG.low;
+  world.add(wm, gm);
+  return { wm, gm };
+}
+const worldMeshes = buildWorld();
+
+/* sign (canvas texture) */
+function drawSign() {
+  const cv = document.createElement('canvas'); cv.width = 1024; cv.height = 96; const g = cv.getContext('2d');
+  g.fillStyle = '#243638'; g.fillRect(0, 0, 1024, 96);
+  g.font = '900 64px Nunito, system-ui, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillStyle = '#ffb25a'; g.shadowColor = 'rgba(0,0,0,.5)'; g.shadowBlur = 6; g.fillText('ÇAY OCAĞI', 512, 52);
+  g.shadowBlur = 0; g.fillStyle = '#e8873a';
+  for (const x of [90, 934]) { g.beginPath(); g.moveTo(x - 22, 22); g.lineTo(x + 22, 22); g.quadraticCurveTo(x + 20, 56, x + 8, 66); g.lineTo(x + 8, 78); g.lineTo(x - 8, 78); g.lineTo(x - 8, 66); g.quadraticCurveTo(x - 20, 56, x - 22, 22); g.fill(); }
+  return cv;
+}
+const signTex = new THREE.CanvasTexture(drawSign()); signTex.colorSpace = THREE.SRGBColorSpace; signTex.anisotropy = 4;
+const signMesh = new THREE.Mesh(new THREE.PlaneGeometry(7.4, .62).rotateY(Math.PI / 2), new THREE.MeshLambertMaterial({ map: signTex, emissive: 0x553322, emissiveMap: signTex }));
+signMesh.position.set(-8.05, 5.04, 0); world.add(signMesh);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { signTex.image = drawSign(); signTex.needsUpdate = true; });
+
+/* lamp lanterns (emissive) */
+{
+  const lm = new THREE.MeshLambertMaterial({ color: 0xffd48a, emissive: 0xffb454, emissiveIntensity: 1.1 });
+  const g = new THREE.BoxGeometry(.36, .5, .36); const im = new THREE.InstancedMesh(g, lm, 2);
+  im.setMatrixAt(0, mat(6.0, 4.15, -8.7)); im.setMatrixAt(1, mat(-3.6, 4.15, -8.7)); im.frustumCulled = false; world.add(im); DYN.lanterns = im;
+}
+
+/* second semaver (upgrade) */
+{ const K2 = new Merger(); addSemaver(K2, -3.85); const m2 = new THREE.Mesh(K2.geometry(), matV()); m2.castShadow = !FLAG.low; m2.visible = false; world.add(m2); DYN.kettleB = m2; }
+
+/* oven glow */
+{
+  const gm = new THREE.MeshLambertMaterial({ color: 0x2a1810, emissive: 0xff7a1a, emissiveIntensity: .2 });
+  const g = new THREE.Mesh(new THREE.BoxGeometry(.05, .62, .82), gm); g.position.set(CNT_X + .73, 2.07, STATION_Z.simit); world.add(g); DYN.ovenGlow = g;
+}
+/* ready simit rings on top of the oven */
+{
+  const g = new THREE.TorusGeometry(.17, .075, 6, 12).rotateX(Math.PI / 2);
+  const im = new THREE.InstancedMesh(g, new THREE.MeshLambertMaterial({ color: 0xd9983a, flatShading: true }), 3); im.castShadow = !FLAG.low; im.frustumCulled = false;
+  world.add(im); DYN.simitRings = im;
+}
+/* coffee foam (per pot) */
+{
+  const im = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 8, 6), matI(), 2); im.frustumCulled = false;
+  im.setColorAt(0, new THREE.Color(0x6b4226)); im.setColorAt(1, new THREE.Color(0x6b4226)); world.add(im); DYN.foam = im;
+}
+
+/* ---------- tables, stools, tableware (instanced) ---------- */
+const TB = {};
+{
+  const tops = new THREE.InstancedMesh(new THREE.CylinderGeometry(.88, .88, .09, 16), matI(), 6);
+  const legs = (() => { const m = new Merger(); m.cyl(0, 0, 0, .34, .4, .06, 0x4a3a30, 10); m.cyl(0, .06, 0, .08, .08, .84, 0x4a3a30, 8); return new THREE.InstancedMesh(m.geometry(), matIV(), 6); })();
+  const stools = new THREE.InstancedMesh(new THREE.CylinderGeometry(.27, .2, .5, 8), matI(), 24);
+  const cush = new THREE.InstancedMesh(new THREE.CylinderGeometry(.29, .29, .08, 8), matI(), 24);
+  const glass = new THREE.InstancedMesh(new THREE.CylinderGeometry(.115, .075, .22, 8), matI(), 36);
+  const plate = new THREE.InstancedMesh(new THREE.CylinderGeometry(.2, .17, .04, 10), matI(), 36);
+  const cloth = [0xd9693a, 0x3f8a92, 0xe0a63f, 0xb85a7a, 0x6a9a4a, 0xd9693a];
+  for (let i = 0; i < 6; i++) tops.setColorAt(i, new THREE.Color(cloth[i]));
+  const sc = [0x3f7f86, 0xc2602a, 0x3f7f86, 0xc2602a];
+  for (let i = 0; i < 24; i++) { stools.setColorAt(i, new THREE.Color(sc[i % 4])); cush.setColorAt(i, new THREE.Color(0xf08c3a)); }
+  for (let i = 0; i < 36; i++) { glass.setColorAt(i, new THREE.Color(C.amber)); plate.setColorAt(i, new THREE.Color(0xd9a043)); }
+  [tops, legs, stools, cush, glass, plate].forEach(m => { m.frustumCulled = false; m.castShadow = !FLAG.low; m.receiveShadow = !FLAG.low; world.add(m); });
+  glass.castShadow = plate.castShadow = false;
+  Object.assign(TB, { tops, legs, stools, cush, glass, plate });
+}
+const ITEM_COL = { tea: 0xc2410c, simit: 0xd9a043, coffee: 0x5a3a22, ayran: 0xf4f1ea, dirty: 0x8d857c };
+
+/* ---------- hover ring ---------- */
+const hoverRing = new THREE.Mesh(new THREE.RingGeometry(.92, 1.08, 40).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ color: 0xC2410C, emissive: 0xC2410C, emissiveIntensity: .9, transparent: true, opacity: .85, depthWrite: false }));
+hoverRing.visible = false; hoverRing.position.y = .05; world.add(hoverRing);
+
+/* ---------- pick proxies ---------- */
+(function () {
+  const inv = new THREE.MeshBasicMaterial({ visible: false });
+  STATION_KEYS.forEach(id => {
+    const z = id === 'tea' ? -4.45 : STATION_Z[id], d = id === 'tea' ? 3.0 : 2.0;
+    const m = new THREE.Mesh(new THREE.BoxGeometry(2.0, 3.4, d), inv); m.position.set(CNT_X, 1.7, z); m.visible = false; world.add(m); pickables.push({ mesh: m, kind: 'station', id });
+  });
+  for (let i = 0; i < 6; i++) {
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(1.45, 1.45, 1.8, 12), inv); m.position.set(TABLE_POS[i][0], .9, TABLE_POS[i][1]); m.visible = false; world.add(m); pickables.push({ mesh: m, kind: 'table', id: i });
+  }
+  const cm = new THREE.Mesh(new THREE.SphereGeometry(.7, 8, 6), inv); cm.visible = false; world.add(cm); pickables.push({ mesh: cm, kind: 'cat', id: 0 }); DYN.catPick = cm;
+})();
+
+/* ---------- characters ---------- */
+function personGeos() {
+  const b = new Merger(); b.cyl(0, 0, 0, .21, .29, .8, 0xffffff, 8, 0); b.sph(-.27, .55, 0, .1, 0xffffff, 1, 1.5, 1, 5, 4, 0); b.sph(.27, .55, 0, .1, 0xffffff, 1, 1.5, 1, 5, 4, 0);
+  const h = new Merger(); h.sph(0, 0, 0, .22, 0xffffff, 1, 1, 1, 10, 8, 0); h.box(0, -.04, .22, .07, .09, .08, 0xffffff, 0, 0, 0, 0); h.box(-.08, .04, .205, .05, .05, .04, 0x1b1410, 0, 0, 0, 0); h.box(.08, .04, .205, .05, .05, .04, 0x1b1410, 0, 0, 0, 0);
+  const hr = new Merger(); hr.add(new THREE.SphereGeometry(1, 10, 6, 0, Math.PI * 2, 0, Math.PI * .55), mat(0, 0, -.02, .245, .245, .245), 0xffffff, 0);
+  const cp = new Merger(); cp.cyl(0, 0, 0, .23, .24, .11, 0xffffff, 10, 0); cp.box(0, .0, .24, .26, .03, .16, 0xffffff, 0, 0, 0, 0);
+  return { b: b.geometry(), h: h.geometry(), hr: hr.geometry(), cp: cp.geometry() };
+}
+const PG = personGeos();
+const PPL = {
+  body: new THREE.InstancedMesh(PG.b, matIV(), MAXP), head: new THREE.InstancedMesh(PG.h, matIV(), MAXP),
+  hair: new THREE.InstancedMesh(PG.hr, matIV(), MAXP), cap: new THREE.InstancedMesh(PG.cp, matIV(), MAXP)
+};
+Object.values(PPL).forEach(m => { m.frustumCulled = false; m.castShadow = !FLAG.low; world.add(m); for (let i = 0; i < MAXP; i++) { m.setMatrixAt(i, mat(0, -50, 0, 0, 0, 0)); m.setColorAt(i, new THREE.Color(0xffffff)); } });
+
+function buildWaiter(shirt, vest, apron, hair, scale) {
+  const m = new Merger();
+  m.cyl(0, 0, 0, .27, .3, .5, 0x2b2f3a, 10, 0.02);       // trousers
+  m.cyl(0, .5, 0, .21, .27, .5, shirt, 10, 0.02);         // shirt
+  m.cyl(0, .5, 0, .23, .285, .42, vest, 10, 0.02);        // vest
+  m.cyl(0, .26, .02, .31, .32, .5, apron, 10, 0.02);      // apron
+  m.sph(-.3, .95, 0, .1, shirt, 1, 1.4, 1, 6, 4); m.sph(.3, .95, 0, .1, shirt, 1, 1.4, 1, 6, 4);
+  m.sph(0, 1.28, 0, .23, 0xe9bd96, 1, 1, 1, 10, 8, 0); m.box(0, 1.22, .22, .07, .09, .08, 0xe2b08a, 0, 0, 0, 0);
+  m.box(-.08, 1.32, .21, .05, .05, .04, 0x1b1410, 0, 0, 0, 0); m.box(.08, 1.32, .21, .05, .05, .04, 0x1b1410, 0, 0, 0, 0);
+  m.add(new THREE.SphereGeometry(1, 10, 6, 0, Math.PI * 2, 0, Math.PI * .55), mat(0, 1.29, -.02, .25, .25, .25), hair, 0);
+  m.box(0, 1.2, .1, .3, .06, .09, 0x1b1410, 0, 0, 0, 0);
+  // tray
+  m.cyl(0, 1.0, .5, .42, .42, .04, 0xcfd3d8, 14, 0.02); m.cyl(0, 1.04, .5, .36, .36, .02, 0xe9ecef, 14, 0);
+  m.box(-.3, .95, .3, .08, .06, .4, shirt, .4); m.box(.3, .95, .3, .08, .06, .4, shirt, -.4);
+  const mesh = new THREE.Mesh(m.geometry(), matV()); mesh.castShadow = !FLAG.low; mesh.scale.setScalar(scale);
+  const grp = new THREE.Group(); grp.add(mesh); world.add(grp); return grp;
+}
+const waiterObj = buildWaiter(0xf6efe0, 0x3b2a22, 0xC2410C, 0x20150f, 1.0);
+const apprObj = buildWaiter(0x7fa3c9, 0x3a5f8a, 0xf4f0e6, 0x5a3a22, .92); apprObj.visible = false;
+// tray items
+const trayIM = new THREE.InstancedMesh(new THREE.CylinderGeometry(.1, .08, .2, 8), matI(), 7); trayIM.frustumCulled = false; trayIM.castShadow = !FLAG.low; world.add(trayIM);
+for (let i = 0; i < 7; i++) { trayIM.setColorAt(i, new THREE.Color(0xffffff)); trayIM.setMatrixAt(i, mat(0, -50, 0, 0, 0, 0)); }
+
+/* ---------- cat, gulls, ferry, waves ---------- */
+const catGrp = (() => {
+  const m = new Merger(), fur = 0xd98a3e, wh = 0xf3ebdc;
+  m.sph(0, .24, 0, .27, fur, 1.35, .85, .85, 8, 6); m.sph(.34, .38, 0, .17, fur, 1, 1, 1, 8, 6);
+  m.cone(.36, .5, -.1, .06, .13, fur, 4); m.cone(.36, .5, .1, .06, .13, fur, 4);
+  m.sph(.5, .35, 0, .06, wh, 1, .8, 1.2, 5, 4); m.box(.47, .39, -.07, .03, .03, .03, 0x1b1410, 0, 0, 0, 0); m.box(.47, .39, .07, .03, .03, .03, 0x1b1410, 0, 0, 0, 0);
+  [[-.2, -.14], [-.2, .14], [.18, -.14], [.18, .14]].forEach(([a, b]) => m.box(a, 0, b, .1, .2, .1, a > 0 ? wh : fur));
+  m.sph(-.4, .3, .06, .09, fur, 1.6, .6, .6, 6, 4); m.sph(-.52, .42, .1, .07, wh, 1.2, 1, 1, 6, 4);
+  m.add(sphGeo(8, 6), mat(0, .2, 0, .15, .14, .27), wh, 0.02);
+  const mesh = new THREE.Mesh(m.geometry(), matV()); mesh.castShadow = !FLAG.low;
+  const g = new THREE.Group(); g.add(mesh); world.add(g); return g;
+})();
+const gullIM = (() => {
+  const m = new Merger(); m.sph(0, 0, 0, .2, 0xfafafa, 1.6, .7, .7, 6, 4, 0);
+  m.box(-.02, 0, .08, .24, .025, .5, 0xe8e8ea, 0, .3, 0, 0); m.box(-.02, 0, -.08, .24, .025, .5, 0xe8e8ea, 0, -.3, 0, 0);
+  m.cone(.34, -.03, 0, .035, .1, 0xf2a03a, 4, 0, 0, -Math.PI / 2);
+  const im = new THREE.InstancedMesh(m.geometry(), matIV(), 4); im.frustumCulled = false; world.add(im); return im;
+})();
+const ferryObj = (() => {
+  const m = new Merger();
+  m.box(0, -.4, 0, 8, .95, 2.4, 0xf4f1ea, 0, 0, 0, 0.01); m.box(0, .1, 0, 8.05, .22, 2.45, 0x2f5675, 0, 0, 0, 0);
+  m.box(4.2, -.3, 0, 1.3, .85, 1.7, 0xf4f1ea, 0, 0, 0, 0.01);
+  m.box(-.3, .55, 0, 6.4, .9, 2.0, 0xf6eed8); m.box(-.2, 1.45, 0, 4.2, .8, 1.7, 0xf6eed8);
+  m.box(-.3, .8, 1.01, 6.2, .3, .04, 0x2b3a48); m.box(-.2, 1.7, .86, 4.0, .28, .04, 0x2b3a48); m.box(-.3, .8, -1.01, 6.2, .3, .04, 0x2b3a48);
+  m.box(-.2, 2.25, 0, 4.4, .1, 1.9, 0xc2410c);
+  m.cyl(.6, 2.35, 0, .38, .42, 1.2, 0xc2410c, 10); m.cyl(.6, 3.45, 0, .4, .38, .2, 0x20140f, 10);
+  m.cyl(-1.6, 2.35, 0, .25, .28, .9, 0xc2410c, 10); m.cyl(-1.6, 3.2, 0, .27, .25, .16, 0x20140f, 10);
+  m.cyl(3.0, 1.6, 0, .04, .04, 2.2, 0xdddddd, 5);
+  const mesh = new THREE.Mesh(m.geometry(), matV()); mesh.castShadow = !FLAG.low;
+  const g = new THREE.Group(); g.add(mesh); world.add(g); return g;
+})();
+const waves = (() => {
+  const im = new THREE.InstancedMesh(new THREE.BoxGeometry(1, .03, .12), new THREE.MeshLambertMaterial({ color: 0xcdeef0, emissive: 0x335566, transparent: true, opacity: .55 }), 36);
+  im.frustumCulled = false; world.add(im); const seeds = []; for (let i = 0; i < 36; i++) seeds.push({ x: -40 + Math.random() * 90, z: -11 - Math.random() * 20, s: .5 + Math.random() * 1.8, sp: .15 + Math.random() * .4 }); im.userData.seeds = seeds; return im;
+})();
+
+/* ---------- particles (one Points object) ---------- */
+const NP = FLAG.low ? 90 : 180, NHALO = 4;
+const PT = {
+  pos: new Float32Array(NP * 3), col: new Float32Array(NP * 3), ap: new Float32Array(NP * 2),
+  life: new Float32Array(NP), max: new Float32Array(NP), vx: new Float32Array(NP), vy: new Float32Array(NP), vz: new Float32Array(NP), g: new Float32Array(NP),
+  s0: new Float32Array(NP), s1: new Float32Array(NP), a0: new Float32Array(NP), next: NHALO
+};
+const ptGeo = new THREE.BufferGeometry();
+ptGeo.setAttribute('position', new THREE.BufferAttribute(PT.pos, 3));
+ptGeo.setAttribute('pcol', new THREE.BufferAttribute(PT.col, 3));
+ptGeo.setAttribute('ap', new THREE.BufferAttribute(PT.ap, 2));
+const ptMat = new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false, uniforms: { pr: { value: PR } },
+  vertexShader: 'attribute vec3 pcol; attribute vec2 ap; uniform float pr; varying vec3 vC; varying float vA; void main(){ vC=pcol; vA=ap.x; gl_PointSize=ap.y*pr; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
+  fragmentShader: 'precision mediump float; varying vec3 vC; varying float vA; void main(){ float d=length(gl_PointCoord-0.5); float a=smoothstep(.5,.12,d)*vA; if(a<.01) discard; gl_FragColor=vec4(vC,a); }'
+});
+const points = new THREE.Points(ptGeo, ptMat); points.frustumCulled = false; scene.add(points);
+// lamp halos live in the first slots
+[[6.0, 4.15, -8.7], [-3.6, 4.15, -8.7]].forEach((p, i) => { PT.pos.set(p, i * 3); PT.col.set([1, .78, .42], i * 3); PT.ap[i * 2] = .42; PT.ap[i * 2 + 1] = 84; PT.life[i] = 1e9; });
+const PK = {
+  steam: { c: [.97, .95, .92], a: .5, s0: 12, s1: 30, vy: .9, vs: .25, life: 1.5, g: 0 },
+  smoke: { c: [.62, .56, .52], a: .45, s0: 10, s1: 26, vy: .8, vs: .25, life: 2.0, g: 0 },
+  spark: { c: [1, .84, .3], a: 1, s0: 10, s1: 3, vy: 2.2, vs: 1.4, life: .7, g: -5 },
+  heart: { c: [1, .42, .55], a: .95, s0: 18, s1: 22, vy: .9, vs: .15, life: 1.3, g: 0 },
+  anger: { c: [.92, .24, .14], a: .85, s0: 14, s1: 20, vy: 1.3, vs: .9, life: .9, g: 0 },
+  water: { c: [.62, .82, 1], a: .8, s0: 8, s1: 3, vy: 1.4, vs: .8, life: .7, g: -4 }
+};
+function burst(kind, x, y, z, n = 1) {
+  if (G.simming) return;
+  const k = PK[kind]; if (!k) return;
+  for (let j = 0; j < n; j++) {
+    const i = PT.next; PT.next = PT.next + 1 >= NP ? NHALO : PT.next + 1;
+    PT.pos[i * 3] = x + (Math.random() - .5) * .25; PT.pos[i * 3 + 1] = y; PT.pos[i * 3 + 2] = z + (Math.random() - .5) * .25;
+    PT.vx[i] = (Math.random() - .5) * k.vs; PT.vy[i] = k.vy * (.7 + Math.random() * .6); PT.vz[i] = (Math.random() - .5) * k.vs; PT.g[i] = k.g;
+    PT.life[i] = PT.max[i] = k.life * (.7 + Math.random() * .6); PT.s0[i] = k.s0; PT.s1[i] = k.s1; PT.a0[i] = k.a;
+    PT.col.set(k.c, i * 3);
+  }
+}
+function particlesUpdate(dt) {
+  for (let i = NHALO; i < NP; i++) {
+    if (PT.life[i] <= 0) { PT.ap[i * 2] = 0; PT.ap[i * 2 + 1] = 0; continue; }
+    PT.life[i] -= dt; const f = 1 - PT.life[i] / PT.max[i];
+    PT.vy[i] += PT.g[i] * dt; PT.pos[i * 3] += PT.vx[i] * dt; PT.pos[i * 3 + 1] += PT.vy[i] * dt; PT.pos[i * 3 + 2] += PT.vz[i] * dt;
+    PT.ap[i * 2] = PT.a0[i] * Math.sin(Math.PI * Math.min(1, f * 1.0)) * (f < .15 ? f / .15 : 1) * (f > .6 ? (1 - f) / .4 : 1);
+    PT.ap[i * 2 + 1] = lerp(PT.s0[i], PT.s1[i], f);
+    if (PT.life[i] <= 0) { PT.ap[i * 2] = 0; }
+  }
+  const t = G.vt; PT.ap[0] = .38 + Math.sin(t * 3.1) * .04; PT.ap[2] = .38 + Math.sin(t * 2.7 + 1) * .04;
+  ptGeo.attributes.position.needsUpdate = true; ptGeo.attributes.pcol.needsUpdate = true; ptGeo.attributes.ap.needsUpdate = true;
+}
+
+/* ============================================================
+   ambient life (sim side): cat, gulls, ferry
+   ============================================================ */
+const CATHOME = { x: -7.55, z: -7.6 };
+const cat = { x: CATHOME.x, z: CATHOME.z, y: .3, face: Math.PI / 2, state: 'sleep', t: 14 + Math.random() * 10, path: [], moving: false, pet: 0 };
+const ferry = { x: -44, bob: 0, horn: false };
+const gulls = [{ a: 0, r: 6.5, cx: 1, cz: -13, h: 8.5, sp: .32 }, { a: 2.1, r: 8, cx: -2, cz: -12, h: 10.5, sp: -.27 }, { a: 4.2, r: 5.5, cx: 5, cz: -11, h: 7.5, sp: .4 }, { a: 5.5, r: 9, cx: 0, cz: -14, h: 12, sp: -.22 }];
+const ambient = { people: [] };
+function ambientUpdate(dt) {
+  ferry.x += dt * 1.1; ferry.bob += dt;
+  if (ferry.x > 40) { ferry.x = -46; ferry.horn = false; }
+  if (!ferry.horn && ferry.x > -14) { ferry.horn = true; sfxHorn(); }
+  gulls.forEach(g => g.a += g.sp * dt);
+  switch (cat.state) {
+    case 'sleep': cat.t -= dt; cat.moving = false; if (cat.t <= 0) { cat.state = 'wake'; cat.t = 1.4; } break;
+    case 'wake': cat.t -= dt; if (cat.t <= 0) {
+      let dx, dz, n = 0; do { dx = rr(-4.2, 8.5); dz = rr(-7.4, 7.5); n++; } while (blockedAt(dx, dz) && n < 40);
+      cat.path = findPath(cat.x, cat.z, dx, dz); cat.state = 'walk';
+    } break;
+    case 'walk': if (followPath(cat, 1.3, dt)) { cat.state = 'sit'; cat.t = rr(4, 9); } break;
+    case 'sit': cat.moving = false; cat.t -= dt; if (cat.t <= 0) { cat.path = findPath(cat.x, cat.z, CATHOME.x, CATHOME.z); cat.state = 'return'; } break;
+    case 'return': if (followPath(cat, 1.4, dt)) { cat.state = 'sleep'; cat.t = rr(18, 38); cat.face = Math.PI / 2; } break;
+  }
+  cat.y = cat.x < -6.7 ? .3 : 0;
+  if (cat.pet > 0) cat.pet -= dt;
+}
+function petCat() {
+  if (cat.pet > 0) return; cat.pet = 1.2; sfxMeow(); toast(t('toastMeow'));
+  burst('heart', cat.x, 1.0, cat.z, 4);
+  if (cat.state === 'sleep') { cat.t = Math.min(cat.t, 0.5); }
+}
+
+/* ============================================================
+   per-frame visual sync
+   ============================================================ */
+const _c = new THREE.Color();
+const _tmpV = new THREE.Vector3();
+let steamAcc = 0;
+function syncVisuals(dt) {
+  const vt = G.vt, w = G.waiter;
+  /* tables */
+  for (let i = 0; i < 6; i++) {
+    const tb = G.tables[i] || { unlocked: i < tableCount() }; const on = tb.unlocked;
+    const [x, z] = TABLE_POS[i], s = on ? 1 : 0;
+    TB.tops.setMatrixAt(i, mat(x, .93, z, s, s, s)); TB.legs.setMatrixAt(i, mat(x, 0, z, s, s, s));
+    for (let k = 0; k < 4; k++) {
+      const a = SEAT_ANG[k], sx = x + Math.cos(a) * .98, sz = z + Math.sin(a) * .98;
+      TB.stools.setMatrixAt(i * 4 + k, mat(sx, .25, sz, s, s, s));
+      const cs = on && G.up.stool > 0 ? s : 0;
+      TB.cush.setMatrixAt(i * 4 + k, mat(sx, .52, sz, cs * (G.up.stool > 1 ? 1.08 : 1), cs * (G.up.stool > 1 ? 1.6 : 1), cs * (G.up.stool > 1 ? 1.08 : 1)));
+    }
+    for (let k = 0; k < 6; k++) {
+      const sl = on ? (tb.slots || [])[k] : null, a = k * 1.047 + .5, gx = x + Math.cos(a) * .45, gz = z + Math.sin(a) * .45;
+      const showG = sl && sl.kind === 'glass', showP = sl && sl.kind === 'plate';
+      TB.glass.setMatrixAt(i * 6 + k, showG ? mat(gx, 1.08, gz) : mat(0, -50, 0, 0, 0, 0));
+      TB.plate.setMatrixAt(i * 6 + k, showP ? mat(gx, 1.0, gz) : mat(0, -50, 0, 0, 0, 0));
+      if (sl) { _c.setHex(sl.dirty ? (sl.kind === 'glass' ? 0x9b8f84 : 0xb9a58a) : ITEM_COL[sl.item]); (showG ? TB.glass : TB.plate).setColorAt(i * 6 + k, _c); }
+    }
+  }
+  [TB.tops, TB.legs, TB.stools, TB.cush, TB.glass, TB.plate].forEach(m => { m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; });
+
+  /* stations */
+  const S = G.stations;
+  DYN.kettleB.visible = G.up.kettle > 0;
+  const ovenOn = S && S.oven.st === 'baking';
+  DYN.ovenGlow.material.emissiveIntensity = S ? (ovenOn ? .9 + Math.sin(vt * 9) * .15 : S.oven.st === 'ready' ? .7 : .12) : .12;
+  for (let k = 0; k < 3; k++) { const on = S && S.oven.st === 'ready' && k < S.oven.n; DYN.simitRings.setMatrixAt(k, on ? mat(CNT_X + .05, 2.86, STATION_Z.simit + (k - 1) * .45, 1, 1, 1, .3 * k) : mat(0, -50, 0, 0, 0, 0)); }
+  DYN.simitRings.instanceMatrix.needsUpdate = true;
+  for (let k = 0; k < 2; k++) {
+    const p = S && S.pots[k], z = STATION_Z.coffee + (k ? 1 : -1) * .45;
+    let sc = 0, col = 0x6b4226;
+    if (p) {
+      if (p.st === 'cook') { sc = .02 + (p.t / COOK_T) * .12; col = 0x7a4a2a; }
+      else if (p.st === 'ready') { sc = .14 + Math.sin(vt * 12) * .01; col = 0xb98a56; }
+      else if (p.st === 'spilled') { sc = .02; col = 0x1e140c; }
+    }
+    DYN.foam.setMatrixAt(k, sc > 0 ? mat(CNT_X + .05, 1.66 + (p.st === 'spilled' ? -.5 : 0), z, sc * 1.2, sc * (p.st === 'spilled' ? .5 : .8), sc * 1.2) : mat(0, -50, 0, 0, 0, 0));
+    _c.setHex(col); DYN.foam.setColorAt(k, _c);
+  }
+  DYN.foam.instanceMatrix.needsUpdate = true; DYN.foam.instanceColor.needsUpdate = true;
+  /* steam from brewing / ready kettles + oven smoke */
+  if (!G.paused && S && !G.simming) {
+    steamAcc += dt;
+    if (steamAcc > .13) {
+      steamAcc = 0;
+      S.kettles.forEach((k, i) => { if (i > G.up.kettle) return; const z = i ? -3.85 : -5.05; if (k.st === 'brewing') burst('steam', CNT_X, 3.3, z, 1); else if (k.st === 'ready' && Math.random() < .35) burst('steam', CNT_X, 3.3, z, 1); });
+      if (S.oven.st === 'baking' || S.oven.st === 'ready') burst('smoke', CNT_X - .45, 3.7, STATION_Z.simit - .5, 1);
+      S.pots.forEach((p, k) => { if (p.st === 'cook' && p.t > COOK_T * .5 || p.st === 'ready') burst('steam', CNT_X + .05, 1.9, STATION_Z.coffee + (k ? 1 : -1) * .45, 1); });
+    }
+  }
+  /* waiter */
+  const bobW = w.moving ? Math.abs(Math.sin(vt * 11)) * .07 : 0;
+  waiterObj.position.set(w.x, bobW, w.z); waiterObj.rotation.y = w.face; waiterObj.rotation.z = w.moving ? Math.sin(vt * 11) * .04 : 0;
+  waiterObj.visible = true;
+  for (let k = 0; k < 7; k++) {
+    let it = k < w.tray.length ? w.tray[k] : null;
+    if (it) {
+      const sn = Math.sin(w.face), cs = Math.cos(w.face), lx = [-.18, .18, 0, -.2, .2][k] || 0, lz = [0, 0, .2, .38, .38][k] + .3;
+      // local tray centre is (0,1.06,.5)
+      const ox = lx, oz = lz + .2 - .3;
+      const wx = w.x + ox * cs + oz * sn, wz = w.z - ox * sn + oz * cs;
+      trayIM.setMatrixAt(k, mat(wx, 1.17 + bobW, wz, 1, 1, 1, w.face)); _c.setHex(ITEM_COL[it]); trayIM.setColorAt(k, _c);
+    } else trayIM.setMatrixAt(k, mat(0, -50, 0, 0, 0, 0));
+  }
+  trayIM.instanceMatrix.needsUpdate = true; trayIM.instanceColor.needsUpdate = true;
+  /* apprentice */
+  const ap = G.apprentice;
+  apprObj.visible = !!ap;
+  if (ap) { apprObj.position.set(ap.x, ap.moving ? Math.abs(Math.sin(vt * 11 + 1)) * .06 : 0, ap.z); apprObj.rotation.y = ap.face; }
+  if (ap && ap.carry) { trayIM.setMatrixAt(5, mat(ap.x + Math.sin(ap.face) * .5, 1.18, ap.z + Math.cos(ap.face) * .5, 1, 1, 1, 0)); _c.setHex(ITEM_COL.dirty); trayIM.setColorAt(5, _c); trayIM.instanceMatrix.needsUpdate = true; trayIM.instanceColor.needsUpdate = true; }
+
+  /* people */
+  for (let i = 0; i < MAXP; i++) {
+    const pe = persons[i];
+    if (!pe || pe.delay > 0 && !pe.leaving) { hidePerson(i); continue; }
+    const seated = pe.sitting, mv = pe.moving;
+    const by = seated ? .32 : (mv ? Math.abs(Math.sin(vt * 9 + i)) * .06 : 0);
+    const lean = mv ? Math.sin(vt * 9 + i) * .07 : 0, sh = pe.flash > 0 ? Math.sin(vt * 40) * .05 * pe.flash : 0;
+    const sc = pe.big;
+    PPL.body.setMatrixAt(i, mat(pe.x + sh, by, pe.z, sc, 1, sc, pe.face, 0, lean));
+    PPL.head.setMatrixAt(i, mat(pe.x + sh, by + 1.02, pe.z, sc, sc, sc, pe.face + (seated && pe.arrived ? Math.sin(vt * .7 + i) * .15 : 0), 0, lean * .5));
+    const hasCap = pe.cap;
+    PPL.hair.setMatrixAt(i, hasCap ? mat(0, -50, 0, 0, 0, 0) : mat(pe.x + sh, by + 1.06, pe.z, sc, sc, sc, pe.face, 0, lean * .5));
+    PPL.cap.setMatrixAt(i, hasCap ? mat(pe.x + sh, by + 1.2, pe.z, sc, sc, sc, pe.face, 0, lean * .5) : mat(0, -50, 0, 0, 0, 0));
+    _c.setHex(pe.body); if (pe.flash > 0) _c.lerp(new THREE.Color(0xd23a2a), Math.min(1, pe.flash * 1.5)); PPL.body.setColorAt(i, _c);
+    _c.setHex(pe.skin); PPL.head.setColorAt(i, _c);
+    _c.setHex(pe.hair); PPL.hair.setColorAt(i, _c); _c.setHex(pe.type === 'regular' ? 0x3a4a6a : 0x2a1a10); PPL.cap.setColorAt(i, _c);
+  }
+  // ambient passers-by on the far street
+  ambientPeople(dt);
+  Object.values(PPL).forEach(m => { m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; });
+
+  /* cat */
+  const asleep = cat.state === 'sleep', sit = cat.state === 'sit';
+  const breathe = asleep ? 1 + Math.sin(vt * 1.8) * .04 : 1;
+  catGrp.position.set(cat.x, cat.y, cat.z); catGrp.rotation.y = cat.face - Math.PI / 2 + (asleep ? 0 : 0);
+  catGrp.rotation.y = Math.atan2(Math.sin(cat.face), Math.cos(cat.face)) - Math.PI / 2;
+  catGrp.scale.set(1, asleep ? .72 * breathe : sit ? .9 : 1, 1);
+  catGrp.position.y = cat.y + (cat.moving ? Math.abs(Math.sin(vt * 12)) * .05 : 0);
+  DYN.catPick.position.set(cat.x, cat.y + .35, cat.z);
+  /* gulls */
+  gulls.forEach((g, i) => {
+    const x = g.cx + Math.cos(g.a) * g.r, z = g.cz + Math.sin(g.a) * g.r * .6, y = g.h + Math.sin(vt * .9 + i * 2) * .5;
+    const flap = 0.55 + Math.abs(Math.sin(vt * 5 + i * 1.7)) * .9;
+    gullIM.setMatrixAt(i, mat(x, y, z, 1.3, flap, 1.3, -g.a * Math.sign(g.sp) + (g.sp > 0 ? 0 : Math.PI), 0, Math.sin(vt * 5 + i) * .12));
+  });
+  gullIM.instanceMatrix.needsUpdate = true;
+  /* ferry + waves */
+  ferryObj.position.set(ferry.x, Math.sin(ferry.bob * 1.2) * .06, -13.6); ferryObj.rotation.z = Math.sin(ferry.bob * .9) * .01;
+  const sd = waves.userData.seeds;
+  for (let i = 0; i < sd.length; i++) { const s = sd[i]; s.x += s.sp * dt * (G.paused ? 0 : 1); if (s.x > 50) s.x = -42; waves.setMatrixAt(i, mat(s.x, -.28, s.z, s.s, 1, 1)); }
+  waves.instanceMatrix.needsUpdate = true;
+}
+function hidePerson(i) {
+  const z = mat(0, -50, 0, 0, 0, 0);
+  PPL.body.setMatrixAt(i, z); PPL.head.setMatrixAt(i, z); PPL.hair.setMatrixAt(i, z); PPL.cap.setMatrixAt(i, z);
+}
+/* three decorative pedestrians that stroll along the far (front) street */
+const strollers = [{ x: -10, dir: 1, sp: 1.1, c: 0x5a7fb0, s: 0xe8b88e, h: 0x2a1a10 }, { x: 6, dir: -1, sp: .9, c: 0xb85a6a, s: 0xb9794f, h: 0x1c1c1c }, { x: 18, dir: -1, sp: 1.3, c: 0x7a9a4a, s: 0xd9a07a, h: 0x4a2c18 }];
+function ambientPeople(dt) {
+  strollers.forEach((p, k) => {
+    if (!G.paused) { p.x += p.dir * p.sp * dt; if (p.x > 24) p.dir = -1; if (p.x < -12) p.dir = 1; }
+    const i = 37 + k, z = 11.2 + k * .5, mv = !G.paused, by = mv ? Math.abs(Math.sin(G.vt * 8 + k)) * .05 : 0, face = p.dir > 0 ? Math.PI / 2 : -Math.PI / 2;
+    PPL.body.setMatrixAt(i, mat(p.x, by, z, 1, 1, 1, face)); PPL.head.setMatrixAt(i, mat(p.x, by + 1.02, z, 1, 1, 1, face));
+    PPL.hair.setMatrixAt(i, mat(p.x, by + 1.06, z, 1, 1, 1, face)); PPL.cap.setMatrixAt(i, mat(0, -50, 0, 0, 0, 0));
+    _c.setHex(p.c); PPL.body.setColorAt(i, _c); _c.setHex(p.s); PPL.head.setColorAt(i, _c); _c.setHex(p.h); PPL.hair.setColorAt(i, _c);
+  });
+}
+
+/* ============================================================
+   projection helpers
+   ============================================================ */
+function toScreen(x, y, z, out) {
+  _tmpV.set(x, y, z).project(cam);
+  out.x = (_tmpV.x * .5 + .5) * VIEW.w; out.y = (-_tmpV.y * .5 + .5) * VIEW.h; return out;
+}
+
+/* ============================================================
+   UI
+   ============================================================ */
+const topEl = $('#top'), dockEl = $('#dock'), wlEl = $('#wl'), scrEl = $('#screen'), toastsEl = $('#toasts'), pauseEl = $('#pausebanner'), dbgEl = $('#dbg');
+function langSet(l) { G.lang = l; store.set('cay_prefs', { lang: G.lang, muted: G.muted }); document.documentElement.lang = l; uiStatic(); uiScreen(true); }
+function fmtTime(s) { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
+function starsHTML(n, anim) { let h = ''; for (let i = 0; i < 3; i++) h += `<span style="display:inline-block">${(i < n ? ICON.star : ICON.starOff).replace('<svg', `<svg class="${anim && i < n ? 'pop' : ''}" style="animation-delay:${.25 + i * .28}s"`)}</span>`; return `<div class="stars">${h}</div>`; }
+
+function uiStatic() {
+  topEl.innerHTML = `
+    <div class="logo">${ICON.tulip}<span>Çay Ocağı</span></div>
+    <div class="chip" id="t-day"></div>
+    <div class="chip" title="${t('today')}"><div class="bar clock"><i id="t-clk"></i></div><b id="t-time">3:00</b></div>
+    <div class="chip cc" title="${t('target')}">${ICON.coin}<b id="t-coins">0</b><small>/ <span id="t-target">0</span></small><div class="bar"><i id="t-cbar"></i></div></div>
+    <div class="chip cc" title="${t('happyC')}">${ICON.happy}<b id="t-happy">0</b></div>
+    <div class="chip cc" title="${t('angryC')}">${ICON.angry}<b id="t-angry">0</b></div>
+    <div class="sp"></div>
+    <div class="btns">
+      <button class="ibtn" data-a="speed" title="${t('speedT')}" id="b-speed">1×</button>
+      <button class="ibtn" data-a="pause" title="${t('pauseT')} (Space)" id="b-pause">${ICON.pause}</button>
+      <button class="ibtn" data-a="snd" title="${t('soundT')}" id="b-snd">${G.muted ? ICON.mute : ICON.snd}</button>
+      <button class="ibtn" data-a="lang" id="b-lang">${t('langBtn')}</button>
+    </div>`;
+  let slots = ''; for (let i = 0; i < 5; i++) slots += `<div class="slot" data-slot="${i}"></div>`;
+  const names = { tea: t('tea'), simit: t('simit'), coffee: t('coffee'), ayran: t('ayran'), sink: t('sink') };
+  const units = { tea: 2, simit: 1, coffee: 2, ayran: 0, sink: 0 };
+  let sts = '';
+  STATION_KEYS.forEach((k, i) => {
+    let u = ''; for (let j = 0; j < units[k]; j++) u += `<div class="u" data-u="${j}"><i></i></div>`;
+    sts += `<button class="st" data-st="${k}"><span class="key">${i + 1}</span><span class="cnt"></span>${ICON[k]}<b>${names[k]}</b><div class="units">${u}</div></button>`;
+  });
+  dockEl.innerHTML = `
+    <div id="tray" class="glass"><span class="lbl">${t('tray')}</span><div class="slots">${slots}</div><div id="queue"></div></div>
+    <div id="stations" class="glass">${sts}</div>`;
+  C_cache.clear();
+  // station world badges + table bubbles
+  if (!wlEl.dataset.built) {
+    wlEl.dataset.built = 1;
+    for (let i = 0; i < 6; i++) { const b = document.createElement('div'); b.className = 'bub'; b.dataset.t = i; wlEl.appendChild(b); }
+    ['tea', 'simit', 'coffee'].forEach(k => { const b = document.createElement('div'); b.className = 'bub mini sbadge'; b.dataset.s = k; b.style.pointerEvents = 'none'; wlEl.appendChild(b); });
+  }
+  uiFrame(0, true);
+}
+const C_cache = new Map();
+function setTxt(id, v) { if (C_cache.get(id) !== v) { C_cache.set(id, v); const el = document.getElementById(id); if (el) el.textContent = v; } }
+function setHTML(el, key, v) { if (C_cache.get(key) !== v) { C_cache.set(key, v); el.innerHTML = v; } }
+function setW(id, pct) { const k = id + '#w'; const v = Math.round(pct * 10) / 10; if (C_cache.get(k) !== v) { C_cache.set(k, v); const el = document.getElementById(id); if (el) el.style.width = v + '%'; } }
+
+const _sp = { x: 0, y: 0 };
+let _hoverStation = null;
+function uiFrame(dt, force) {
+  const play = G.state === 'play';
+  /* top bar */
+  setTxt('t-day', G.endless ? t('dayEndless', G.day) : t('dayOf', G.day));
+  setTxt('t-time', fmtTime(G.dayLen - G.clock));
+  setW('t-clk', clamp(G.clock / G.dayLen, 0, 1) * 100);
+  setTxt('t-coins', String(G.dayCoins)); setTxt('t-target', String(G.target));
+  setW('t-cbar', clamp(G.dayCoins / Math.max(1, G.target), 0, 1) * 100);
+  setTxt('t-happy', String(G.happy)); setTxt('t-angry', String(G.angry));
+  const sp = $('#b-speed'); if (sp) { const v = G.speed + '×'; if (C_cache.get('sp') !== v) { C_cache.set('sp', v); sp.textContent = v; sp.classList.toggle('on', G.speed > 1); } }
+  const pb = $('#b-pause'); if (pb) { const v = G.paused ? 1 : 0; if (C_cache.get('pb') !== v) { C_cache.set('pb', v); pb.innerHTML = G.paused ? ICON.play : ICON.pause; pb.classList.toggle('on', !!G.paused); } }
+  dockEl.style.display = play ? 'flex' : 'none';
+  topEl.style.display = G.state === 'play' || G.state === 'intro' ? 'flex' : 'none';
+  wlEl.style.display = G.state === 'play' || G.state === 'intro' || G.state === 'title' ? 'block' : 'none';
+  pauseEl.style.display = G.paused && play ? 'block' : 'none';
+  if (G.paused && play) setHTML(pauseEl, 'pz', `${t('paused')}<small>${t('pausedSub')}</small>`);
+  if (!play && G.state !== 'intro' && G.state !== 'title') { /* nothing else */ }
+  const cfg = dayCfg(G.day), w = G.waiter, S = G.stations;
+  /* tray */
+  if (w) {
+    const cap = trayCap();
+    const sig = w.tray.join(',') + '|' + cap;
+    if (C_cache.get('tray') !== sig) {
+      C_cache.set('tray', sig);
+      $$('.slot').forEach((el, i) => {
+        const it = w.tray[i]; el.className = 'slot' + (it ? ' full' : '') + (i >= cap ? ' lock' : '');
+        el.innerHTML = it ? ICON[it] : ''; el.title = it ? (it === 'dirty' ? t('dirty') : t(it)) : '';
+      });
+    }
+    const qs = w.q.map(a => a.type === 'station' ? a.id : 'T' + (a.id + 1)).join(',') + (w.cur ? '*' : '');
+    if (C_cache.get('q') !== qs) {
+      C_cache.set('q', qs); const qe = $('#queue');
+      if (qe) qe.innerHTML = w.q.map(a => a.type === 'station' ? `<span class="q" style="background:#fff">${ICON[a.id].replace('<svg', '<svg width="16" height="16"')}</span>` : `<span class="q">${a.id + 1}</span>`).join('') + (w.q.length ? `<span class="qx" data-a="clearq">${t('clearQ')}</span>` : '');
+    }
+  }
+  /* stations dock */
+  if (S) {
+    $$('.st').forEach(el => {
+      const k = el.dataset.st; let ready = false, cnt = 0;
+      const menu = cfg.menu; const locked = (k === 'simit' && !menu.includes('simit')) || (k === 'coffee' && !menu.includes('coffee')) || (k === 'ayran' && !menu.includes('ayran'));
+      el.classList.toggle('lock', locked);
+      const us = el.querySelectorAll('.u');
+      us.forEach((u, j) => {
+        let cls = 'u', wd = 0;
+        if (k === 'tea') { if (j > G.up.kettle) { u.style.display = 'none'; return; } u.style.display = ''; const kk = S.kettles[j]; if (kk.st === 'brewing') wd = kk.t / BREW_T * 100; else if (kk.st === 'ready') { cls += ' ready'; ready = true; cnt += kk.n; } }
+        else if (k === 'simit') { const o = S.oven; if (o.st === 'baking') wd = o.t / ovenTime() * 100; else if (o.st === 'ready') { cls += ' ready'; ready = true; cnt += o.n; } }
+        else if (k === 'coffee') { const p = S.pots[j]; if (p.st === 'cook') wd = p.t / COOK_T * 100; else if (p.st === 'ready') { cls += ' warn'; wd = (1 - p.t / COOK_WIN) * 100; ready = true; cnt++; if (COOK_WIN - p.t < 1.3) cls += ' blink'; } else if (p.st === 'spilled') cls += ' bad'; }
+        const key = k + j; const v = cls + '|' + Math.round(wd);
+        if (C_cache.get(key) !== v) { C_cache.set(key, v); u.className = cls; u.firstElementChild.style.width = Math.round(wd) + '%'; }
+      });
+      if (k === 'sink') { cnt = w ? w.tray.filter(x => x === 'dirty').length : 0; }
+      const ce = el.querySelector('.cnt'); const cv = cnt ? String(cnt) : ''; if (C_cache.get('c' + k) !== cv) { C_cache.set('c' + k, cv); ce.textContent = cv; ce.style.display = cv ? 'grid' : 'none'; }
+      if (k === 'tea' && G.day === 1 && !G.won && G.clock < 40 && S.kettles[0].st === 'empty' && w && !w.q.length && !w.cur) ready = true;
+      el.classList.toggle('ready', ready && k !== 'sink'); el.classList.toggle('hov', _hoverStation === k);
+    });
+  }
+  /* world overlays: table bubbles */
+  if (play || G.state === 'intro') {
+    for (let i = 0; i < 6; i++) {
+      const el = wlEl.children[i]; if (!el) continue;
+      const tb = G.tables[i]; let mode = 'none', sig = '';
+      if (tb && tb.unlocked && play) {
+        const p = tb.party;
+        if (p && p.state === 'think') { mode = 'think'; sig = 'think'; }
+        else if (p && p.state === 'wait') { mode = 'wait'; sig = 'wait' + p.type + deliverMask(p) + p.order.map(o => o.item[0]).join(''); }
+        else if (p && p.state === 'eat') { mode = 'eat'; sig = 'eat'; }
+        else if (!p && tb.dirty) { mode = 'dirty'; sig = 'dirty'; }
+      }
+      if (mode === 'none') { if (el.style.display !== 'none') el.style.display = 'none'; continue; }
+      if (el._sig !== sig) {
+        el._sig = sig; el.className = 'bub' + (mode === 'think' ? ' think' : mode === 'dirty' || mode === 'eat' ? ' mini' : '') + (mode === 'dirty' ? ' dirty' : '');
+        if (mode === 'think') el.textContent = '…';
+        else if (mode === 'dirty') el.innerHTML = ICON.dirty;
+        else if (mode === 'eat') el.innerHTML = ICON.happy;
+        else {
+          const p = tb.party;
+          el.innerHTML = `<div class="ring"><svg class="r" viewBox="0 0 38 38"><circle cx="19" cy="19" r="16" fill="none" stroke="rgba(80,40,10,.18)" stroke-width="4"/><circle class="pr" cx="19" cy="19" r="16" fill="none" stroke="#4fa65a" stroke-width="4" stroke-linecap="round" stroke-dasharray="100.5" stroke-dashoffset="0"/></svg><div class="av">${ICON[p.type === 'normal' ? 'person' : p.type]}</div></div><div class="it">${p.order.map(o => `<span class="${o.done ? 'done' : ''}">${ICON[o.item]}</span>`).join('')}</div>`;
+        }
+      }
+      if (mode === 'wait') {
+        const p = tb.party, f = clamp(p.patience / p.maxP, 0, 1), pr = el.querySelector('.pr');
+        if (pr) { pr.style.strokeDashoffset = (100.5 * (1 - f)).toFixed(1); pr.style.stroke = `hsl(${Math.round(f * 120)},62%,44%)`; }
+        el.classList.toggle('urgent', f < .25);
+      }
+      toScreen(tb.x, mode === 'dirty' || mode === 'eat' ? 1.9 : 2.7, tb.z, _sp);
+      el.style.display = 'flex';
+      el.style.transform = `translate(${Math.round(_sp.x)}px,${Math.round(_sp.y)}px) translate(-50%,-100%) translateY(-8px)`;
+    }
+    ['tea', 'simit', 'coffee'].forEach((k, j) => {
+      const el = wlEl.children[6 + j]; if (!el || !S || !play) { if (el) el.style.display = 'none'; return; }
+      let cnt = 0, urgent = false;
+      if (k === 'tea') S.kettles.slice(0, 1 + G.up.kettle).forEach(x => { if (x.st === 'ready') cnt += x.n; });
+      if (k === 'simit' && S.oven.st === 'ready') cnt = S.oven.n;
+      if (k === 'coffee') S.pots.forEach(x => { if (x.st === 'ready') { cnt++; if (COOK_WIN - x.t < 1.3) urgent = true; } });
+      if (!cnt) { el.style.display = 'none'; return; }
+      setHTML(el, 'sb' + k, `${ICON[k]}<b style="font-size:13px">×${cnt}</b>`);
+      toScreen(CNT_X, k === 'tea' ? 3.9 : 3.35, k === 'tea' ? -4.45 : STATION_Z[k], _sp);
+      el.style.display = 'flex'; el.style.transform = `translate(${Math.round(_sp.x)}px,${Math.round(_sp.y)}px) translate(-50%,-100%)`;
+      el.style.outline = urgent ? '3px solid #c0392b' : '';
+    });
+  }
+  if (FLAG.debug) {
+    const v = [`fps ${G.fps}  calls ${G.drawCalls} (max ${G.maxDrawCalls})  tris ${renderer.info.render.triangles}  geo ${renderer.info.memory.geometries}`,`state ${G.state} day ${G.day} t ${G.clock.toFixed(0)}s  coins ${G.dayCoins}/${G.target} wallet ${G.coins}`,`happy ${G.happy} angry ${G.angry}  parties ${G.parties.length}  speed ${G.speed}`,G.log.map(r => `d${r.day} ${r.coins}/${r.target} h${r.happy} a${r.angry} *${r.stars}`).join(' | '),G.benchOut || '', G.testOut || '',...G.errors.map(e => '<span class="err">' + e + '</span>')].join('\n');
+    if (C_cache.get('dbg') !== v) { C_cache.set('dbg', v); dbgEl.innerHTML = v; }
+  }
+}
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+function uiRefreshAll() { uiFrame(0, true); }
+
+function toast(msg, kind = '') {
+  if (G.simming) return false;
+  while (toastsEl.children.length >= 3) toastsEl.removeChild(toastsEl.firstChild);
+  const d = document.createElement('div'); d.className = 'toast ' + kind; d.textContent = msg; toastsEl.appendChild(d);
+  setTimeout(() => d.remove(), 2400); return false;
+}
+function floatText(wx, wy, wz, html, cls = '') {
+  if (G.simming) return;
+  const e = document.createElement('div'); e.className = 'fl ' + cls; e.innerHTML = html; toScreen(wx, wy, wz, _sp);
+  e.style.left = Math.round(_sp.x) + 'px'; e.style.top = Math.round(_sp.y) + 'px'; e.style.translate = '-50% -100%'; wlEl.appendChild(e); setTimeout(() => e.remove(), 1300);
+}
+function confetti() {
+  if (G.simming) return;
+  const d = document.createElement('div'); d.className = 'conf'; const cols = ['#C2410C', '#f2b632', '#3f8a92', '#e05a7a', '#6a9a4a'];
+  for (let i = 0; i < 70; i++) { const p = document.createElement('i'); p.style.left = Math.random() * 100 + '%'; p.style.background = cols[i % 5]; p.style.animationDuration = 2.4 + Math.random() * 2.4 + 's'; p.style.animationDelay = Math.random() * .8 + 's'; d.appendChild(p); }
+  document.body.appendChild(d); setTimeout(() => d.remove(), 6500);
+}
+
+/* ---------- screens ---------- */
+function bestLine() { const b = store.get('cay_best', { day: 0, total: 0 }); return b.day ? t('best', b.day, b.total) : t('noBest'); }
+function rowk(a, b) { return `<div class="rowk"><span>${a}</span><span>${b}</span></div>`; }
+function coinHTML(n) { return `<span style="display:inline-flex;align-items:center;gap:5px">${ICON.coin.replace('<svg', '<svg width="18" height="18"')}${n}</span>`; }
+function uiScreen(force) {
+  const st = G.state;
+  if (st === 'play') { scrEl.style.display = 'none'; scrEl.innerHTML = ''; C_cache.delete('scr'); return; }
+  const sig = st + G.day + G.lang + (st === 'shop' ? G.coins + JSON.stringify(G.up) : '');
+  if (!force && C_cache.get('scr') === sig) { scrEl.style.display = 'flex'; return; }
+  C_cache.set('scr', sig);
+  let h = '';
+  const cfg = dayCfg(G.day);
+  const langBtn = `<button class="ibtn lang" data-a="lang">${t('langBtn')}</button>`;
+  if (st === 'title') {
+    h = `<div class="card glass">${langBtn}<div class="big">${ICON.tea}</div><h1>Çay Ocağı</h1><p>${t('tagline')}</p>
+      <ul class="how"><li><b>1</b><span>${t('how1')}</span></li><li><b>2</b><span>${t('how2')}</span></li><li><b>3</b><span>${t('how3')}</span></li><li><b>4</b><span>${t('how4')}</span></li></ul>
+      <p style="font-size:13px;color:#7a5a44">${bestLine()}</p><button class="btn" data-a="start">${t('play')}</button></div>`;
+  } else if (st === 'intro') {
+    const tip = t('tip' + (1 + ((G.day - 1) % 5)));
+    h = `<div class="card glass">${langBtn}<h2>${G.endless ? t('dayEndless', G.day) : t('dayOf', G.day)}</h2>
+      ${rowk(t('target'), coinHTML(cfg.target))}
+      <div class="chipnew">${ICON[cfg.ni] || ICON.star}<span>${t('newThing')}: ${t(cfg.nk)}</span></div>
+      <p style="margin:2px 0;font-size:13px">${t('menuToday')}</p><div class="menurow">${cfg.menu.map(i => `<span>${ICON[i]}</span>`).join('')}</div>
+      <p style="font-size:13px"><b>${t('hint')}:</b> ${tip}</p><button class="btn" data-a="begin">${t('startDay')}</button></div>`;
+  } else if (st === 'summary') {
+    const r = G.lastResult;
+    h = `<div class="card glass"><h2>${t('dayDone')}</h2>${starsHTML(r.stars, true)}<p style="font-weight:900;color:var(--amber)">${[, t('stars1'), t('stars2'), t('stars3')][r.stars]}</p>
+      ${rowk(t('earned'), coinHTML(r.coins) + ' / ' + r.target)}${rowk(t('tips'), coinHTML(r.tips))}${rowk(t('happyC'), r.happy)}${rowk(t('angryC'), r.angry)}
+      <button class="btn" data-a="aftersum">${G.day === 7 && !G.won ? t('cont') : t('toShop')}</button></div>`;
+  } else if (st === 'shop') {
+    let cards = '';
+    UPG.forEach(u => {
+      const lv = G.up[u.id], maxed = lv >= u.max, cost = maxed ? 0 : u.cost[lv], can = !maxed && G.coins >= cost;
+      let pips = ''; for (let i = 0; i < u.max; i++) pips += `<i class="${i < lv ? 'on' : ''}"></i>`;
+      cards += `<div class="up ${can ? 'can' : ''}"><div class="ic">${ICON[u.icon]}</div><div class="tx"><b>${t('u_' + u.id)}</b><small>${t('u_' + u.id + '_d')}</small><div class="pips">${pips}</div></div>
+        <button class="buy ${maxed ? 'max' : ''}" data-a="buy" data-id="${u.id}" ${can ? '' : 'disabled'}>${maxed ? t('maxed') : ICON.coin + cost}</button></div>`;
+    });
+    h = `<div class="card glass" style="width:min(760px,100%)"><h2>${t('shop')}</h2><div class="wallet">${ICON.coin}${G.coins}</div><div class="shop">${cards}</div>
+      <button class="btn" data-a="next">${G.retrying ? t('retry') : t('nextDay')}</button></div>`;
+  } else if (st === 'victory') {
+    h = `<div class="card glass"><div class="big">${ICON.star}</div><h1 style="font-size:38px">${t('victory')}</h1><p>${t('victoryTxt')}</p>
+      ${rowk(t('total'), coinHTML(G.totalEarned))}${rowk(t('ratingStars'), G.log.reduce((a, r) => a + r.stars, 0) + ' / 21')}<p style="font-size:13px">${bestLine()}</p>
+      <button class="btn" data-a="endless">${t('endless')}</button><button class="btn alt" data-a="menu">${t('menu')}</button></div>`;
+  } else if (st === 'gameover') {
+    const r = G.lastResult;
+    h = `<div class="card glass"><h2>${t('gameover')}</h2><p>${t('goTxt')}</p>
+      ${rowk(t('reached'), G.day)}${rowk(t('earned'), coinHTML(r.coins) + ' / ' + r.target)}${rowk(t('happyC') + ' / ' + t('angryC'), r.happy + ' / ' + r.angry)}${rowk(t('total'), coinHTML(G.totalEarned))}<p style="font-size:13px">${bestLine()}</p>
+      <button class="btn" data-a="retry">${t('shop')}</button><button class="btn alt" data-a="menu">${t('menu')}</button></div>`;
+  }
+  scrEl.innerHTML = h; scrEl.style.display = 'flex';
+}
+
+/* ---------- input ---------- */
+function toggleSpeed() { G.speed = G.speed >= 3 ? 1 : G.speed + 1; }
+function togglePause() { if (G.state !== 'play') return; G.paused = !G.paused; G.autoPaused = false; sfxTick(); }
+const actions = {
+  start() { A.start(); }, begin() { A.begin(); }, aftersum() { A.afterSummary(); },
+  buy(el) { A.buy(el.dataset.id); }, next() { if (G.retrying) { G.retrying = false; A.intro(); } else A.next(); },
+  endless() { A.endlessMode(); }, menu() { A.menu(); },
+  retry() { G.retrying = true; A.shop(); },
+  lang() { langSet(G.lang === 'tr' ? 'en' : 'tr'); }, speed() { toggleSpeed(); }, pause() { togglePause(); },
+  snd() { sfxInit(); sfxMute(!G.muted); const b = $('#b-snd'); if (b) b.innerHTML = G.muted ? ICON.mute : ICON.snd; },
+  clearq() { clearQueue(); }
+};
+document.addEventListener('click', e => {
+  sfxInit();
+  const el = e.target.closest('[data-a]'); if (el && actions[el.dataset.a]) { e.stopPropagation(); actions[el.dataset.a](el); return; }
+  const st = e.target.closest('.st'); if (st) { clickStation(st.dataset.st); return; }
+  const sl = e.target.closest('.slot.full'); if (sl) { dropTray(+sl.dataset.slot); return; }
+  const bub = e.target.closest('.bub[data-t]'); if (bub) { clickTable(+bub.dataset.t); }
+});
+window.addEventListener('keydown', e => {
+  if (e.repeat && e.code === 'Space') return;
+  sfxInit();
+  if (e.code === 'Space') { e.preventDefault(); if (G.state === 'play') togglePause(); else if (G.state === 'title') A.start(); else if (G.state === 'intro') A.begin(); return; }
+  if (G.state === 'play') {
+    const n = parseInt(e.key); if (n >= 1 && n <= 5) { clickStation(STATION_KEYS[n - 1]); return; }
+    if (e.key === 'Escape') clearQueue();
+  }
+  if (e.key === 'm' || e.key === 'M') actions.snd();
+});
+document.addEventListener('visibilitychange', () => { if (document.hidden && G.state === 'play' && !G.paused) { G.paused = true; G.autoPaused = true; } });
+window.addEventListener('blur', () => { /* keep running, only hidden tabs pause */ });
+
+/* pointer: click / pan / pinch */
+const ptrs = new Map(); let pinch0 = 0, zoom0 = 1;
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+function pickAt(cx, cy) {
+  ndc.set((cx / VIEW.w) * 2 - 1, -(cy / VIEW.h) * 2 + 1); ray.setFromCamera(ndc, cam);
+  const hits = ray.intersectObjects(pickables.map(p => p.mesh), false);
+  for (const h of hits) { const p = pickables.find(q => q.mesh === h.object); if (p.kind === 'table' && !(G.tables[p.id] && G.tables[p.id].unlocked)) continue; return p; }
+  return null;
+}
+canvas.addEventListener('pointerdown', e => {
+  sfxInit(); try { canvas.setPointerCapture(e.pointerId); } catch (_) { }
+  ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, moved: false });
+  if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch0 = Math.hypot(a.x - b.x, a.y - b.y); zoom0 = VIEW.zoom; }
+  if (e.button === 2) { clearQueue(); }
+});
+canvas.addEventListener('pointermove', e => {
+  const p = ptrs.get(e.pointerId);
+  if (!p) { hoverAt(e.clientX, e.clientY, e.pointerType); return; }
+  const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
+  if (Math.hypot(p.x - p.sx, p.y - p.sy) > 7) p.moved = true;
+  if (ptrs.size === 1 && p.moved) {
+    const wpp = (cam.right - cam.left) / VIEW.w;
+    VIEW.panX = clamp(VIEW.panX - dx * wpp, -5, 5); VIEW.panY = clamp(VIEW.panY + dy * wpp * 1.73, -5, 5); placeCamera();
+  } else if (ptrs.size === 2) {
+    const [a, b] = [...ptrs.values()]; const d = Math.hypot(a.x - b.x, a.y - b.y);
+    if (pinch0 > 10) { VIEW.zoom = clamp(zoom0 * d / pinch0, .8, 1.8); layoutCamera(); }
+  }
+});
+function endPtr(e) {
+  const p = ptrs.get(e.pointerId); ptrs.delete(e.pointerId);
+  if (p && !p.moved && ptrs.size === 0 && e.type === 'pointerup') {
+    const hit = pickAt(e.clientX, e.clientY);
+    if (hit) {
+      if (hit.kind === 'station') clickStation(hit.id); else if (hit.kind === 'table') clickTable(hit.id); else if (hit.kind === 'cat') petCat();
+    }
+  }
+}
+canvas.addEventListener('pointerup', endPtr); canvas.addEventListener('pointercancel', endPtr);
+canvas.addEventListener('contextmenu', e => { e.preventDefault(); clearQueue(); });
+canvas.addEventListener('wheel', e => { e.preventDefault(); VIEW.zoom = clamp(VIEW.zoom * (e.deltaY < 0 ? 1.08 : 1 / 1.08), .8, 1.8); layoutCamera(); }, { passive: false });
+function hoverAt(x, y, type) {
+  if (type === 'touch') return;
+  const h = G.state === 'play' ? pickAt(x, y) : null; _hoverStation = null;
+  if (!h || h.kind === 'cat') { hoverRing.visible = false; canvas.style.cursor = h ? 'pointer' : 'default'; return; }
+  canvas.style.cursor = 'pointer'; hoverRing.visible = true;
+  if (h.kind === 'station') { _hoverStation = h.id; hoverRing.position.set(CNT_X + .35, .06, h.id === 'tea' ? -4.45 : STATION_Z[h.id]); hoverRing.scale.set(1.2, 1, h.id === 'tea' ? 2.1 : 1.3); }
+  else { const tb = G.tables[h.id]; hoverRing.position.set(tb.x, .06, tb.z); hoverRing.scale.set(1.5, 1, 1.5); }
+}
+
+/* ============================================================
+   main loop
+   ============================================================ */
+window.addEventListener('error', e => { G.errors.push((e.message || 'error') + (e.lineno ? ' @' + e.lineno : '')); if (G.errors.length > 5) G.errors.shift(); });
+window.addEventListener('unhandledrejection', e => { G.errors.push('promise: ' + (e.reason && e.reason.message || e.reason)); });
+if (FLAG.debug) dbgEl.style.display = 'block';
+
+let lastT = performance.now(), acc = 0, fpsT = 0, fpsN = 0;
+function frame(now) {
+  requestAnimationFrame(frame);
+  const dtReal = Math.min(0.1, (now - lastT) / 1000); lastT = now;
+  fpsT += dtReal; fpsN++; if (fpsT >= .5) { G.fps = Math.round(fpsN / fpsT); fpsT = 0; fpsN = 0; }
+  if (!G.paused && !document.hidden) {
+    acc += dtReal * G.speed; let n = 0;
+    while (acc >= STEP && n < 14) { simStep(STEP); acc -= STEP; n++; }
+    if (n >= 14) acc = 0;
+  }
+  if (G.waiter) syncVisuals(dtReal);
+  if (!G.paused) particlesUpdate(dtReal * Math.min(G.speed, 2));
+  uiFrame(dtReal);
+  hoverRing.material.opacity = .6 + Math.sin(now / 160) * .25;
+  renderer.render(scene, cam);
+  G.drawCalls = renderer.info.render.calls; if (G.drawCalls > G.maxDrawCalls) G.maxDrawCalls = G.drawCalls;
+}
+
+/* boot */
+document.documentElement.lang = G.lang;
+layoutCamera();
+scene.updateMatrixWorld(true);
+resetWorldForDay();
+uiStatic();
+uiScreen(true);
+window.cayBench = function (n, base) {
+  const res = []; G.botHold = false; const keep = FLAG.stop; FLAG.stop = '';
+  for (let i = 0; i < n; i++) {
+    _seed = (base || 1) * 1000 + i; G.log = []; G.state = 'title'; A.start(); G.simming = true; let steps = 0;
+    while (G.state !== 'victory' && G.state !== 'gameover' && steps < 60 * 60 * 80) { simStep(STEP); steps++; }
+    res.push({ reached: G.day, state: G.state, log: G.log.slice() });
+  }
+  G.simming = false; FLAG.stop = keep;
+  const days = {}; res.forEach(r => r.log.forEach(l => { const o = days[l.day] || (days[l.day] = { n: 0, ratio: 0, angry: 0, happy: 0, stars: 0, fail: 0, sp: 0, bl: 0 }); o.n++; o.sp += l.spawned; o.bl += l.blocked; o.ratio += l.coins / l.target; o.angry += l.angry; o.happy += l.happy; o.stars += l.stars; if (!l.passed) o.fail++; }));
+  let s = `bench n=${n} wins=${res.filter(r => r.state === 'victory').length}
+`;
+  Object.keys(days).forEach(k => { const o = days[k]; s += `d${k}: ratio ${(o.ratio / o.n).toFixed(2)} happy ${(o.happy / o.n).toFixed(1)} angry ${(o.angry / o.n).toFixed(1)} stars ${(o.stars / o.n).toFixed(1)} fail ${o.fail}/${o.n} spawned ${(o.sp / o.n).toFixed(1)} walkby ${(o.bl / o.n).toFixed(1)}
+`; });
+  G.benchOut = s; return s;
+};
+function clickTest() {
+  const out = []; A.start(); A.begin(); G.botHold = true; G.paused = false;
+  const fire = (type, x, y) => canvas.dispatchEvent(new PointerEvent(type, { clientX: x, clientY: y, pointerId: 7, pointerType: 'mouse', button: 0, bubbles: true }));
+  const clickWorld = (x, y, z) => { toScreen(x, y, z, _sp); fire('pointerdown', _sp.x, _sp.y); fire('pointerup', _sp.x, _sp.y); };
+  toScreen(CNT_X, 1.8, STATION_Z.tea, _sp); const pk = pickAt(_sp.x, _sp.y); out.push('pick@tea=' + (pk ? pk.kind + ':' + pk.id : 'none') + ' at ' + Math.round(_sp.x) + ',' + Math.round(_sp.y) + ' state=' + G.state);
+  clickWorld(CNT_X, 1.8, STATION_Z.tea); out.push('queue after tea click=' + G.waiter.q.length);
+  window.caySim(9); out.push('kettle=' + G.stations.kettles[0].st + ' t=' + G.stations.kettles[0].t.toFixed(1));
+  window.caySim(2); out.push('kettle=' + G.stations.kettles[0].st);
+  clickWorld(CNT_X, 1.8, STATION_Z.tea); window.caySim(5); out.push('tray=' + G.waiter.tray.join('+'));
+  clickWorld(-1.0, 1.0, -0.5); out.push('queue after table click=' + G.waiter.q.length);
+  clickWorld(CNT_X, 1.8, STATION_Z.ayran); out.push('ayran(locked) queue=' + G.waiter.q.length);
+  window.caySim(4); out.push('waiter state=' + G.waiter.state + ' tray=' + G.waiter.tray.join('+'));
+  G.testOut = out.join(' | ');
+}
+if (Q.has('audiotest')) {
+  sfxInit(); const fns = { sfxBell, sfxClink, sfxCash, sfxPip, sfxPing, sfxTick, sfxPour, sfxWash, sfxHiss, sfxWhistle, sfxGrumble, sfxFanfare, sfxLose, sfxGull, sfxHorn, sfxMeow }; let okc = 0;
+  Aud.ctx.resume().then(() => { for (const k in fns) { try { fns[k](); okc++; } catch (e) { G.errors.push(k + ': ' + e.message); } } G.testOut = 'audio state=' + Aud.ctx.state + ' called=' + okc + '/' + Object.keys(fns).length; }).catch(e => G.errors.push('audio ' + e.message));
+}
+if (Q.has('clicktest')) { try { clickTest(); } catch (e) { G.errors.push('clicktest: ' + e.message); } }
+if (FLAG.bench) { try { window.cayBench(FLAG.bench, 1); } catch (e) { G.errors.push('bench: ' + e.message); } }
+if (FLAG.sim > 0) { try { window.caySim(FLAG.sim); } catch (e) { G.errors.push('sim: ' + e.message + ' ' + (e.stack || '').split('\n')[1]); } }
+requestAnimationFrame(frame);
+
+</script>
+</body>
+</html>
