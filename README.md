@@ -71,6 +71,7 @@ screen in Turkish and English and a 390 px phone layout.
 |---|---|---|---|
 | 1 | [Hisar](https://github.com/Furkiozknn/kale-savunmasi) | Tower defense, 3D | Claude Opus 5.5 |
 | 2 | **Çay Ocağı** | Time management, 3D | Claude Sonnet 5.5 |
+| 3 | [Çini Ustası](https://github.com/Furkiozknn/cini-ustasi) | Puzzle, 3D | Claude Fable 5.1 |
 
 ## Tech
 
