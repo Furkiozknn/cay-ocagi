@@ -638,7 +638,8 @@ function endDay() {
   G.parties = [];
   const best = store.get(KEY.best, { day: 0, total: 0 });
   const reached = rec.passed ? G.day : G.day - 1;
-  G.newRecord = reached > 0 && (reached > best.day || (reached === best.day && G.totalEarned > best.total));
+  // no record for a run that earned nothing or started on a later day (?day)
+  G.newRecord = reached > 0 && G.totalEarned > 0 && FLAG.day <= 1 && (reached > best.day || (reached === best.day && G.totalEarned > best.total));
   if (G.newRecord && !FLAG.nosave) store.set(KEY.best, { day: reached, total: G.totalEarned });
   if (rec.passed) { G.state = 'summary'; sfxFanfare(); } else { G.state = 'gameover'; sfxLose(); }
   // failed-day rule (same in the Godot port): the coins earned on a failed day are kept, and the retry goes through
@@ -2078,7 +2079,7 @@ const recHTML = () => G.newRecord ? `<div class="rec">${t('newRecord')}</div>` :
 const pct = v => Math.round(v * 100);
 function seg(key, opts, cur) { return `<div class="seg">${opts.map(([v, label]) => `<button data-a="seg" data-k="${key}" data-v="${v}" class="${v === cur ? 'on' : ''}" aria-pressed="${v === cur}">${label}</button>`).join('')}</div>`; }
 function settingsHTML() {
-  const fs = !!document.fullscreenElement, low = SET.quality === 'low';
+  const fs = !!document.fullscreenElement, low = FLAG.low; // ?low in the URL shows as Low too
   const slider = k => `<label><span>${t(k)}</span><input type="range" min="0" max="100" step="5" value="${pct(SET[k])}" data-set="${k}" aria-label="${t(k)}"><output id="o-${k}">${pct(SET[k])}</output></label>`;
   return `<div class="card glass" style="width:min(480px,100%)"><h2>${t('settings')}</h2><div class="set">
     ${slider('master')}${slider('music')}${slider('sfx')}
@@ -2187,7 +2188,12 @@ const actions = {
     const k = el.dataset.k, v = el.dataset.v;
     if (k === 'lang') { G.panel = 'settings'; langSet(v); }
     else if (k === 'fs') toggleFullscreen();
-    else if (k === 'quality' && v !== SET.quality) { SET.quality = v; saveSettings(); location.reload(); }
+    else if (k === 'quality' && (v === 'low') !== FLAG.low) {
+      SET.quality = v; saveSettings();
+      // High has to drop a ?low flag from the URL, or the reload would come back in low quality
+      const u = new URL(location.href); if (v === 'high') u.searchParams.delete('low');
+      if (u.href !== location.href) location.replace(u.href); else location.reload();
+    }
   },
   lang() { langSet(G.lang === 'tr' ? 'en' : 'tr'); }, speed() { toggleSpeed(); }, pause() { togglePause(); },
   snd() { sfxInit(); sfxMute(!G.muted); const b = $('#b-snd'); if (b) b.innerHTML = G.muted ? ICON.mute : ICON.snd; },
