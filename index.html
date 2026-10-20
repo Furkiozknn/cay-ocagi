@@ -105,8 +105,13 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
 .toast{padding:8px 16px;border-radius:20px;background:rgba(58,35,20,.88);color:#fff6e5;font-weight:800;font-size:14px;animation:tin 2.4s ease forwards;white-space:nowrap}
 .toast.bad{background:rgba(160,40,25,.92)}.toast.good{background:rgba(52,120,62,.93)}
 @keyframes tin{0%{opacity:0;transform:translateY(-8px)}8%{opacity:1;transform:none}85%{opacity:1}100%{opacity:0}}
-#pausebanner{position:fixed;left:50%;top:42%;transform:translate(-50%,-50%);padding:14px 28px;font-weight:900;font-size:26px;display:none;z-index:6;text-align:center}
-#pausebanner small{display:block;font-size:13px;color:var(--ink2);font-weight:700;margin-top:4px}
+.bar.clock.last i{background:linear-gradient(90deg,#e8863d,var(--bad))}
+#t-time.last{color:var(--bad)}
+/* coins flying to the HUD */
+.cfly{position:fixed;left:0;top:0;width:22px;height:22px;z-index:7;pointer-events:none;transition:transform .7s cubic-bezier(.5,0,.75,.4),opacity .7s ease-in}
+.cfly svg{width:22px;height:22px}
+.chip.bump{animation:bump .35s ease-out}
+@keyframes bump{40%{transform:scale(1.18)}}
 /* screens */
 #screen{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:8;background:rgba(70,30,10,.34);backdrop-filter:blur(3px);padding:12px;overflow:auto}
 body.low #screen{backdrop-filter:none}
@@ -116,6 +121,7 @@ body.low #screen{backdrop-filter:none}
 .card h2{margin:0 0 6px;font-size:28px;font-weight:900}
 .card p{margin:6px 0;font-weight:700;color:#5a3d2a;line-height:1.35}
 .card .big{width:76px;height:76px;margin:0 auto}
+.card .biglogo{display:block;width:128px;height:128px;margin:-4px auto 0;filter:drop-shadow(0 4px 8px rgba(90,40,10,.25))}
 .how{list-style:none;padding:0;margin:12px 0;text-align:left;display:grid;gap:7px}
 .how li{display:flex;gap:10px;align-items:flex-start;font-weight:700;font-size:14px;line-height:1.3;background:rgba(255,255,255,.5);border-radius:12px;padding:8px 10px}
 .how li b{flex:none;width:22px;height:22px;border-radius:50%;background:var(--amber);color:#fff;display:grid;place-items:center;font-size:12px}
@@ -151,6 +157,26 @@ body.low #screen{backdrop-filter:none}
 .wallet{display:inline-flex;gap:8px;align-items:center;font-size:22px;font-weight:900;background:rgba(255,255,255,.6);padding:6px 16px;border-radius:30px}
 .wallet svg{width:26px;height:26px}
 .lang{position:absolute;right:14px;top:12px}
+.card{position:relative}
+.card .gear{position:absolute;left:14px;top:12px}
+.col{display:flex;flex-direction:column;align-items:center;gap:2px;margin:6px 0}
+.col .btn{min-width:min(260px,100%);margin:4px}
+.foot{margin:12px 0 0;font-size:12px;font-weight:700;color:var(--ink2)}
+.foot a{color:var(--amber);text-decoration:none;font-weight:900}
+.foot a:hover{text-decoration:underline}
+.rec{display:inline-block;margin:4px 0;padding:4px 14px;border-radius:20px;background:#f2b632;color:#5a3410;font-weight:900;animation:starpop .6s cubic-bezier(.2,1.6,.4,1) both .4s}
+/* settings */
+.set{display:grid;gap:8px;margin:12px 0;text-align:left}
+.set label,.set .row{display:flex;align-items:center;gap:12px;font-weight:800;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.5);min-height:48px}
+.set label span:first-child,.set .row span:first-child{flex:none;width:118px}
+.set input[type=range]{flex:1;accent-color:var(--amber);height:28px;min-width:0}
+.set output{width:38px;text-align:right;font-weight:900}
+.seg{display:flex;gap:6px;flex:1;flex-wrap:wrap}
+.seg button{flex:1;min-height:36px;border-radius:10px;background:rgba(255,255,255,.7);font-weight:900;padding:4px 10px}
+.seg button.on{background:var(--amber);color:#fff}
+.set small{display:block;font-size:12px;color:var(--ink2);font-weight:700;margin:-2px 2px 0}
+:focus-visible{outline:3px solid var(--amber2);outline-offset:2px}
+#c:focus-visible{outline:none}
 .conf{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:9}
 .conf i{position:absolute;top:-20px;width:10px;height:16px;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
@@ -174,16 +200,18 @@ body.low #screen{backdrop-filter:none}
  .st svg{width:26px;height:26px}
  .st b{font-size:11px}
  .st .key{display:none}
- .bub{transform-origin:0 0;padding:3px 6px 3px 3px;gap:3px}
+ .bub{padding:3px 6px 3px 3px;gap:3px}
  .bub .ring,.bub .ring svg.r{width:30px;height:30px}
  .bub .ring .av{inset:5px}.bub .ring .av svg{width:20px;height:20px}
  .bub .it span{width:21px;height:21px;border-radius:6px}.bub .it span svg{width:17px;height:17px}
- .card{padding:16px 14px}.card h1{font-size:36px}.card h2{font-size:23px}
+ .card{padding:16px 14px}.card h1{font-size:36px}.card .biglogo{width:96px;height:96px}.card h2{font-size:23px}
  .stars svg{width:44px;height:44px}
  #toasts{top:100px}
  #dbg{top:100px}
 }
-@media (max-width:420px){#top .hide-s{display:none}}
+@media (max-width:700px){#top .hud-gear{display:none}} /* settings stay reachable from the pause menu */
+@media (max-width:420px){#t-clkbar{display:none}}
+@media (pointer:coarse){.ibtn{min-width:44px;height:44px}.slot{width:44px;height:44px}.st{min-height:64px}.btn.sm{min-height:44px}.seg button{min-height:44px}}
 </style>
 </head>
 <body>
@@ -192,7 +220,6 @@ body.low #screen{backdrop-filter:none}
 <header id="top" class="glass"></header>
 <div id="toasts"></div>
 <div id="dock"></div>
-<div id="pausebanner" class="glass"></div>
 <div id="screen"></div>
 <div id="dbg"></div>
 <div id="fatal">Three.js could not be loaded (internet connection needed for the CDN). Please reload when online.</div>
@@ -205,8 +232,27 @@ try { THREE = await import('three'); }
 catch (e) { document.getElementById('fatal').style.display = 'flex'; throw e; }
 
 const Q = new URLSearchParams(location.search);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } },
+  del(k) { try { localStorage.removeItem(k); } catch (e) { } }
+};
+/* settings (arena.cay.settings), migrated once from the old cay_prefs / cay_best keys */
+const KEY = { settings: 'arena.cay.settings', save: 'arena.cay.save', best: 'arena.cay.best' };
+const SET = (() => {
+  let s = store.get(KEY.settings, null);
+  if (!s) {
+    const old = store.get('cay_prefs', {});
+    s = { master: .8, music: .6, sfx: .8, lang: old.lang || null, quality: 'high', muted: !!old.muted };
+    const ob = store.get('cay_best', null); if (ob && !store.get(KEY.best, null)) store.set(KEY.best, ob);
+  }
+  return Object.assign({ master: .8, music: .6, sfx: .8, lang: null, quality: 'high', muted: false }, s);
+})();
+function saveSettings() { store.set(KEY.settings, SET); }
 const FLAG = {
-  auto: Q.has('auto'), debug: Q.has('debug'), low: Q.has('low'),
+  auto: Q.has('auto'), debug: Q.has('debug'), low: Q.has('low') || SET.quality === 'low',
+  // test runs never touch the player's saved game
+  nosave: Q.has('nosave') || Q.has('auto') || Q.has('bench') || Q.has('clicktest'),
   sim: parseFloat(Q.get('sim')) || 0,
   stop: Q.get('stop') || '', stopDay: parseInt(Q.get('stopday')) || 0,
   day: parseInt(Q.get('day')) || 0,
@@ -214,14 +260,15 @@ const FLAG = {
   skill: Q.has('skill') ? parseFloat(Q.get('skill')) : 1
 };
 if (FLAG.low) document.body.classList.add('low');
+// generated assets (assets/models, assets/ui, assets/textures). From file:// the model loader is skipped (Chrome blocks
+// fetch there) and the procedural look stays; ?noassets forces the original look everywhere, icons included.
+const NOASSETS = Q.has('noassets');
+const USE_MODELS = !NOASSETS && location.protocol !== 'file:';
+const assetState = { done: NOASSETS, loaded: 0, total: 0 };
 
 const $ = (s, el = document) => el.querySelector(s);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const lerp = (a, b, t) => a + (b - a) * t;
-const store = {
-  get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
-  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } }
-};
 
 /* seeded RNG for the simulation (visual randomness uses Math.random) */
 let _seed = Q.get('seed') ? parseInt(Q.get('seed')) : (Math.random() * 1e9) | 0;
@@ -260,9 +307,32 @@ const ICON = {
   apprentice: `<svg viewBox="0 0 24 24"><circle cx="12" cy="7" r="4" fill="#e0aa84"/><path d="M8.200 5.500q3.800-3.800 7.600 0z" fill="#3a2314"/><path d="M5 21c0-5 3-7.500 7-7.500s7 2.500 7 7.500z" fill="#fff" stroke="#c9b9a4" stroke-width="1"/><path d="M8.500 21l1-6.500h5l1 6.500z" fill="#c2410c"/></svg>`,
   table: `<svg viewBox="0 0 24 24"><ellipse cx="12" cy="9" rx="9.500" ry="4" fill="#e9825a" stroke="#8a3a1a" stroke-width="1.200"/><path d="M12 13v7M8 21h8" stroke="#6a3a1a" stroke-width="2" stroke-linecap="round"/></svg>`,
   stool: `<svg viewBox="0 0 24 24"><ellipse cx="12" cy="8" rx="7.500" ry="3.300" fill="#f19b4a" stroke="#8a4a14" stroke-width="1.200"/><path d="M7 10l-2 10M17 10l2 10M12 11v9" stroke="#6a3a1a" stroke-width="1.800" stroke-linecap="round"/></svg>`,
+  gear: `<svg viewBox="0 0 24 24"><path d="M10.3 2.5h3.4l.5 2.6 1.6.9 2.5-.9 1.7 2.9-2 1.8v1.9l2 1.8-1.7 2.9-2.5-.9-1.6.9-.5 2.6h-3.4l-.5-2.6-1.6-.9-2.5.9-1.7-2.9 2-1.8v-1.9l-2-1.8 1.7-2.9 2.5.9 1.6-.9z" fill="currentColor"/><circle cx="12" cy="12" r="3.1" fill="#fff8eb"/></svg>`,
   tulip: `<svg viewBox="0 0 24 24"><path d="M6.500 3.500h11c0 5.200-1.600 8.400-3.300 9.800v2.200h-4.400v-2.200C8.100 11.900 6.500 8.700 6.500 3.500z" fill="#c2410c"/></svg>`
 };
-const itemIcon = k => ICON[k] || '';
+// generated icon set (assets/ui/icons, sliced from one sheet). Each PNG sits inside an <svg> wrapper so every size rule
+// and the '<svg' string tweaks below keep working. The PNGs (and the logo) are preloaded with new Image() in
+// loadIcons(), which also works from file://; the SVG icons above stay in use unless every file decodes.
+const ICON_PNG = ['tea', 'simit', 'coffee', 'ayran', 'sink', 'dirty', 'coin', 'happy', 'angry', 'star', 'person', 'office', 'group', 'regular', 'kettle', 'tray', 'oven', 'apprentice', 'table', 'stool'];
+const pngIcon = (src, style = '') => `<svg viewBox="0 0 24 24"><image href="${src}" width="24" height="24"${style ? ` style="${style}"` : ''}/></svg>`;
+let LOGO_BIG = `<div class="big">${ICON.tea}</div>`;
+function useIconPNGs() {
+  for (const k of ICON_PNG) ICON[k] = pngIcon(`assets/ui/icons/${k}.png`);
+  ICON.starOff = pngIcon('assets/ui/icons/star.png', 'opacity:.3'); // grey enough; filter on <image> is not honoured everywhere
+  ICON.tulip = ICON.tea; // the detailed logo is unreadable at 26 px, the tea glass reads well
+  LOGO_BIG = '<img class="biglogo" src="assets/ui/logo.png" alt="">';
+  const fav = document.querySelector('link[rel=icon]'); if (fav) fav.href = 'assets/ui/favicon.png';
+}
+// icon PNGs + logo, counted in the title's "Loading… n/N"
+function loadIcons(tick) {
+  const files = ICON_PNG.map(k => `assets/ui/icons/${k}.png`).concat('assets/ui/logo.png');
+  return Promise.all(files.map(src => new Promise(res => {
+    const im = new Image(); im.onload = () => { tick(); res(true); }; im.onerror = () => { tick(); res(false); }; im.src = src;
+  }))).then(ok => {
+    if (ok.every(Boolean)) { useIconPNGs(); return true; }
+    console.warn('[cay] icon PNGs missing, keeping the drawn icons'); return false;
+  });
+}
 
 /* ---------------- text ---------------- */
 const TXT = {
@@ -272,25 +342,23 @@ const TXT = {
     how1: 'Bir istasyona tıkla (1-4): çay demle, simit ısıt, kahve pişir. Hazır olunca tekrar tıkla, tepsine girsin.',
     how2: 'Bir masaya tıkla: istenenleri servis et. Kirli bardakları topla, lavaboya (5) götür.',
     how3: 'Müşterilerin sabrı tükenmeden servis yap. Hızlı servis daha çok bahşiş getirir.',
-    how4: 'Boşluk: duraklat · Esc: kuyruğu temizle · Sürükle: kaydır · Tekerlek: yakınlaştır.',
+    how4: 'P / Esc: duraklat · Geri tuşu ya da sağ tık: sırayı temizle · M müzik · X efekt · L dil · Sürükle: kaydır · Tekerlek: yakınlaştır.',
     day: 'Gün', dayOf: 'Gün {0}/7', dayEndless: 'Gün {0} ∞', target: 'Hedef', newThing: 'Yeni', menuToday: 'Bugünün menüsü',
-    startDay: 'Günü başlat', today: 'Bugün', tray: 'Tepsi', queue: 'Sıra', clearQ: 'temizle',
+    startDay: 'Günü başlat', today: 'Bugün', tray: 'Tepsi', clearQ: 'temizle',
     tea: 'Çay', simit: 'Simit', coffee: 'Kahve', ayran: 'Ayran', sink: 'Lavabo', dirty: 'Kirli bardak',
-    n_tea: 'Çay', n_simit: 'Simit', n_coffee: 'Türk kahvesi', n_ayran: 'Ayran',
-    c_normal: 'Müşteri', c_office: 'Aceleci memur', c_group: '3 kişilik grup', c_regular: 'Müdavim (bahşiş x2)',
     new1: 'Demli çay', new2: 'Sıcak simit', new3: 'Türk kahvesi', new4: 'Soğuk ayran',
     new5: 'Aceleci ofis çalışanı: sabrı kısa', new6: '3 kişilik grup: büyük sipariş', new7: 'Müdavim: bahşişi iki katı',
     newE: 'Sonsuz vardiya: her gün biraz daha kalabalık',
     tip1: 'Önce çayı demle: demlenirken simit ısıtabilirsin.', tip2: 'Sırayı akıllı kur: tepsiye 3 şey sığar.',
     tip3: 'Kahveyi hazır olunca hemen al, yoksa taşar!', tip4: 'Boş dururken kirli bardakları topla.', tip5: 'Dükkandan yardımcı ve masa al.',
-    paused: 'Duraklatıldı', pausedSub: 'Devam etmek için Boşluk tuşu ya da ▶',
+    paused: 'Duraklatıldı', pausedSub: 'Devam etmek için P, Esc ya da Boşluk',
     toastTray: 'Tepsi dolu!', toastBrewing: 'Henüz hazır değil', toastNothing: 'Burada yapacak bir şey yok', toastQueue: 'Sıra dolu',
     toastWrong: 'Bu masa onu istemedi', toastNoOrder: 'Henüz sipariş vermedi', toastTeaReady: 'Çay hazır!', toastSimitReady: 'Simit sıcak!',
     toastCoffeeReady: 'Kahve hazır, taşmadan al!', toastSpill: 'Kahve taştı!', toastAngry: 'Müşteri kızıp gitti!', toastClean: 'Kahve ocağı temizlendi',
-    toastWash: 'Bardaklar yıkandı', toastMeow: 'Miyav!', toastApprentice: 'Çırak masayı topladı', toastBrewStart: 'Demleniyor...',
-    toastCook: 'Kahve pişiyor...', toastWarm: 'Simit ısınıyor...', toastNothingToWash: 'Yıkanacak bardak yok',
-    dayDone: 'Gün tamamlandı!', dayFail: 'Hedef tutmadı', earned: 'Kazanılan', tips: 'Bahşiş', happyC: 'Memnun', angryC: 'Kızgın',
-    cont: 'Devam', toShop: 'Dükkana git', shop: 'Dükkan', wallet: 'Cüzdan', nextDay: 'Sonraki gün', buy: 'Al', maxed: 'Tamam',
+    toastWash: 'Bardaklar yıkandı', toastMeow: 'Miyav!', toastBrewStart: 'Demleniyor...',
+    toastCook: 'Kahve pişiyor...', toastWarm: 'Simit ısınıyor...', toastNothingToWash: 'Yıkanacak bardak yok', toastDirtyDrop: 'Kirli bardak lavaboya (5) gider',
+    dayDone: 'Gün tamamlandı!', earned: 'Kazanılan', tips: 'Bahşiş', happyC: 'Memnun', angryC: 'Kızgın',
+    cont: 'Devam', toShop: 'Dükkana git', shop: 'Dükkan', wallet: 'Cüzdan', nextDay: 'Sonraki gün', maxed: 'Tamam',
     retry: 'Günü tekrar dene', menu: 'Ana menü', victory: 'Tebrikler!', victoryTxt: 'Yedi günü tamamladın. Çay ocağı artık mahallenin gözdesi!',
     endless: 'Sonsuz vardiya', total: 'Toplam altın', gameover: 'Vardiya bitti', goTxt: 'Bu gün hedefe ulaşamadın. Dükkandaki geliştirmeler bir dahaki denemede işine yarar.',
     reached: 'Ulaşılan gün', ratingStars: 'Yıldız',
@@ -302,7 +370,13 @@ const TXT = {
     u_stool: 'Rahat tabure', u_stool_d: 'Müşteriler daha sabırlı (+%20 sabır).',
     langBtn: 'EN', speedT: 'Hız', pauseT: 'Duraklat', soundT: 'Ses', hint: 'İpucu', stars3: 'Harika!', stars2: 'Güzel gün', stars1: 'Idare eder',
     welcome: 'Hoş geldin! Önce çay istasyonuna (1) tıkla.',
-    full: 'dolu', passByWait: 'Masa yok'
+    passByWait: 'Masa yok', loading: 'Yükleniyor… {0}/{1}',
+    cont2: 'Devam et', newGame: 'Yeni oyun', newGameWarn: 'Yeni oyun kayıtlı ilerlemenin üzerine yazar.', yes: 'Evet, yeni oyun', back: 'Geri',
+    savedAt: 'Kayıt: Gün {0} · {1} altın', settings: 'Ayarlar', master: 'Ana ses', music: 'Müzik', sfx: 'Efektler', language: 'Dil',
+    quality: 'Kalite', qLow: 'Düşük', qHigh: 'Yüksek', qNote: 'Kalite değişince sayfa yeniden yüklenir (gün baştan başlar).',
+    fullscreen: 'Tam ekran', on: 'Açık', off: 'Kapalı', resume: 'Devam et', restart: 'Günü baştan başlat', retryShop: 'Dükkân ve tekrar',
+    newRecord: 'Yeni rekor!', lastOrders: 'Son siparişler! Yeni müşteri gelmeyecek.',
+    footer: 'Claude Game Arena · {0} yaptı · varlıklar yenilendi'
   },
   en: {
     tagline: 'A tiny tea house by the Bosphorus. Brew, serve, collect tips.',
@@ -310,25 +384,23 @@ const TXT = {
     how1: 'Click a station (1-4): brew tea, warm simit, cook coffee. Click again when ready to grab it onto your tray.',
     how2: 'Click a table to serve what they ordered. Collect dirty glasses and bring them to the sink (5).',
     how3: 'Serve before patience runs out. Fast service earns bigger tips.',
-    how4: 'Space: pause · Esc: clear queue · Drag: pan · Wheel: zoom.',
+    how4: 'P / Esc: pause · Backspace or right-click: clear queue · M music · X effects · L language · Drag: pan · Wheel: zoom.',
     day: 'Day', dayOf: 'Day {0}/7', dayEndless: 'Day {0} ∞', target: 'Target', newThing: 'New', menuToday: "Today's menu",
-    startDay: 'Start the day', today: 'Today', tray: 'Tray', queue: 'Queue', clearQ: 'clear',
+    startDay: 'Start the day', today: 'Today', tray: 'Tray', clearQ: 'clear',
     tea: 'Tea', simit: 'Simit', coffee: 'Coffee', ayran: 'Ayran', sink: 'Sink', dirty: 'Dirty glass',
-    n_tea: 'Tea', n_simit: 'Simit', n_coffee: 'Turkish coffee', n_ayran: 'Ayran',
-    c_normal: 'Customer', c_office: 'Hurried clerk', c_group: 'Group of 3', c_regular: 'Regular (tips x2)',
     new1: 'Fresh brewed tea', new2: 'Warm simit', new3: 'Turkish coffee', new4: 'Cold ayran',
     new5: 'Hurried office worker: short patience', new6: 'Group of 3: big orders', new7: 'Regular: tips double',
     newE: 'Endless shift: a bit busier every day',
     tip1: 'Start the tea first: warm simit while it brews.', tip2: 'Plan your route: the tray holds only 3 items.',
     tip3: 'Grab the coffee as soon as it is ready, or it boils over!', tip4: 'Clear dirty glasses when idle.', tip5: 'Buy an apprentice and extra tables in the shop.',
-    paused: 'Paused', pausedSub: 'Press Space or ▶ to resume',
+    paused: 'Paused', pausedSub: 'Press P, Esc or Space to resume',
     toastTray: 'Tray is full!', toastBrewing: 'Not ready yet', toastNothing: 'Nothing to do here', toastQueue: 'Queue is full',
     toastWrong: "That table didn't order it", toastNoOrder: 'No order yet', toastTeaReady: 'Tea is ready!', toastSimitReady: 'Simit is warm!',
     toastCoffeeReady: 'Coffee is ready, grab it!', toastSpill: 'Coffee boiled over!', toastAngry: 'A customer left angry!', toastClean: 'Coffee pot cleaned',
-    toastWash: 'Glasses washed', toastMeow: 'Meow!', toastApprentice: 'Apprentice cleared a table', toastBrewStart: 'Brewing...',
-    toastCook: 'Cooking coffee...', toastWarm: 'Warming simit...', toastNothingToWash: 'No dirty glasses to wash',
-    dayDone: 'Day complete!', dayFail: 'Target missed', earned: 'Earned', tips: 'Tips', happyC: 'Happy', angryC: 'Angry',
-    cont: 'Continue', toShop: 'Go to shop', shop: 'Shop', wallet: 'Wallet', nextDay: 'Next day', buy: 'Buy', maxed: 'Maxed',
+    toastWash: 'Glasses washed', toastMeow: 'Meow!', toastBrewStart: 'Brewing...',
+    toastCook: 'Cooking coffee...', toastWarm: 'Warming simit...', toastNothingToWash: 'No dirty glasses to wash', toastDirtyDrop: 'Dirty glasses go to the sink (5)',
+    dayDone: 'Day complete!', earned: 'Earned', tips: 'Tips', happyC: 'Happy', angryC: 'Angry',
+    cont: 'Continue', toShop: 'Go to shop', shop: 'Shop', wallet: 'Wallet', nextDay: 'Next day', maxed: 'Maxed',
     retry: 'Retry the day', menu: 'Main menu', victory: 'Congratulations!', victoryTxt: 'You finished all seven days. The tea house is now the pride of the neighbourhood!',
     endless: 'Endless shift', total: 'Total coins', gameover: 'Shift over', goTxt: "You missed the target today. Upgrades from the shop will help next time.",
     reached: 'Day reached', ratingStars: 'Stars',
@@ -340,19 +412,24 @@ const TXT = {
     u_stool: 'Comfy stools', u_stool_d: 'Customers are more patient (+20%).',
     langBtn: 'TR', speedT: 'Speed', pauseT: 'Pause', soundT: 'Sound', hint: 'Hint', stars3: 'Brilliant!', stars2: 'Nice day', stars1: 'Good enough',
     welcome: 'Welcome! Click the tea station (1) first.',
-    full: 'full', passByWait: 'No table'
+    passByWait: 'No table', loading: 'Loading… {0}/{1}',
+    cont2: 'Continue', newGame: 'New game', newGameWarn: 'A new game overwrites your saved progress.', yes: 'Yes, new game', back: 'Back',
+    savedAt: 'Saved: Day {0} · {1} coins', settings: 'Settings', master: 'Master', music: 'Music', sfx: 'Effects', language: 'Language',
+    quality: 'Quality', qLow: 'Low', qHigh: 'High', qNote: 'Changing quality reloads the page (the day starts over).',
+    fullscreen: 'Fullscreen', on: 'On', off: 'Off', resume: 'Resume', restart: 'Restart the day', retryShop: 'Shop & retry',
+    newRecord: 'New record!', lastOrders: 'Last orders! No new customers today.',
+    footer: 'Claude Game Arena · built by {0} · assets remastered'
   }
 };
 
 /* ---------------- state ---------------- */
-const prefs = store.get('cay_prefs', {});
 const G = window.cay = {
   state: 'title', day: 1, endless: false, won: false,
   clock: 0, dayLen: 180, coins: 0, dayCoins: 0, dayTips: 0, totalEarned: 0, target: 40,
   happy: 0, angry: 0, served: 0, missed: 0,
-  speed: FLAG.auto ? 3 : 1, paused: false, autoPaused: false,
-  lang: Q.get('lang') || prefs.lang || ((navigator.language || 'tr').toLowerCase().startsWith('tr') ? 'tr' : 'en'),
-  muted: !!prefs.muted,
+  speed: FLAG.auto ? 3 : 1, paused: false, panel: null, // panel: 'settings' | 'confirm', shown over the current screen
+  lang: Q.get('lang') || SET.lang || ((navigator.language || 'tr').toLowerCase().startsWith('tr') ? 'tr' : 'en'),
+  muted: !!SET.muted,
   up: { kettle: 0, tray: 0, oven: 0, apprentice: 0, table: 0, stool: 0 },
   tables: [], parties: [], waiter: null, apprentice: null, stations: null,
   vt: 0, simming: false, halt: false, botHold: false,
@@ -523,7 +600,7 @@ function resetWorldForDay() {
   G.waiter = { x: LANE_X, z: 0.5, face: -Math.PI / 2, path: [], q: [], cur: null, state: 'idle', workT: 0, tray: [], moving: false, sx: 0, sz: 0 };
   G.apprentice = G.up.apprentice ? { x: -4.3, z: 5.9, face: 0, path: [], state: 'idle', t: 0, tb: null, moving: false } : null;
   G.clock = 0; G.dayCoins = 0; G.dayTips = 0; G.happy = 0; G.angry = 0; G.served = 0; G.missed = 0;
-  G.spawnT = 2.2; G.spawnCount = 0; G.blockedT = 0; G.walkby = 0;
+  G.spawnT = 2.2; G.spawnCount = 0; G.walkby = 0; G.lastCall = false;
 }
 let _snap = null;
 function beginDay() {
@@ -544,35 +621,58 @@ function ratingStars() {
   return s;
 }
 function endDay() {
+  // closing time: tables that were fully served and are still eating pay their bill and tip now
+  for (const p of G.parties) if (p.state === 'eat') payParty(p);
   const stars = ratingStars(); G.stars = stars;
   const rec = { day: G.day, coins: G.dayCoins, target: G.target, tips: G.dayTips, happy: G.happy, angry: G.angry, stars, passed: stars > 0, served: G.served, spawned: G.spawnCount, blocked: G.walkby | 0 };
   G.log.push(rec);
   G.lastResult = rec;
   for (const p of G.parties) for (const pe of p.persons) freePerson(pe);
   G.parties = [];
-  const best = store.get('cay_best', { day: 0, total: 0 });
+  const best = store.get(KEY.best, { day: 0, total: 0 });
   const reached = rec.passed ? G.day : G.day - 1;
-  if (reached > 0 && (reached > best.day || (reached === best.day && G.totalEarned > best.total))) store.set('cay_best', { day: reached, total: G.totalEarned });
+  G.newRecord = reached > 0 && (reached > best.day || (reached === best.day && G.totalEarned > best.total));
+  if (G.newRecord && !FLAG.nosave) store.set(KEY.best, { day: reached, total: G.totalEarned });
   if (rec.passed) { G.state = 'summary'; sfxFanfare(); } else { G.state = 'gameover'; sfxLose(); }
+  // failed-day rule (same in the Godot port): the coins earned on a failed day are kept, and the retry goes through
+  // the shop, so the player can buy an upgrade before trying the same day again
+  if (rec.passed && G.day === 7 && !G.won) saveGame('shop', { won: true, endless: true });
+  else if (rec.passed) saveGame('shop');
+  else { G.retrying = true; saveGame('shop'); }
   G.paused = false; G.waiter.q.length = 0;
   uiScreen(); checkStop();
 }
+/* saved run (arena.cay.save): written at the start of each day and at each shop visit; Continue resumes there */
+function saveGame(resume, over = {}) {
+  if (FLAG.nosave) return;
+  store.set(KEY.save, Object.assign({ v: 1, day: G.day, coins: G.coins, up: G.up, totalEarned: G.totalEarned, log: G.log, won: G.won, endless: G.endless, retrying: !!G.retrying, resume }, over));
+}
+function loadSave() { const s = store.get(KEY.save, null); return s && s.v === 1 && s.day >= 1 && s.up ? s : null; }
 const A = G.act = {
-  start() { sfxInit(); G.retrying = false; G.coins = 0; G.totalEarned = 0; G.log = []; G.won = false; G.endless = false; G.up = { kettle: 0, tray: 0, oven: 0, apprentice: 0, table: 0, stool: 0 }; G.day = FLAG.day || 1; if (G.day > 1) { G.coins = 150 * (G.day - 1); } A.intro(); },
-  intro() { G.state = 'intro'; resetWorldForDay(); G.target = dayCfg(G.day).target; uiScreen(); checkStop(); },
+  start() { sfxInit(); G.retrying = false; G.coins = 0; G.totalEarned = 0; G.log = []; G.won = false; G.endless = false; G.up = { kettle: 0, tray: 0, oven: 0, apprentice: 0, table: 0, stool: 0 }; G.day = FLAG.day || 1; if (G.day > 1) { G.coins = 150 * (G.day - 1); G.endless = G.day > 7; G.won = G.day > 7; } A.intro(); },
+  cont() {
+    const s = loadSave(); if (!s) return A.start();
+    sfxInit();
+    Object.assign(G, { day: s.day, coins: s.coins, totalEarned: s.totalEarned || 0, log: s.log || [], won: !!s.won, endless: !!s.endless, retrying: !!s.retrying });
+    G.up = Object.assign({ kettle: 0, tray: 0, oven: 0, apprentice: 0, table: 0, stool: 0 }, s.up);
+    if (s.resume === 'shop') A.shop(); else A.intro();
+  },
+  intro() { G.state = 'intro'; G.panel = null; resetWorldForDay(); G.target = dayCfg(G.day).target; saveGame('intro'); uiScreen(); checkStop(); },
   begin() { beginDay(); },
-  afterSummary() { if (G.day === 7 && !G.won) { G.won = true; G.state = 'victory'; uiScreen(); sfxFanfare(); confetti(); checkStop(); } else { A.shop(); } },
-  shop() { G.state = 'shop'; uiScreen(); checkStop(); },
+  afterSummary() { if (G.day === 7 && !G.won) { G.won = true; G.endless = true; G.state = 'victory'; uiScreen(); sfxFanfare(); confetti(); checkStop(); } else { A.shop(); } },
+  shop() { G.state = 'shop'; saveGame('shop'); uiScreen(); checkStop(); },
   buy(id) {
     const u = UPG.find(x => x.id === id); if (!u) return false;
     const lv = G.up[id]; if (lv >= u.max) return false; const c = u.cost[lv];
     if (G.coins < c) return false;
     G.coins -= c; G.up[id]++; sfxCash(); if (G.state === 'shop') uiScreen(true); return true;
   },
-  next() { G.day++; A.intro(); },
-  retry() { if (_snap) { G.coins = _snap.coins; G.up = { ..._snap.up }; G.totalEarned = _snap.total; } G.log.pop(); A.intro(); },
+  next() { if (G.retrying) G.retrying = false; else G.day++; A.intro(); },
+  retryShop() { G.retrying = true; A.shop(); },
+  // pause menu: the day starts over with the coins and upgrades it began with
+  restart() { if (_snap) { G.coins = _snap.coins; G.up = { ..._snap.up }; G.totalEarned = _snap.total; } beginDay(); },
   endlessMode() { G.endless = true; A.shop(); },
-  menu() { G.state = 'title'; G.endless = false; G.won = false; uiScreen(); }
+  menu() { G.state = 'title'; G.paused = false; G.panel = null; resetWorldForDay(); uiScreen(); audApply(); }
 };
 function checkStop() {
   if (FLAG.stop && G.state === FLAG.stop && (!FLAG.stopDay || FLAG.stopDay === G.day)) { G.halt = true; G.botHold = true; }
@@ -580,7 +680,7 @@ function checkStop() {
 function addCoins(n, wx, wz, tip) {
   G.coins += n; G.dayCoins += n; G.totalEarned += n; G.dayTips += tip;
   sfxCash(); floatText(wx, 2.4, wz, '+' + n + (tip ? ` <small>(${tip})</small>` : ''));
-  burst('spark', wx, 1.8, wz, 8);
+  burst('spark', wx, 1.8, wz, 8); coinFly(wx, wz, n);
 }
 
 /* ---------------- people pool ---------------- */
@@ -705,7 +805,7 @@ function stationsUpdate(dt) {
   if (o.st === 'baking') { o.t += dt; if (o.t >= ovenTime()) { o.st = 'ready'; o.t = 0; o.n = OVEN_N; sfxPing(); toast(t('toastSimitReady'), 'good'); } }
   S.pots.forEach(p => {
     if (p.st === 'cook') { p.t += dt; if (p.t >= COOK_T) { p.st = 'ready'; p.t = 0; sfxPing(); toast(t('toastCoffeeReady'), 'good'); } }
-    else if (p.st === 'ready') { p.t += dt; if (p.t >= COOK_WIN) { p.st = 'spilled'; p.t = 0; sfxHiss(); toast(t('toastSpill'), 'bad'); burst('steam', CNT_X, 1.5, STATION_Z.coffee, 10); } }
+    else if (p.st === 'ready') { p.t += dt; if (p.t >= COOK_WIN) { p.st = 'spilled'; p.t = 0; sfxHiss(); toast(t('toastSpill'), 'bad'); const q = FIT.pots[S.pots.indexOf(p)]; burst('steam', q[0], q[1] + FIT.potSteamDY, q[2], 10); } }
   });
 }
 function doStation(id) {
@@ -764,6 +864,8 @@ function doTable(i) {
   if (!p && tb.dirty) {
     if (w.tray.length >= trayCap()) return toast(t('toastTray'), 'bad');
     w.tray.push('dirty'); tb.dirty = false; tb.slots = []; did = true; sfxClink();
+    // the apprentice was on its way to this table: send it back instead of clearing a clean table
+    if (tb.claimed) { tb.claimed = false; const a = G.apprentice; if (a && a.tb === tb) { a.tb = null; a.state = 'back'; a.path = findPath(a.x, a.z, -4.3, 5.9); } }
   }
   if (!did) return toast(t('toastNothing'));
   return true;
@@ -774,9 +876,10 @@ function enqueue(a) {
   w.q.push(a); sfxTick(); return true;
 }
 function stationLocked(id) { const m = dayCfg(G.day).menu; return (id === 'simit' || id === 'coffee' || id === 'ayran') && !m.includes(id); }
-function clickStation(id) { if (G.state === 'play' && stationLocked(id)) return toast(t('toastNothing')); return enqueue({ type: 'station', id }); }
-function clickTable(i) { return G.tables[i] && G.tables[i].unlocked && enqueue({ type: 'table', id: i }); }
-function dropTray(k) { const w = G.waiter; if (w && w.tray[k] != null) { w.tray.splice(k, 1); sfxTick(); } }
+function clickStation(id) { if (G.paused) return false; if (G.state === 'play' && stationLocked(id)) return toast(t('toastNothing')); return enqueue({ type: 'station', id }); }
+function clickTable(i) { return !G.paused && G.tables[i] && G.tables[i].unlocked && enqueue({ type: 'table', id: i }); }
+// dirty glasses cannot be thrown away: they have to go through the sink
+function dropTray(k) { const w = G.waiter; if (!w || G.paused || w.tray[k] == null) return; if (w.tray[k] === 'dirty') return toast(t('toastDirtyDrop'), 'bad'); w.tray.splice(k, 1); sfxTick(); }
 function clearQueue() { if (G.waiter) G.waiter.q.length = 0; }
 function actTarget(a) {
   if (a.type === 'station') return { x: LANE_X, z: STATION_Z[a.id], face: -Math.PI / 2 };
@@ -825,7 +928,8 @@ function apprenticeUpdate(dt) {
   }
 }
 function spawnUpdate(dt) {
-  if (G.clock > G.dayLen - 20) return;
+  // the last 20 s nobody new comes in: say so once ("last orders"), the HUD clock turns red
+  if (G.clock > G.dayLen - 20) { if (!G.lastCall) { G.lastCall = true; toast(t('lastOrders')); sfxBell(); } return; }
   G.spawnT -= dt;
   if (G.spawnT <= 0) {
     const cfg = dayCfg(G.day);
@@ -911,7 +1015,7 @@ function botDecide() {
   else if (dirtyT.length && trayRoom > 0) { clickTable(dirtyT[0].i); return; }
   if (tray.includes('dirty') && !queued.some(a => a.id === 'sink')) { clickStation('sink'); return; }
   // pre-warm: start idle stations when customers are around
-  if (G.parties.length && G.day >= 1) {
+  if (G.parties.length) {
     const menu = dayCfg(G.day).menu;
     const ks = S.kettles.slice(0, 1 + G.up.kettle);
     if (ks.some(k => k.st === 'empty') && !ks.some(k => k.st === 'brewing') && !ks.some(k => k.st === 'ready') && qStation('tea') === 0) { clickStation('tea'); return; }
@@ -966,25 +1070,36 @@ const STEP = 1 / 60;
 /* ============================================================
    AUDIO (all synthesised with Web Audio)
    ============================================================ */
-const Aud = { ctx: null, master: null, last: {}, ambOn: false };
+// buses: sfx + music (ambience and the hicaz loop) -> master -> speakers; volumes from the settings
+const Aud = G.aud = { ctx: null, master: null, sfx: null, music: null, last: {}, ambOn: false }; // G.aud: test hook
 function sfxInit() {
   if (Aud.ctx) { if (Aud.ctx.state === 'suspended') Aud.ctx.resume().catch(() => { }); return; }
   try {
     const C = window.AudioContext || window.webkitAudioContext; if (!C) return;
-    Aud.ctx = new C(); Aud.master = Aud.ctx.createGain(); Aud.master.gain.value = G.muted ? 0 : 0.85; Aud.master.connect(Aud.ctx.destination);
-    startAmbience();
-  } catch (e) { }
+    Aud.ctx = new C(); Aud.master = Aud.ctx.createGain(); Aud.master.connect(Aud.ctx.destination);
+    Aud.sfx = Aud.ctx.createGain(); Aud.sfx.connect(Aud.master);
+    Aud.music = Aud.ctx.createGain(); Aud.music.connect(Aud.master);
+    audApply(); startAmbience(); startMusic();
+  } catch (e) { Aud.ctx = null; }
 }
-function sfxMute(m) { G.muted = m; if (Aud.master) Aud.master.gain.value = m ? 0 : 0.85; store.set('cay_prefs', { lang: G.lang, muted: G.muted }); }
+// music is ducked while paused or in a hidden tab
+function audApply() {
+  if (!Aud.ctx) return;
+  const t0 = Aud.ctx.currentTime, duck = G.paused || document.hidden ? .45 : 1;
+  Aud.master.gain.setTargetAtTime(G.muted ? 0 : SET.master, t0, .05);
+  Aud.sfx.gain.setTargetAtTime(SET.sfx, t0, .05);
+  Aud.music.gain.setTargetAtTime(SET.music * duck, t0, .2);
+}
+function sfxMute(m) { G.muted = m; SET.muted = m; saveSettings(); audApply(); }
 function sOK(name, gap = 0.04) {
-  if (!Aud.ctx || G.muted || G.simming || Aud.ctx.state !== 'running') return false;
+  if (!Aud.ctx || G.muted || G.simming || !SET.sfx || Aud.ctx.state !== 'running') return false;
   const n = performance.now(); if (Aud.last[name] && n - Aud.last[name] < gap * 1000) return false; Aud.last[name] = n; return true;
 }
 function tone(f, d, type = 'sine', v = 0.15, slide = 0, delay = 0, dest) {
   const c = Aud.ctx, t0 = c.currentTime + delay, o = c.createOscillator(), g = c.createGain();
   o.type = type; o.frequency.setValueAtTime(f, t0); if (slide) o.frequency.exponentialRampToValueAtTime(Math.max(20, f + slide), t0 + d);
   g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(v, t0 + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
-  o.connect(g); g.connect(dest || Aud.master); o.start(t0); o.stop(t0 + d + 0.05);
+  o.connect(g); g.connect(dest || Aud.sfx); o.start(t0); o.stop(t0 + d + 0.05);
 }
 let _noiseBuf = null;
 function noiseBuf() {
@@ -995,7 +1110,7 @@ function noise(d, v, ftype, f0, f1, delay = 0) {
   const c = Aud.ctx, t0 = c.currentTime + delay, s = c.createBufferSource(), fl = c.createBiquadFilter(), g = c.createGain();
   s.buffer = noiseBuf(); fl.type = ftype; fl.frequency.setValueAtTime(f0, t0); if (f1) fl.frequency.exponentialRampToValueAtTime(f1, t0 + d);
   g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(v, t0 + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t0 + d);
-  s.connect(fl); fl.connect(g); g.connect(Aud.master); s.start(t0, Math.random()); s.stop(t0 + d + 0.05);
+  s.connect(fl); fl.connect(g); g.connect(Aud.sfx); s.start(t0, Math.random()); s.stop(t0 + d + 0.05);
 }
 function sfxBell() { if (!sOK('bell', .2)) return; tone(1568, .9, 'sine', .09); tone(2093, .8, 'sine', .06, 0, .02); tone(1568, .7, 'sine', .06, 0, .22); tone(2349, .6, 'sine', .04, 0, .24); }
 function sfxClink() { if (!sOK('clink')) return; tone(2600 + Math.random() * 300, .16, 'triangle', .1); tone(3900, .1, 'sine', .05, 0, .02); }
@@ -1006,8 +1121,8 @@ function sfxTick() { if (!sOK('tick')) return; tone(620, .05, 'triangle', .06); 
 function sfxPour() { if (!sOK('pour', .1)) return; noise(.35, .12, 'bandpass', 900, 1800); tone(1900, .06, 'sine', .03, 0, .25); }
 function sfxWash() { if (!sOK('wash', .1)) return; noise(.5, .1, 'bandpass', 1800, 900); tone(2400, .08, 'triangle', .05, 0, .3); }
 function sfxHiss() { if (!sOK('hiss', .2)) return; noise(.6, .14, 'highpass', 2500, 5000); }
-function sfxWhistle() { if (!sOK('whistle', .5)) return; const c = Aud.ctx, t0 = c.currentTime, o = c.createOscillator(), l = c.createOscillator(), lg = c.createGain(), g = c.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(1250, t0); o.frequency.linearRampToValueAtTime(1550, t0 + .15); o.frequency.linearRampToValueAtTime(1500, t0 + 1.0); l.frequency.value = 9; lg.gain.value = 40; l.connect(lg); lg.connect(o.frequency); g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(.07, t0 + .08); g.gain.setValueAtTime(.07, t0 + .8); g.gain.exponentialRampToValueAtTime(.0001, t0 + 1.1); o.connect(g); g.connect(Aud.master); o.start(t0); l.start(t0); o.stop(t0 + 1.2); l.stop(t0 + 1.2); }
-function sfxGrumble() { if (!sOK('grumble', .3)) return; const c = Aud.ctx, t0 = c.currentTime, o = c.createOscillator(), f = c.createBiquadFilter(), g = c.createGain(); o.type = 'sawtooth'; o.frequency.setValueAtTime(170, t0); o.frequency.exponentialRampToValueAtTime(80, t0 + .5); f.type = 'lowpass'; f.frequency.value = 420; g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(.16, t0 + .06); g.gain.exponentialRampToValueAtTime(.0001, t0 + .55); o.connect(f); f.connect(g); g.connect(Aud.master); o.start(t0); o.stop(t0 + .6); tone(120, .4, 'sawtooth', .06, -30, .18); }
+function sfxWhistle() { if (!sOK('whistle', .5)) return; const c = Aud.ctx, t0 = c.currentTime, o = c.createOscillator(), l = c.createOscillator(), lg = c.createGain(), g = c.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(1250, t0); o.frequency.linearRampToValueAtTime(1550, t0 + .15); o.frequency.linearRampToValueAtTime(1500, t0 + 1.0); l.frequency.value = 9; lg.gain.value = 40; l.connect(lg); lg.connect(o.frequency); g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(.07, t0 + .08); g.gain.setValueAtTime(.07, t0 + .8); g.gain.exponentialRampToValueAtTime(.0001, t0 + 1.1); o.connect(g); g.connect(Aud.sfx); o.start(t0); l.start(t0); o.stop(t0 + 1.2); l.stop(t0 + 1.2); }
+function sfxGrumble() { if (!sOK('grumble', .3)) return; const c = Aud.ctx, t0 = c.currentTime, o = c.createOscillator(), f = c.createBiquadFilter(), g = c.createGain(); o.type = 'sawtooth'; o.frequency.setValueAtTime(170, t0); o.frequency.exponentialRampToValueAtTime(80, t0 + .5); f.type = 'lowpass'; f.frequency.value = 420; g.gain.setValueAtTime(.0001, t0); g.gain.exponentialRampToValueAtTime(.16, t0 + .06); g.gain.exponentialRampToValueAtTime(.0001, t0 + .55); o.connect(f); f.connect(g); g.connect(Aud.sfx); o.start(t0); o.stop(t0 + .6); tone(120, .4, 'sawtooth', .06, -30, .18); }
 function sfxFanfare() { if (!sOK('fan', .5)) return;[523, 659, 784, 1047].forEach((f, i) => tone(f, .4, 'triangle', .09, 0, i * .13)); tone(1319, .7, 'sine', .07, 0, .55); }
 function sfxLose() { if (!sOK('lose', .5)) return;[392, 349, 311, 262].forEach((f, i) => tone(f, .4, 'triangle', .09, 0, i * .18)); }
 function sfxGull() { if (!sOK('gull', 1)) return; const d = Math.random() * .1; tone(1500, .22, 'sawtooth', .02, 700, 0); tone(1100, .2, 'sawtooth', .02, 900, .24 + d); tone(1700, .3, 'sawtooth', .018, -800, .5 + d); }
@@ -1018,12 +1133,46 @@ function startAmbience() {
   const s = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain(), lfo = c.createOscillator(), lg = c.createGain();
   s.buffer = noiseBuf(); s.loop = true; f.type = 'lowpass'; f.frequency.value = 520; g.gain.value = .07;
   lfo.frequency.value = .13; lg.gain.value = .03; lfo.connect(lg); lg.connect(g.gain);
-  s.connect(f); f.connect(g); g.connect(Aud.master); s.start(); lfo.start();
+  s.connect(f); f.connect(g); g.connect(Aud.music); s.start(); lfo.start();
   const loop = () => {
-    if (Aud.ctx && !G.muted && Aud.ctx.state === 'running' && !document.hidden && !G.paused) { const r = Math.random(); if (r < .45) sfxGull(); else if (r < .6) { tone(330, .5, 'sine', .01); } }
+    if (Aud.ctx && !G.muted && Aud.ctx.state === 'running' && !document.hidden && !G.paused) { const r = Math.random(); if (r < .45) sfxGull(); }
     setTimeout(loop, 5000 + Math.random() * 9000);
   };
   setTimeout(loop, 4000);
+}
+/* music: a 32-beat hicaz loop (D Eb F# G A Bb C) with bass and frame drum, rendered once into a buffer.
+   Same notes as the Godot remake (scripts/autoload/sfx.gd). */
+const BPM = 96, MELODY = [
+  [0, 1, 'D4'], [1, .5, 'F#4'], [1.5, .5, 'G4'], [2, 1, 'A4'], [3, .5, 'Bb4'], [3.5, .5, 'A4'], [4, 1, 'G4'], [5, .5, 'F#4'], [5.5, .5, 'Eb4'], [6, 2, 'D4'],
+  [8, 1, 'A4'], [9, .5, 'C5'], [9.5, .5, 'Bb4'], [10, 1, 'A4'], [11, .5, 'G4'], [11.5, .5, 'F#4'], [12, 1, 'G4'], [13, 1, 'A4'], [14, 1, 'Bb4'], [15, 1, 'A4'],
+  [16, 1.5, 'D5'], [17.5, .5, 'C5'], [18, 1, 'Bb4'], [19, 1, 'A4'], [20, .5, 'G4'], [20.5, .5, 'F#4'], [21, 1, 'G4'], [22, 2, 'A4'],
+  [24, 1, 'Bb4'], [25, .5, 'A4'], [25.5, .5, 'G4'], [26, 1, 'F#4'], [27, 1, 'Eb4'], [28, 2, 'D4']
+];
+const NOTE = { D3: 146.83, A3: 220, D4: 293.66, Eb4: 311.13, 'F#4': 369.99, G4: 392, A4: 440, Bb4: 466.16, C5: 523.25, D5: 587.33 };
+function startMusic() {
+  const c = Aud.ctx, R = 16000, size = Math.round(32 * 60 / BPM * R), buf = c.createBuffer(1, size, R), d = buf.getChannelData(0), TAU = Math.PI * 2;
+  const at = beat => Math.round(beat * 60 / BPM * R);
+  for (const [b, len, nm] of MELODY) { // plucked string
+    const f = NOTE[nm], s0 = at(b), n = Math.round(Math.min(len * 60 / BPM + .45, 1.6) * R);
+    for (let i = 0; i < n; i++) { const t = i / R; d[(s0 + i) % size] += (Math.sin(TAU * f * t) + .5 * Math.sin(TAU * f * 2 * t) * Math.exp(-t * 6) + .25 * Math.sin(TAU * f * 3 * t) * Math.exp(-t * 9)) * Math.exp(-t * 3.2) * Math.min(t / .006, 1) * .2; }
+  }
+  for (let bar = 0; bar < 8; bar++) {
+    for (let h = 0; h < 2; h++) { // bass: D then A
+      const f = h ? NOTE.A3 : NOTE.D3, s0 = at(bar * 4 + h * 2);
+      for (let i = 0, n = 1.4 * R; i < n; i++) { const t = i / R; d[(s0 + i) % size] += (Math.sin(TAU * f * t) + .3 * Math.sin(TAU * f * 2 * t)) * Math.min(t / .03, 1) * Math.exp(-t * 2.2) * .16; }
+    }
+    for (let hit = 0; hit < 4; hit++) { // frame drum: thump on 1 and 3, soft tick on the off-beats
+      const thump = hit % 2 === 0, s0 = at(bar * 4 + hit); let lp = 0;
+      for (let i = 0, n = (thump ? .18 : .07) * R; i < n; i++) {
+        const t = i / R, env = Math.exp(-t * (thump ? 18 : 45));
+        if (thump) d[(s0 + i) % size] += Math.sin(TAU * (95 - 40 * t) * t) * env * .3;
+        else { lp += .35 * ((Math.random() * 2 - 1) - lp); d[(s0 + i) % size] += lp * env * .07; }
+      }
+    }
+  }
+  let peak = 0; for (let i = 0; i < size; i++) peak = Math.max(peak, Math.abs(d[i]));
+  const k = .5 / Math.max(peak, .01); for (let i = 0; i < size; i++) d[i] *= k;
+  const src = c.createBufferSource(); src.buffer = buf; src.loop = true; src.connect(Aud.music); src.start();
 }
 
 /* ============================================================
@@ -1053,14 +1202,18 @@ sun.shadow.mapSize.set(1024, 1024);
 scene.add(sun, sun.target);
 
 function layoutCamera() {
-  const w = window.innerWidth, h = window.innerHeight, asp = w / h;
+  const w = window.innerWidth, h = window.innerHeight;
   VIEW.w = w; VIEW.h = h;
   const needHalfW = 9.6; // world half-width (screen units) we want visible at zoom 1
-  VIEW.halfH = Math.max(8.2, needHalfW / asp);
-  const hh = VIEW.halfH / VIEW.zoom, hw = hh * asp;
+  VIEW.halfH = Math.max(8.2, needHalfW / (w / h));
+  renderer.setSize(w, h, false);
+  applyZoom();
+}
+// zoom only changes the camera frustum (no canvas resize, so wheel / pinch stay smooth)
+function applyZoom() {
+  const asp = VIEW.w / VIEW.h, hh = VIEW.halfH / VIEW.zoom, hw = hh * asp;
   cam.left = -hw; cam.right = hw; cam.top = hh; cam.bottom = -hh;
   cam.updateProjectionMatrix();
-  renderer.setSize(w, h, false);
   placeCamera();
 }
 const _fwd = new THREE.Vector3(-0.7071, 0, -0.7071), _rgt = new THREE.Vector3(0.7071, 0, -0.7071);
@@ -1132,6 +1285,11 @@ const C = {
 const world = new THREE.Group(); scene.add(world);
 const pickables = []; // {mesh, kind, id}
 const DYN = {}; // dynamic meshes by name
+// effect anchors on the station props; applyAssets() moves them onto the generated models
+const FIT = {
+  teaSteamY: 3.3, ringY: 2.86, ringX: CNT_X + .05, smoke: [CNT_X - .45, 3.7, STATION_Z.simit - .5],
+  pots: [[CNT_X + .05, 1.66, STATION_Z.coffee - .45], [CNT_X + .05, 1.66, STATION_Z.coffee + .45]], potSteamDY: .24
+};
 function addSemaver(m, zc) {
   const x = CNT_X;
   m.cyl(x, 1.12, zc, .52, .56, .12, C.stoneD, 12);
@@ -1148,12 +1306,13 @@ function addSemaver(m, zc) {
   m.box(x - .08, 2.86, zc + .36, .34, .06, .09, C.cream, 0, 0, .3);
   m.box(x - .05, 3.0, zc - .38, .16, .22, .07, C.cream);
 }
-function buildWorld() {
+// skip: parts that come from generated models instead (see applyAssets)
+function buildWorld(skip = new Set()) {
   const W = new Merger(), Gd = new Merger(), K = W;
   /* ground */
   Gd.quad(-200, -9.3, 200, 200, 0, 0x8c7a66, 0);
   Gd.quad(-200, -300, 200, -9.3, -0.32, C.sea, 0);
-  for (let x = -14; x < 17; x++) for (let z = -9; z < 14; z++) {
+  if (!skip.has('ground')) for (let x = -14; x < 17; x++) for (let z = -9; z < 14; z++) {
     const tones = [0xc9b79a, 0xbfae92, 0xd2c1a3, 0xb7a68b, 0xc4b296];
     const o = (z & 1) ? 0.45 : 0;
     Gd.quad(x + o + .04, z + .04, x + o + .96, z + .96, 0.015, tones[(Math.random() * tones.length) | 0], 0.06);
@@ -1175,7 +1334,7 @@ function buildWorld() {
   K.box(-8.3, 4.35, -1, .14, .16, 15.4, C.wallD); // cornice
   K.box(-8.3, 5.45, -1, .12, .12, 15.4, C.wallD);
   // upper windows
-  for (let z = -7; z <= 6; z += 3.25) {
+  if (!skip.has('window')) for (let z = -7; z <= 6; z += 3.25) {
     K.box(-8.21, 5.45, z, .1, .72, 1.3, C.dark); K.box(-8.2, 5.4, z, .08, .08, 1.45, C.cream); K.box(-8.2, 6.12, z, .08, .08, 1.45, C.cream);
     K.box(-8.18, 5.45, z - .84, .1, .7, .3, C.teal); K.box(-8.18, 5.45, z + .84, .1, .7, .3, C.teal);
     K.box(-8.0, 5.25, z, .3, .22, 1.5, C.wood);
@@ -1208,9 +1367,9 @@ function buildWorld() {
   }
   K.box(-5.9, 0, -6.45, .1, 3.95, .1, C.cream); K.box(-5.9, 0, 6.3, .1, 3.95, .1, C.cream);
   // semaver (first)
-  addSemaver(K, -5.05);
+  if (!skip.has('semaver')) addSemaver(K, -5.05);
   // simit oven
-  { const zc = STATION_Z.simit, x = CNT_X;
+  if (!skip.has('oven')) { const zc = STATION_Z.simit, x = CNT_X;
     K.box(x, 1.12, zc, 1.55, .45, 1.7, C.stoneD);
     K.box(x, 1.57, zc, 1.5, 1.15, 1.65, 0xa0673a);
     K.box(x, 2.72, zc, 1.62, .12, 1.78, C.roof);
@@ -1221,7 +1380,7 @@ function buildWorld() {
     K.box(x + .6, 1.4, zc, .5, .06, 1.5, C.wood);
   }
   // coffee station
-  { const zc = STATION_Z.coffee, x = CNT_X;
+  if (!skip.has('coffee')) { const zc = STATION_Z.coffee, x = CNT_X;
     K.box(x, 1.12, zc, 1.5, .1, 1.9, C.dark);
     K.box(x, 1.2, zc, 1.34, .08, 1.74, C.sand, 0, 0, 0, .02);
     K.box(x - .62, 1.12, zc, .08, .3, 1.9, C.wood); K.box(x + .62, 1.12, zc, .08, .3, 1.9, C.wood);
@@ -1235,7 +1394,7 @@ function buildWorld() {
     });
   }
   // ayran cooler
-  { const zc = STATION_Z.ayran, x = CNT_X;
+  if (!skip.has('ayran')) { const zc = STATION_Z.ayran, x = CNT_X;
     K.box(x, 1.12, zc, 1.45, 1.75, 1.55, 0xe2eaef);
     K.box(x + .74, 1.3, zc, .06, 1.25, 1.25, 0x89b1c6);
     K.box(x + .76, 2.5, zc, .08, .3, 1.35, 0x3b6f94);
@@ -1244,7 +1403,7 @@ function buildWorld() {
     K.cyl(x - .3, 2.87, zc + .3, .17, .13, .3, 0xfbfaf4, 8); K.cyl(x - .3, 2.87, zc - .3, .17, .13, .3, 0xfbfaf4, 8);
   }
   // sink
-  { const zc = STATION_Z.sink, x = CNT_X;
+  if (!skip.has('sink')) { const zc = STATION_Z.sink, x = CNT_X;
     K.box(x, 1.12, zc, 1.5, .5, 1.6, 0x8aa6b4);
     K.box(x + .05, 1.58, zc, 1.15, .06, 1.25, 0x5e94b0, 0, 0, 0, 0);
     K.cyl(x - .5, 1.62, zc, .06, .06, .85, 0xc9ccd0, 8); K.box(x - .3, 2.4, zc, .55, .07, .07, 0xc9ccd0);
@@ -1349,18 +1508,46 @@ const TB = {};
   const legs = (() => { const m = new Merger(); m.cyl(0, 0, 0, .34, .4, .06, 0x4a3a30, 10); m.cyl(0, .06, 0, .08, .08, .84, 0x4a3a30, 8); return new THREE.InstancedMesh(m.geometry(), matIV(), 6); })();
   const stools = new THREE.InstancedMesh(new THREE.CylinderGeometry(.27, .2, .5, 8), matI(), 24);
   const cush = new THREE.InstancedMesh(new THREE.CylinderGeometry(.29, .29, .08, 8), matI(), 24);
-  const glass = new THREE.InstancedMesh(new THREE.CylinderGeometry(.115, .075, .22, 8), matI(), 36);
-  const plate = new THREE.InstancedMesh(new THREE.CylinderGeometry(.2, .17, .04, 10), matI(), 36);
   const cloth = [0xd9693a, 0x3f8a92, 0xe0a63f, 0xb85a7a, 0x6a9a4a, 0xd9693a];
   for (let i = 0; i < 6; i++) tops.setColorAt(i, new THREE.Color(cloth[i]));
   const sc = [0x3f7f86, 0xc2602a, 0x3f7f86, 0xc2602a];
   for (let i = 0; i < 24; i++) { stools.setColorAt(i, new THREE.Color(sc[i % 4])); cush.setColorAt(i, new THREE.Color(0xf08c3a)); }
-  for (let i = 0; i < 36; i++) { glass.setColorAt(i, new THREE.Color(C.amber)); plate.setColorAt(i, new THREE.Color(0xd9a043)); }
-  [tops, legs, stools, cush, glass, plate].forEach(m => { m.frustumCulled = false; m.castShadow = !FLAG.low; m.receiveShadow = !FLAG.low; world.add(m); });
-  glass.castShadow = plate.castShadow = false;
-  Object.assign(TB, { tops, legs, stools, cush, glass, plate });
+  [tops, legs, stools, cush].forEach(m => { m.frustumCulled = false; m.castShadow = !FLAG.low; m.receiveShadow = !FLAG.low; world.add(m); });
+  Object.assign(TB, { tops, legs, stools, cush });
 }
-const ITEM_COL = { tea: 0xc2410c, simit: 0xd9a043, coffee: 0x5a3a22, ayran: 0xf4f1ea, dirty: 0x8d857c };
+
+/* ---------- served / carried items: one small instanced model per item type, shared by the tray and the tables ---------- */
+const ITM = (() => {
+  const lathe = (m, pts, col, seg = 10) => m.add(new THREE.LatheGeometry(pts.map(([r, y]) => new THREE.Vector2(r, y)), seg), mat(0, 0, 0), col, 0);
+  const saucer = (m, r) => { m.cyl(0, 0, 0, r, r * .78, .025, 0xf6efe2, 12, 0); m.cyl(0, .025, 0, r * .55, r * .55, .004, 0xc2410c, 12, 0); };
+  const tulip = [[0, .03], [.055, .03], [.07, .06], [.056, .12], [.054, .15], [.072, .21], [.08, .24]];
+  const B = {
+    tea(m) { saucer(m, .13); lathe(m, tulip, 0xb8340e); m.cyl(0, .2, 0, .07, .07, .012, 0x8e230a, 10, 0); m.cyl(0, .228, 0, .079, .076, .014, 0xf3e3c8, 10, 0); },
+    glass(m) { saucer(m, .13); lathe(m, tulip, 0xcfc6b8); m.cyl(0, .035, 0, .05, .05, .025, 0x8a5a3a, 8, 0); }, // empty, used glass
+    simit(m) { m.cyl(0, 0, 0, .19, .16, .03, 0xf6efe2, 12, 0); m.add(new THREE.TorusGeometry(.105, .048, 6, 12).rotateX(Math.PI / 2), mat(0, .072, 0), 0xc7802f, 0); },
+    plate(m) { m.cyl(0, 0, 0, .19, .16, .03, 0xe6dccb, 12, 0); m.sph(.05, .035, .03, .02, 0xb07a3a, 1, .6, 1, 4, 3, 0); m.sph(-.06, .035, -.02, .016, 0xb07a3a, 1, .6, 1, 4, 3, 0); },
+    coffee(m) { saucer(m, .12); lathe(m, [[0, .025], [.045, .025], [.062, .06], [.068, .125]], 0xfbf6ec); m.cyl(0, .108, 0, .062, .062, .01, 0x3b2414, 10, 0); m.box(.075, .06, 0, .03, .045, .018, 0xfbf6ec, 0, 0, 0, 0); },
+    ayran(m) { lathe(m, [[0, 0], [.058, 0], [.077, .19]], 0xfbfaf4); m.cyl(0, .07, 0, .07, .066, .045, 0x7fb3d5, 10, 0); m.cyl(0, .19, 0, .079, .079, .008, 0xeef3f6, 10, 0); }
+  };
+  const out = {}, N = 44; // 7 tray slots + 36 table slots + the apprentice's glass
+  for (const k in B) {
+    const m = new Merger(); B[k](m);
+    const im = new THREE.InstancedMesh(m.geometry(), matIV(), N); im.frustumCulled = false; im.castShadow = !FLAG.low; im.count = 0; im.visible = false; world.add(im);
+    out[k] = { im, n: 0 };
+  }
+  return out;
+})();
+// what a finished item leaves on the table, and the tint for used cups
+const ITEM_USED = { tea: 'glass', simit: 'plate', coffee: 'coffee', ayran: 'ayran', dirty: 'glass' };
+const USED_TINT = { coffee: 0x9a9088, ayran: 0xb3aca4 };
+function itemsBegin() { for (const k in ITM) ITM[k].n = 0; }
+function itemPut(kind, x, y, z, ry, tint = 0xffffff) {
+  const it = ITM[kind]; if (!it || it.n >= 44) return;
+  it.im.setMatrixAt(it.n, mat(x, y, z, 1, 1, 1, ry)); _c.setHex(tint); it.im.setColorAt(it.n, _c); it.n++;
+}
+function itemsEnd() {
+  for (const k in ITM) { const it = ITM[k]; it.im.count = it.n; it.im.visible = it.n > 0; it.im.instanceMatrix.needsUpdate = true; if (it.im.instanceColor) it.im.instanceColor.needsUpdate = true; }
+}
 
 /* ---------- hover ring ---------- */
 const hoverRing = new THREE.Mesh(new THREE.RingGeometry(.92, 1.08, 40).rotateX(-Math.PI / 2), new THREE.MeshLambertMaterial({ color: 0xC2410C, emissive: 0xC2410C, emissiveIntensity: .9, transparent: true, opacity: .85, depthWrite: false }));
@@ -1392,7 +1579,8 @@ const PPL = {
   body: new THREE.InstancedMesh(PG.b, matIV(), MAXP), head: new THREE.InstancedMesh(PG.h, matIV(), MAXP),
   hair: new THREE.InstancedMesh(PG.hr, matIV(), MAXP), cap: new THREE.InstancedMesh(PG.cp, matIV(), MAXP)
 };
-Object.values(PPL).forEach(m => { m.frustumCulled = false; m.castShadow = !FLAG.low; world.add(m); for (let i = 0; i < MAXP; i++) { m.setMatrixAt(i, mat(0, -50, 0, 0, 0, 0)); m.setColorAt(i, new THREE.Color(0xffffff)); } });
+const PPL_LIST = Object.values(PPL), FLASH_C = new THREE.Color(0xd23a2a);
+PPL_LIST.forEach(m => { m.frustumCulled = false; m.castShadow = !FLAG.low; world.add(m); for (let i = 0; i < MAXP; i++) { m.setMatrixAt(i, mat(0, -50, 0, 0, 0, 0)); m.setColorAt(i, new THREE.Color(0xffffff)); } });
 
 function buildWaiter(shirt, vest, apron, hair, scale) {
   const m = new Merger();
@@ -1413,9 +1601,6 @@ function buildWaiter(shirt, vest, apron, hair, scale) {
 }
 const waiterObj = buildWaiter(0xf6efe0, 0x3b2a22, 0xC2410C, 0x20150f, 1.0);
 const apprObj = buildWaiter(0x7fa3c9, 0x3a5f8a, 0xf4f0e6, 0x5a3a22, .92); apprObj.visible = false;
-// tray items
-const trayIM = new THREE.InstancedMesh(new THREE.CylinderGeometry(.1, .08, .2, 8), matI(), 7); trayIM.frustumCulled = false; trayIM.castShadow = !FLAG.low; world.add(trayIM);
-for (let i = 0; i < 7; i++) { trayIM.setColorAt(i, new THREE.Color(0xffffff)); trayIM.setMatrixAt(i, mat(0, -50, 0, 0, 0, 0)); }
 
 /* ---------- cat, gulls, ferry, waves ---------- */
 const catGrp = (() => {
@@ -1454,7 +1639,7 @@ const waves = (() => {
 })();
 
 /* ---------- particles (one Points object) ---------- */
-const NP = FLAG.low ? 90 : 180, NHALO = 4;
+const NP = FLAG.low ? 90 : 180, NHALO = 2;
 const PT = {
   pos: new Float32Array(NP * 3), col: new Float32Array(NP * 3), ap: new Float32Array(NP * 2),
   life: new Float32Array(NP), max: new Float32Array(NP), vx: new Float32Array(NP), vy: new Float32Array(NP), vz: new Float32Array(NP), g: new Float32Array(NP),
@@ -1477,8 +1662,7 @@ const PK = {
   smoke: { c: [.62, .56, .52], a: .45, s0: 10, s1: 26, vy: .8, vs: .25, life: 2.0, g: 0 },
   spark: { c: [1, .84, .3], a: 1, s0: 10, s1: 3, vy: 2.2, vs: 1.4, life: .7, g: -5 },
   heart: { c: [1, .42, .55], a: .95, s0: 18, s1: 22, vy: .9, vs: .15, life: 1.3, g: 0 },
-  anger: { c: [.92, .24, .14], a: .85, s0: 14, s1: 20, vy: 1.3, vs: .9, life: .9, g: 0 },
-  water: { c: [.62, .82, 1], a: .8, s0: 8, s1: 3, vy: 1.4, vs: .8, life: .7, g: -4 }
+  anger: { c: [.92, .24, .14], a: .85, s0: 14, s1: 20, vy: 1.3, vs: .9, life: .9, g: 0 }
 };
 function burst(kind, x, y, z, n = 1) {
   if (G.simming) return;
@@ -1511,7 +1695,6 @@ const CATHOME = { x: -7.55, z: -7.6 };
 const cat = { x: CATHOME.x, z: CATHOME.z, y: .3, face: Math.PI / 2, state: 'sleep', t: 14 + Math.random() * 10, path: [], moving: false, pet: 0 };
 const ferry = { x: -44, bob: 0, horn: false };
 const gulls = [{ a: 0, r: 6.5, cx: 1, cz: -13, h: 8.5, sp: .32 }, { a: 2.1, r: 8, cx: -2, cz: -12, h: 10.5, sp: -.27 }, { a: 4.2, r: 5.5, cx: 5, cz: -11, h: 7.5, sp: .4 }, { a: 5.5, r: 9, cx: 0, cz: -14, h: 12, sp: -.22 }];
-const ambient = { people: [] };
 function ambientUpdate(dt) {
   ferry.x += dt * 1.1; ferry.bob += dt;
   if (ferry.x > 40) { ferry.x = -46; ferry.horn = false; }
@@ -1545,10 +1728,11 @@ let steamAcc = 0;
 function syncVisuals(dt) {
   const vt = G.vt, w = G.waiter;
   /* tables */
+  itemsBegin();
   for (let i = 0; i < 6; i++) {
     const tb = G.tables[i] || { unlocked: i < tableCount() }; const on = tb.unlocked;
     const [x, z] = TABLE_POS[i], s = on ? 1 : 0;
-    TB.tops.setMatrixAt(i, mat(x, .93, z, s, s, s)); TB.legs.setMatrixAt(i, mat(x, 0, z, s, s, s));
+    TB.tops.setMatrixAt(i, mat(x, .93, z, s, s, s)); if (TB.legs.visible) TB.legs.setMatrixAt(i, mat(x, 0, z, s, s, s));
     for (let k = 0; k < 4; k++) {
       const a = SEAT_ANG[k], sx = x + Math.cos(a) * .98, sz = z + Math.sin(a) * .98;
       TB.stools.setMatrixAt(i * 4 + k, mat(sx, .25, sz, s, s, s));
@@ -1557,30 +1741,28 @@ function syncVisuals(dt) {
     }
     for (let k = 0; k < 6; k++) {
       const sl = on ? (tb.slots || [])[k] : null, a = k * 1.047 + .5, gx = x + Math.cos(a) * .45, gz = z + Math.sin(a) * .45;
-      const showG = sl && sl.kind === 'glass', showP = sl && sl.kind === 'plate';
-      TB.glass.setMatrixAt(i * 6 + k, showG ? mat(gx, 1.08, gz) : mat(0, -50, 0, 0, 0, 0));
-      TB.plate.setMatrixAt(i * 6 + k, showP ? mat(gx, 1.0, gz) : mat(0, -50, 0, 0, 0, 0));
-      if (sl) { _c.setHex(sl.dirty ? (sl.kind === 'glass' ? 0x9b8f84 : 0xb9a58a) : ITEM_COL[sl.item]); (showG ? TB.glass : TB.plate).setColorAt(i * 6 + k, _c); }
+      if (sl) itemPut(sl.dirty ? ITEM_USED[sl.item] : sl.item, gx, .98, gz, -a, sl.dirty ? USED_TINT[sl.item] : undefined);
     }
   }
-  [TB.tops, TB.legs, TB.stools, TB.cush, TB.glass, TB.plate].forEach(m => { m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; });
+  [TB.tops, TB.legs, TB.stools, TB.cush].forEach(m => { if (!m.visible) return; m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; });
 
   /* stations */
   const S = G.stations;
   DYN.kettleB.visible = G.up.kettle > 0;
   const ovenOn = S && S.oven.st === 'baking';
   DYN.ovenGlow.material.emissiveIntensity = S ? (ovenOn ? .9 + Math.sin(vt * 9) * .15 : S.oven.st === 'ready' ? .7 : .12) : .12;
-  for (let k = 0; k < 3; k++) { const on = S && S.oven.st === 'ready' && k < S.oven.n; DYN.simitRings.setMatrixAt(k, on ? mat(CNT_X + .05, 2.86, STATION_Z.simit + (k - 1) * .45, 1, 1, 1, .3 * k) : mat(0, -50, 0, 0, 0, 0)); }
+  for (let k = 0; k < 3; k++) { const on = S && S.oven.st === 'ready' && k < S.oven.n; DYN.simitRings.setMatrixAt(k, on ? mat(FIT.ringX, FIT.ringY, STATION_Z.simit + (k - 1) * .45, 1, 1, 1, .3 * k) : mat(0, -50, 0, 0, 0, 0)); }
   DYN.simitRings.instanceMatrix.needsUpdate = true;
   for (let k = 0; k < 2; k++) {
-    const p = S && S.pots[k], z = STATION_Z.coffee + (k ? 1 : -1) * .45;
+    const p = S && S.pots[k], [px, py, z] = FIT.pots[k];
     let sc = 0, col = 0x6b4226;
     if (p) {
       if (p.st === 'cook') { sc = .02 + (p.t / COOK_T) * .12; col = 0x7a4a2a; }
       else if (p.st === 'ready') { sc = .14 + Math.sin(vt * 12) * .01; col = 0xb98a56; }
-      else if (p.st === 'spilled') { sc = .02; col = 0x1e140c; }
+      else if (p.st === 'spilled') { sc = .02; col = 0x2e1d10; }
     }
-    DYN.foam.setMatrixAt(k, sc > 0 ? mat(CNT_X + .05, 1.66 + (p.st === 'spilled' ? -.5 : 0), z, sc * 1.2, sc * (p.st === 'spilled' ? .5 : .8), sc * 1.2) : mat(0, -50, 0, 0, 0, 0));
+    const spill = p && p.st === 'spilled'; // boiled over: a wide, flat, dark froth spread over the pot mouth
+    DYN.foam.setMatrixAt(k, sc > 0 ? (spill ? mat(px, py + .01, z, .26, .05, .26) : mat(px, py, z, sc * 1.2, sc * .8, sc * 1.2)) : mat(0, -50, 0, 0, 0, 0));
     _c.setHex(col); DYN.foam.setColorAt(k, _c);
   }
   DYN.foam.instanceMatrix.needsUpdate = true; DYN.foam.instanceColor.needsUpdate = true;
@@ -1589,9 +1771,9 @@ function syncVisuals(dt) {
     steamAcc += dt;
     if (steamAcc > .13) {
       steamAcc = 0;
-      S.kettles.forEach((k, i) => { if (i > G.up.kettle) return; const z = i ? -3.85 : -5.05; if (k.st === 'brewing') burst('steam', CNT_X, 3.3, z, 1); else if (k.st === 'ready' && Math.random() < .35) burst('steam', CNT_X, 3.3, z, 1); });
-      if (S.oven.st === 'baking' || S.oven.st === 'ready') burst('smoke', CNT_X - .45, 3.7, STATION_Z.simit - .5, 1);
-      S.pots.forEach((p, k) => { if (p.st === 'cook' && p.t > COOK_T * .5 || p.st === 'ready') burst('steam', CNT_X + .05, 1.9, STATION_Z.coffee + (k ? 1 : -1) * .45, 1); });
+      S.kettles.forEach((k, i) => { if (i > G.up.kettle) return; const z = i ? -3.85 : -5.05; if (k.st === 'brewing') burst('steam', CNT_X, FIT.teaSteamY, z, 1); else if (k.st === 'ready' && Math.random() < .35) burst('steam', CNT_X, FIT.teaSteamY, z, 1); });
+      if (S.oven.st === 'baking' || S.oven.st === 'ready') burst('smoke', FIT.smoke[0], FIT.smoke[1], FIT.smoke[2], 1);
+      S.pots.forEach((p, k) => { if (p.st === 'cook' && p.t > COOK_T * .5 || p.st === 'ready') { const q = FIT.pots[k]; burst('steam', q[0], q[1] + FIT.potSteamDY, q[2], 1); } });
     }
   }
   /* waiter */
@@ -1605,15 +1787,15 @@ function syncVisuals(dt) {
       // local tray centre is (0,1.06,.5)
       const ox = lx, oz = lz + .2 - .3;
       const wx = w.x + ox * cs + oz * sn, wz = w.z - ox * sn + oz * cs;
-      trayIM.setMatrixAt(k, mat(wx, 1.17 + bobW, wz, 1, 1, 1, w.face)); _c.setHex(ITEM_COL[it]); trayIM.setColorAt(k, _c);
-    } else trayIM.setMatrixAt(k, mat(0, -50, 0, 0, 0, 0));
+      itemPut(it === 'dirty' ? 'glass' : it, wx, 1.07 + bobW, wz, w.face);
+    }
   }
-  trayIM.instanceMatrix.needsUpdate = true; trayIM.instanceColor.needsUpdate = true;
   /* apprentice */
   const ap = G.apprentice;
   apprObj.visible = !!ap;
   if (ap) { apprObj.position.set(ap.x, ap.moving ? Math.abs(Math.sin(vt * 11 + 1)) * .06 : 0, ap.z); apprObj.rotation.y = ap.face; }
-  if (ap && ap.carry) { trayIM.setMatrixAt(5, mat(ap.x + Math.sin(ap.face) * .5, 1.18, ap.z + Math.cos(ap.face) * .5, 1, 1, 1, 0)); _c.setHex(ITEM_COL.dirty); trayIM.setColorAt(5, _c); trayIM.instanceMatrix.needsUpdate = true; trayIM.instanceColor.needsUpdate = true; }
+  if (ap && ap.carry) itemPut('glass', ap.x + Math.sin(ap.face) * .5, 1.08, ap.z + Math.cos(ap.face) * .5, 0);
+  itemsEnd();
 
   /* people */
   for (let i = 0; i < MAXP; i++) {
@@ -1628,18 +1810,18 @@ function syncVisuals(dt) {
     const hasCap = pe.cap;
     PPL.hair.setMatrixAt(i, hasCap ? mat(0, -50, 0, 0, 0, 0) : mat(pe.x + sh, by + 1.06, pe.z, sc, sc, sc, pe.face, 0, lean * .5));
     PPL.cap.setMatrixAt(i, hasCap ? mat(pe.x + sh, by + 1.2, pe.z, sc, sc, sc, pe.face, 0, lean * .5) : mat(0, -50, 0, 0, 0, 0));
-    _c.setHex(pe.body); if (pe.flash > 0) _c.lerp(new THREE.Color(0xd23a2a), Math.min(1, pe.flash * 1.5)); PPL.body.setColorAt(i, _c);
+    _c.setHex(pe.body); if (pe.flash > 0) _c.lerp(FLASH_C, Math.min(1, pe.flash * 1.5)); PPL.body.setColorAt(i, _c);
     _c.setHex(pe.skin); PPL.head.setColorAt(i, _c);
     _c.setHex(pe.hair); PPL.hair.setColorAt(i, _c); _c.setHex(pe.type === 'regular' ? 0x3a4a6a : 0x2a1a10); PPL.cap.setColorAt(i, _c);
   }
   // ambient passers-by on the far street
   ambientPeople(dt);
-  Object.values(PPL).forEach(m => { m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; });
+  PPL_LIST.forEach(m => { m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; });
 
   /* cat */
   const asleep = cat.state === 'sleep', sit = cat.state === 'sit';
   const breathe = asleep ? 1 + Math.sin(vt * 1.8) * .04 : 1;
-  catGrp.position.set(cat.x, cat.y, cat.z); catGrp.rotation.y = cat.face - Math.PI / 2 + (asleep ? 0 : 0);
+  catGrp.position.set(cat.x, cat.y, cat.z);
   catGrp.rotation.y = Math.atan2(Math.sin(cat.face), Math.cos(cat.face)) - Math.PI / 2;
   catGrp.scale.set(1, asleep ? .72 * breathe : sit ? .9 : 1, 1);
   catGrp.position.y = cat.y + (cat.moving ? Math.abs(Math.sin(vt * 12)) * .05 : 0);
@@ -1684,25 +1866,29 @@ function toScreen(x, y, z, out) {
 /* ============================================================
    UI
    ============================================================ */
-const topEl = $('#top'), dockEl = $('#dock'), wlEl = $('#wl'), scrEl = $('#screen'), toastsEl = $('#toasts'), pauseEl = $('#pausebanner'), dbgEl = $('#dbg');
-function langSet(l) { G.lang = l; store.set('cay_prefs', { lang: G.lang, muted: G.muted }); document.documentElement.lang = l; uiStatic(); uiScreen(true); }
+const topEl = $('#top'), dockEl = $('#dock'), wlEl = $('#wl'), scrEl = $('#screen'), toastsEl = $('#toasts'), dbgEl = $('#dbg');
+const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
+function langSet(l) { G.lang = l; SET.lang = l; saveSettings(); document.documentElement.lang = l; uiStatic(); uiScreen(true); }
 function fmtTime(s) { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
 function starsHTML(n, anim) { let h = ''; for (let i = 0; i < 3; i++) h += `<span style="display:inline-block">${(i < n ? ICON.star : ICON.starOff).replace('<svg', `<svg class="${anim && i < n ? 'pop' : ''}" style="animation-delay:${.25 + i * .28}s"`)}</span>`; return `<div class="stars">${h}</div>`; }
 
+// elements updated every frame, looked up once per uiStatic()
+const UI = { sts: [] };
 function uiStatic() {
   topEl.innerHTML = `
     <div class="logo">${ICON.tulip}<span>Çay Ocağı</span></div>
     <div class="chip" id="t-day"></div>
-    <div class="chip" title="${t('today')}"><div class="bar clock"><i id="t-clk"></i></div><b id="t-time">3:00</b></div>
-    <div class="chip cc" title="${t('target')}">${ICON.coin}<b id="t-coins">0</b><small>/ <span id="t-target">0</span></small><div class="bar"><i id="t-cbar"></i></div></div>
+    <div class="chip" title="${t('today')}"><div class="bar clock" id="t-clkbar"><i id="t-clk"></i></div><b id="t-time">3:00</b></div>
+    <div class="chip cc" id="t-coinchip" title="${t('target')}">${ICON.coin}<b id="t-coins">0</b><small>/ <span id="t-target">0</span></small><div class="bar"><i id="t-cbar"></i></div></div>
     <div class="chip cc" title="${t('happyC')}">${ICON.happy}<b id="t-happy">0</b></div>
     <div class="chip cc" title="${t('angryC')}">${ICON.angry}<b id="t-angry">0</b></div>
     <div class="sp"></div>
     <div class="btns">
       <button class="ibtn" data-a="speed" title="${t('speedT')}" id="b-speed">1×</button>
-      <button class="ibtn" data-a="pause" title="${t('pauseT')} (Space)" id="b-pause">${ICON.pause}</button>
-      <button class="ibtn" data-a="snd" title="${t('soundT')}" id="b-snd">${G.muted ? ICON.mute : ICON.snd}</button>
-      <button class="ibtn" data-a="lang" id="b-lang">${t('langBtn')}</button>
+      <button class="ibtn" data-a="pause" title="${t('pauseT')} (P / Esc)" aria-label="${t('pauseT')}" id="b-pause">${ICON.pause}</button>
+      <button class="ibtn" data-a="snd" title="${t('soundT')}" aria-label="${t('soundT')}" id="b-snd">${G.muted ? ICON.mute : ICON.snd}</button>
+      <button class="ibtn hud-gear" data-a="settings" title="${t('settings')}" aria-label="${t('settings')}">${ICON.gear}</button>
+      <button class="ibtn" data-a="lang" title="${t('language')} (L)" id="b-lang">${t('langBtn')}</button>
     </div>`;
   let slots = ''; for (let i = 0; i < 5; i++) slots += `<div class="slot" data-slot="${i}"></div>`;
   const names = { tea: t('tea'), simit: t('simit'), coffee: t('coffee'), ayran: t('ayran'), sink: t('sink') };
@@ -1715,6 +1901,10 @@ function uiStatic() {
   dockEl.innerHTML = `
     <div id="tray" class="glass"><span class="lbl">${t('tray')}</span><div class="slots">${slots}</div><div id="queue"></div></div>
     <div id="stations" class="glass">${sts}</div>`;
+  Object.assign(UI, {
+    sp: $('#b-speed'), pb: $('#b-pause'), slots: $$('.slot'), queue: $('#queue'), clk: $('#t-clkbar'), time: $('#t-time'), coinChip: $('#t-coinchip'),
+    sts: $$('.st').map(el => ({ el, k: el.dataset.st, us: $$('.u', el), ce: $('.cnt', el) }))
+  });
   C_cache.clear();
   // station world badges + table bubbles
   if (!wlEl.dataset.built) {
@@ -1722,12 +1912,14 @@ function uiStatic() {
     for (let i = 0; i < 6; i++) { const b = document.createElement('div'); b.className = 'bub'; b.dataset.t = i; wlEl.appendChild(b); }
     ['tea', 'simit', 'coffee'].forEach(k => { const b = document.createElement('div'); b.className = 'bub mini sbadge'; b.dataset.s = k; b.style.pointerEvents = 'none'; wlEl.appendChild(b); });
   }
+  for (const b of wlEl.children) b._sig = null; // icons may have changed (PNG set loaded)
   uiFrame(0, true);
 }
 const C_cache = new Map();
 function setTxt(id, v) { if (C_cache.get(id) !== v) { C_cache.set(id, v); const el = document.getElementById(id); if (el) el.textContent = v; } }
 function setHTML(el, key, v) { if (C_cache.get(key) !== v) { C_cache.set(key, v); el.innerHTML = v; } }
 function setW(id, pct) { const k = id + '#w'; const v = Math.round(pct * 10) / 10; if (C_cache.get(k) !== v) { C_cache.set(k, v); const el = document.getElementById(id); if (el) el.style.width = v + '%'; } }
+function setVis(el, key, v) { if (C_cache.get(key) !== v) { C_cache.set(key, v); el.style.display = v; } }
 
 const _sp = { x: 0, y: 0 };
 let _hoverStation = null;
@@ -1737,17 +1929,16 @@ function uiFrame(dt, force) {
   setTxt('t-day', G.endless ? t('dayEndless', G.day) : t('dayOf', G.day));
   setTxt('t-time', fmtTime(G.dayLen - G.clock));
   setW('t-clk', clamp(G.clock / G.dayLen, 0, 1) * 100);
+  const last = play && G.clock > G.dayLen - 20;
+  if (C_cache.get('last') !== last) { C_cache.set('last', last); UI.clk.classList.toggle('last', last); UI.time.classList.toggle('last', last); }
   setTxt('t-coins', String(G.dayCoins)); setTxt('t-target', String(G.target));
   setW('t-cbar', clamp(G.dayCoins / Math.max(1, G.target), 0, 1) * 100);
   setTxt('t-happy', String(G.happy)); setTxt('t-angry', String(G.angry));
-  const sp = $('#b-speed'); if (sp) { const v = G.speed + '×'; if (C_cache.get('sp') !== v) { C_cache.set('sp', v); sp.textContent = v; sp.classList.toggle('on', G.speed > 1); } }
-  const pb = $('#b-pause'); if (pb) { const v = G.paused ? 1 : 0; if (C_cache.get('pb') !== v) { C_cache.set('pb', v); pb.innerHTML = G.paused ? ICON.play : ICON.pause; pb.classList.toggle('on', !!G.paused); } }
-  dockEl.style.display = play ? 'flex' : 'none';
-  topEl.style.display = G.state === 'play' || G.state === 'intro' ? 'flex' : 'none';
-  wlEl.style.display = G.state === 'play' || G.state === 'intro' || G.state === 'title' ? 'block' : 'none';
-  pauseEl.style.display = G.paused && play ? 'block' : 'none';
-  if (G.paused && play) setHTML(pauseEl, 'pz', `${t('paused')}<small>${t('pausedSub')}</small>`);
-  if (!play && G.state !== 'intro' && G.state !== 'title') { /* nothing else */ }
+  { const v = G.speed + '×'; if (C_cache.get('sp') !== v) { C_cache.set('sp', v); UI.sp.textContent = v; UI.sp.classList.toggle('on', G.speed > 1); } }
+  { const v = G.paused ? 1 : 0; if (C_cache.get('pb') !== v) { C_cache.set('pb', v); UI.pb.innerHTML = G.paused ? ICON.play : ICON.pause; UI.pb.classList.toggle('on', !!G.paused); } }
+  setVis(dockEl, 'v-dock', play ? 'flex' : 'none');
+  setVis(topEl, 'v-top', play || G.state === 'intro' ? 'flex' : 'none');
+  setVis(wlEl, 'v-wl', play || G.state === 'intro' || G.state === 'title' ? 'block' : 'none');
   const cfg = dayCfg(G.day), w = G.waiter, S = G.stations;
   /* tray */
   if (w) {
@@ -1755,37 +1946,37 @@ function uiFrame(dt, force) {
     const sig = w.tray.join(',') + '|' + cap;
     if (C_cache.get('tray') !== sig) {
       C_cache.set('tray', sig);
-      $$('.slot').forEach((el, i) => {
+      UI.slots.forEach((el, i) => {
         const it = w.tray[i]; el.className = 'slot' + (it ? ' full' : '') + (i >= cap ? ' lock' : '');
         el.innerHTML = it ? ICON[it] : ''; el.title = it ? (it === 'dirty' ? t('dirty') : t(it)) : '';
       });
     }
     const qs = w.q.map(a => a.type === 'station' ? a.id : 'T' + (a.id + 1)).join(',') + (w.cur ? '*' : '');
     if (C_cache.get('q') !== qs) {
-      C_cache.set('q', qs); const qe = $('#queue');
-      if (qe) qe.innerHTML = w.q.map(a => a.type === 'station' ? `<span class="q" style="background:#fff">${ICON[a.id].replace('<svg', '<svg width="16" height="16"')}</span>` : `<span class="q">${a.id + 1}</span>`).join('') + (w.q.length ? `<span class="qx" data-a="clearq">${t('clearQ')}</span>` : '');
+      C_cache.set('q', qs);
+      UI.queue.innerHTML = w.q.map(a => a.type === 'station' ? `<span class="q" style="background:#fff">${ICON[a.id].replace('<svg', '<svg width="16" height="16"')}</span>` : `<span class="q">${a.id + 1}</span>`).join('') + (w.q.length ? `<span class="qx" data-a="clearq">${t('clearQ')}</span>` : '');
     }
   }
   /* stations dock */
-  if (S) {
-    $$('.st').forEach(el => {
-      const k = el.dataset.st; let ready = false, cnt = 0;
-      const menu = cfg.menu; const locked = (k === 'simit' && !menu.includes('simit')) || (k === 'coffee' && !menu.includes('coffee')) || (k === 'ayran' && !menu.includes('ayran'));
-      el.classList.toggle('lock', locked);
-      const us = el.querySelectorAll('.u');
+  if (S && play) {
+    for (const { el, k, us, ce } of UI.sts) {
+      let ready = false, cnt = 0;
+      const locked = k !== 'tea' && k !== 'sink' && !cfg.menu.includes(k);
+      if (C_cache.get('lk' + k) !== locked) { C_cache.set('lk' + k, locked); el.classList.toggle('lock', locked); }
       us.forEach((u, j) => {
         let cls = 'u', wd = 0;
-        if (k === 'tea') { if (j > G.up.kettle) { u.style.display = 'none'; return; } u.style.display = ''; const kk = S.kettles[j]; if (kk.st === 'brewing') wd = kk.t / BREW_T * 100; else if (kk.st === 'ready') { cls += ' ready'; ready = true; cnt += kk.n; } }
+        if (k === 'tea') { const hide = j > G.up.kettle; setVis(u, 'uh' + j, hide ? 'none' : ''); if (hide) return; const kk = S.kettles[j]; if (kk.st === 'brewing') wd = kk.t / BREW_T * 100; else if (kk.st === 'ready') { cls += ' ready'; ready = true; cnt += kk.n; } }
         else if (k === 'simit') { const o = S.oven; if (o.st === 'baking') wd = o.t / ovenTime() * 100; else if (o.st === 'ready') { cls += ' ready'; ready = true; cnt += o.n; } }
         else if (k === 'coffee') { const p = S.pots[j]; if (p.st === 'cook') wd = p.t / COOK_T * 100; else if (p.st === 'ready') { cls += ' warn'; wd = (1 - p.t / COOK_WIN) * 100; ready = true; cnt++; if (COOK_WIN - p.t < 1.3) cls += ' blink'; } else if (p.st === 'spilled') cls += ' bad'; }
         const key = k + j; const v = cls + '|' + Math.round(wd);
         if (C_cache.get(key) !== v) { C_cache.set(key, v); u.className = cls; u.firstElementChild.style.width = Math.round(wd) + '%'; }
       });
       if (k === 'sink') { cnt = w ? w.tray.filter(x => x === 'dirty').length : 0; }
-      const ce = el.querySelector('.cnt'); const cv = cnt ? String(cnt) : ''; if (C_cache.get('c' + k) !== cv) { C_cache.set('c' + k, cv); ce.textContent = cv; ce.style.display = cv ? 'grid' : 'none'; }
+      const cv = cnt ? String(cnt) : ''; if (C_cache.get('c' + k) !== cv) { C_cache.set('c' + k, cv); ce.textContent = cv; ce.style.display = cv ? 'grid' : 'none'; }
       if (k === 'tea' && G.day === 1 && !G.won && G.clock < 40 && S.kettles[0].st === 'empty' && w && !w.q.length && !w.cur) ready = true;
-      el.classList.toggle('ready', ready && k !== 'sink'); el.classList.toggle('hov', _hoverStation === k);
-    });
+      const rv = (ready && k !== 'sink') + '|' + (_hoverStation === k);
+      if (C_cache.get('r' + k) !== rv) { C_cache.set('r' + k, rv); el.classList.toggle('ready', ready && k !== 'sink'); el.classList.toggle('hov', _hoverStation === k); }
+    }
   }
   /* world overlays: table bubbles */
   if (play || G.state === 'intro') {
@@ -1837,7 +2028,6 @@ function uiFrame(dt, force) {
     if (C_cache.get('dbg') !== v) { C_cache.set('dbg', v); dbgEl.innerHTML = v; }
   }
 }
-const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
 function uiRefreshAll() { uiFrame(0, true); }
 
 function toast(msg, kind = '') {
@@ -1858,35 +2048,79 @@ function confetti() {
   document.body.appendChild(d); setTimeout(() => d.remove(), 6500);
 }
 
+// a few coins fly from the paying table to the coin counter, which then bumps
+function coinFly(wx, wz, n) {
+  if (G.simming || G.state !== 'play' || !UI.coinChip || UI.coinChip.offsetParent === null) return;
+  const tr = $('#t-coins').getBoundingClientRect(); toScreen(wx, 1.6, wz, _sp);
+  const k = Math.min(4, 1 + (n / 8 | 0));
+  for (let i = 0; i < k; i++) {
+    const e = document.createElement('div'); e.className = 'cfly'; e.innerHTML = ICON.coin;
+    const sx = _sp.x - 11 + (Math.random() - .5) * 26, sy = _sp.y - 11 + (Math.random() - .5) * 16;
+    e.style.transform = `translate(${sx}px,${sy}px)`; document.body.appendChild(e);
+    setTimeout(() => { e.style.transform = `translate(${tr.left - 4}px,${tr.top}px) scale(.8)`; e.style.opacity = '.4'; }, 40 + i * 70);
+    setTimeout(() => e.remove(), 800 + i * 70);
+  }
+  setTimeout(() => { UI.coinChip.classList.remove('bump'); void UI.coinChip.offsetWidth; UI.coinChip.classList.add('bump'); }, 760);
+}
+
 /* ---------- screens ---------- */
-function bestLine() { const b = store.get('cay_best', { day: 0, total: 0 }); return b.day ? t('best', b.day, b.total) : t('noBest'); }
+function bestLine() { const b = store.get(KEY.best, { day: 0, total: 0 }); return b.day ? t('best', b.day, b.total) : t('noBest'); }
 function rowk(a, b) { return `<div class="rowk"><span>${a}</span><span>${b}</span></div>`; }
 function coinHTML(n) { return `<span style="display:inline-flex;align-items:center;gap:5px">${ICON.coin.replace('<svg', '<svg width="18" height="18"')}${n}</span>`; }
+const recHTML = () => G.newRecord ? `<div class="rec">${t('newRecord')}</div>` : '';
+const pct = v => Math.round(v * 100);
+function seg(key, opts, cur) { return `<div class="seg">${opts.map(([v, label]) => `<button data-a="seg" data-k="${key}" data-v="${v}" class="${v === cur ? 'on' : ''}" aria-pressed="${v === cur}">${label}</button>`).join('')}</div>`; }
+function settingsHTML() {
+  const fs = !!document.fullscreenElement, low = SET.quality === 'low';
+  const slider = k => `<label><span>${t(k)}</span><input type="range" min="0" max="100" step="5" value="${pct(SET[k])}" data-set="${k}" aria-label="${t(k)}"><output id="o-${k}">${pct(SET[k])}</output></label>`;
+  return `<div class="card glass" style="width:min(480px,100%)"><h2>${t('settings')}</h2><div class="set">
+    ${slider('master')}${slider('music')}${slider('sfx')}
+    <div class="row"><span>${t('language')}</span>${seg('lang', [['tr', 'Türkçe'], ['en', 'English']], G.lang)}</div>
+    <div class="row"><span>${t('quality')}</span>${seg('quality', [['low', t('qLow')], ['high', t('qHigh')]], low ? 'low' : 'high')}</div><small>${t('qNote')}</small>
+    ${document.fullscreenEnabled ? `<div class="row"><span>${t('fullscreen')}</span>${seg('fs', [['1', t('on')], ['0', t('off')]], fs ? '1' : '0')}</div>` : ''}
+    </div><button class="btn" data-a="back">${t('back')}</button></div>`;
+}
 function uiScreen(force) {
-  const st = G.state;
-  if (st === 'play') { scrEl.style.display = 'none'; scrEl.innerHTML = ''; C_cache.delete('scr'); return; }
-  const sig = st + G.day + G.lang + (st === 'shop' ? G.coins + JSON.stringify(G.up) : '');
+  const st = G.state, pause = st === 'play' && G.paused;
+  if (st === 'play' && !pause && !G.panel) { if (scrEl.style.display !== 'none') { scrEl.style.display = 'none'; scrEl.innerHTML = ''; } C_cache.delete('scr'); return; }
+  const sig = st + G.day + G.lang + G.panel + pause + (st === 'shop' ? G.coins + JSON.stringify(G.up) : '') + (st === 'title' ? assetState.done + '' + !!loadSave() : '');
   if (!force && C_cache.get('scr') === sig) { scrEl.style.display = 'flex'; return; }
   C_cache.set('scr', sig);
   let h = '';
   const cfg = dayCfg(G.day);
-  const langBtn = `<button class="ibtn lang" data-a="lang">${t('langBtn')}</button>`;
-  if (st === 'title') {
-    h = `<div class="card glass">${langBtn}<div class="big">${ICON.tea}</div><h1>Çay Ocağı</h1><p>${t('tagline')}</p>
+  const langBtn = `<button class="ibtn lang" data-a="lang" title="${t('language')} (L)">${t('langBtn')}</button>`;
+  const gearBtn = `<button class="ibtn gear" data-a="settings" title="${t('settings')}" aria-label="${t('settings')}">${ICON.gear}</button>`;
+  const menuBtn = `<button class="btn alt sm" data-a="menu">${t('menu')}</button>`;
+  if (G.panel === 'settings') h = settingsHTML();
+  else if (G.panel === 'confirm') {
+    h = `<div class="card glass" style="width:min(440px,100%)"><h2>${t('newGame')}</h2><p>${t('newGameWarn')}</p>
+      <div class="col"><button class="btn" data-a="start">${t('yes')}</button><button class="btn alt" data-a="back">${t('back')}</button></div></div>`;
+  } else if (pause) {
+    h = `<div class="card glass" style="width:min(400px,100%)"><h2>${t('paused')}</h2><p style="font-size:13px">${t('pausedSub')}</p>
+      <div class="col"><button class="btn" data-a="pause">${t('resume')}</button><button class="btn alt" data-a="restart">${t('restart')}</button>
+      <button class="btn alt" data-a="settings">${t('settings')}</button><button class="btn alt" data-a="menu">${t('menu')}</button></div></div>`;
+  } else if (st === 'title') {
+    const sv = loadSave(), dis = assetState.done ? '' : 'disabled';
+    const label = k => assetState.done ? t(k) : t('loading', assetState.loaded, assetState.total);
+    const main = sv
+      ? `<button class="btn" data-a="cont" ${dis}>${label('cont2')}</button><small style="font-weight:700;color:var(--ink2)">${t('savedAt', sv.day, sv.coins)}</small><button class="btn alt" data-a="newgame" ${dis}>${t('newGame')}</button>`
+      : `<button class="btn" data-a="start" ${dis}>${label('play')}</button>`;
+    h = `<div class="card glass">${gearBtn}${langBtn}${LOGO_BIG}<h1>Çay Ocağı</h1><p>${t('tagline')}</p>
       <ul class="how"><li><b>1</b><span>${t('how1')}</span></li><li><b>2</b><span>${t('how2')}</span></li><li><b>3</b><span>${t('how3')}</span></li><li><b>4</b><span>${t('how4')}</span></li></ul>
-      <p style="font-size:13px;color:#7a5a44">${bestLine()}</p><button class="btn" data-a="start">${t('play')}</button></div>`;
+      <p style="font-size:13px;color:#7a5a44">${bestLine()}</p><div class="col">${main}<button class="btn alt sm" data-a="settings">${t('settings')}</button></div>
+      <p class="foot"><a href="https://furkiozknn.github.io/claude-game-arena/" target="_blank" rel="noopener">${t('footer', 'Claude Sonnet 5.5')}</a></p></div>`;
   } else if (st === 'intro') {
     const tip = t('tip' + (1 + ((G.day - 1) % 5)));
-    h = `<div class="card glass">${langBtn}<h2>${G.endless ? t('dayEndless', G.day) : t('dayOf', G.day)}</h2>
+    h = `<div class="card glass">${gearBtn}${langBtn}<h2>${G.endless ? t('dayEndless', G.day) : t('dayOf', G.day)}</h2>
       ${rowk(t('target'), coinHTML(cfg.target))}
       <div class="chipnew">${ICON[cfg.ni] || ICON.star}<span>${t('newThing')}: ${t(cfg.nk)}</span></div>
       <p style="margin:2px 0;font-size:13px">${t('menuToday')}</p><div class="menurow">${cfg.menu.map(i => `<span>${ICON[i]}</span>`).join('')}</div>
-      <p style="font-size:13px"><b>${t('hint')}:</b> ${tip}</p><button class="btn" data-a="begin">${t('startDay')}</button></div>`;
+      <p style="font-size:13px"><b>${t('hint')}:</b> ${tip}</p><button class="btn" data-a="begin">${t('startDay')}</button><br>${menuBtn}</div>`;
   } else if (st === 'summary') {
     const r = G.lastResult;
-    h = `<div class="card glass"><h2>${t('dayDone')}</h2>${starsHTML(r.stars, true)}<p style="font-weight:900;color:var(--amber)">${[, t('stars1'), t('stars2'), t('stars3')][r.stars]}</p>
+    h = `<div class="card glass"><h2>${t('dayDone')}</h2>${starsHTML(r.stars, true)}<p style="font-weight:900;color:var(--amber)">${[, t('stars1'), t('stars2'), t('stars3')][r.stars]}</p>${recHTML()}
       ${rowk(t('earned'), coinHTML(r.coins) + ' / ' + r.target)}${rowk(t('tips'), coinHTML(r.tips))}${rowk(t('happyC'), r.happy)}${rowk(t('angryC'), r.angry)}
-      <button class="btn" data-a="aftersum">${G.day === 7 && !G.won ? t('cont') : t('toShop')}</button></div>`;
+      <button class="btn" data-a="aftersum">${G.day === 7 && !G.won ? t('cont') : t('toShop')}</button>${menuBtn}</div>`;
   } else if (st === 'shop') {
     let cards = '';
     UPG.forEach(u => {
@@ -1896,28 +2130,58 @@ function uiScreen(force) {
         <button class="buy ${maxed ? 'max' : ''}" data-a="buy" data-id="${u.id}" ${can ? '' : 'disabled'}>${maxed ? t('maxed') : ICON.coin + cost}</button></div>`;
     });
     h = `<div class="card glass" style="width:min(760px,100%)"><h2>${t('shop')}</h2><div class="wallet">${ICON.coin}${G.coins}</div><div class="shop">${cards}</div>
-      <button class="btn" data-a="next">${G.retrying ? t('retry') : t('nextDay')}</button></div>`;
+      <button class="btn" data-a="next">${G.retrying ? t('retry') : t('nextDay')}</button>${menuBtn}</div>`;
   } else if (st === 'victory') {
-    h = `<div class="card glass"><div class="big">${ICON.star}</div><h1 style="font-size:38px">${t('victory')}</h1><p>${t('victoryTxt')}</p>
+    h = `<div class="card glass"><div class="big">${ICON.star}</div><h1 style="font-size:38px">${t('victory')}</h1><p>${t('victoryTxt')}</p>${recHTML()}
       ${rowk(t('total'), coinHTML(G.totalEarned))}${rowk(t('ratingStars'), G.log.reduce((a, r) => a + r.stars, 0) + ' / 21')}<p style="font-size:13px">${bestLine()}</p>
       <button class="btn" data-a="endless">${t('endless')}</button><button class="btn alt" data-a="menu">${t('menu')}</button></div>`;
   } else if (st === 'gameover') {
     const r = G.lastResult;
-    h = `<div class="card glass"><h2>${t('gameover')}</h2><p>${t('goTxt')}</p>
+    h = `<div class="card glass"><h2>${t('gameover')}</h2><p>${t('goTxt')}</p>${recHTML()}
       ${rowk(t('reached'), G.day)}${rowk(t('earned'), coinHTML(r.coins) + ' / ' + r.target)}${rowk(t('happyC') + ' / ' + t('angryC'), r.happy + ' / ' + r.angry)}${rowk(t('total'), coinHTML(G.totalEarned))}<p style="font-size:13px">${bestLine()}</p>
-      <button class="btn" data-a="retry">${t('shop')}</button><button class="btn alt" data-a="menu">${t('menu')}</button></div>`;
+      <button class="btn" data-a="retryshop">${t('retryShop')}</button><button class="btn alt" data-a="menu">${t('menu')}</button></div>`;
   }
   scrEl.innerHTML = h; scrEl.style.display = 'flex';
+  // keyboard players land on the first main button (Enter / Space press it); mouse and touch players see no ring
+  const first = $('.btn:not([disabled])', scrEl); if (first && kbdUser && !G.simming) first.focus({ preventScroll: true });
+}
+// while the title waits for assets only the button label changes (no re-render, so the card does not pop again)
+function uiLoading() {
+  if (G.state !== 'title' || G.panel) return;
+  const b = $('[data-a=start],[data-a=cont]', scrEl); if (b && b.disabled) b.textContent = t('loading', assetState.loaded, assetState.total);
 }
 
 /* ---------- input ---------- */
+let kbdUser = false;
+window.addEventListener('pointerdown', () => { kbdUser = false; }, true);
 function toggleSpeed() { G.speed = G.speed >= 3 ? 1 : G.speed + 1; }
-function togglePause() { if (G.state !== 'play') return; G.paused = !G.paused; G.autoPaused = false; sfxTick(); }
+function togglePause() { if (G.state !== 'play') return; G.paused = !G.paused; if (!G.paused) G.panel = null; sfxTick(); uiScreen(); audApply(); }
+function toggleFullscreen() {
+  if (document.fullscreenElement) document.exitFullscreen().catch(() => { });
+  else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => { });
+}
+// M and X: switch music / effects off and back on (to the level they had)
+const _volPrev = { music: .6, sfx: .8 };
+function toggleVol(k) {
+  sfxInit();
+  if (SET[k] > 0) { _volPrev[k] = SET[k]; SET[k] = 0; } else SET[k] = _volPrev[k] || .6;
+  saveSettings(); audApply(); toast(t(k) + ': ' + (SET[k] > 0 ? t('on') : t('off')));
+  if (G.panel === 'settings') uiScreen(true);
+}
+function closePanel() { G.panel = null; uiScreen(true); }
 const actions = {
-  start() { A.start(); }, begin() { A.begin(); }, aftersum() { A.afterSummary(); },
-  buy(el) { A.buy(el.dataset.id); }, next() { if (G.retrying) { G.retrying = false; A.intro(); } else A.next(); },
-  endless() { A.endlessMode(); }, menu() { A.menu(); },
-  retry() { G.retrying = true; A.shop(); },
+  start() { G.panel = null; A.start(); }, cont() { A.cont(); }, newgame() { G.panel = 'confirm'; uiScreen(); },
+  begin() { A.begin(); }, aftersum() { A.afterSummary(); },
+  buy(el) { A.buy(el.dataset.id); }, next() { A.next(); },
+  endless() { A.endlessMode(); }, menu() { A.menu(); }, restart() { A.restart(); },
+  retryshop() { A.retryShop(); },
+  settings() { if (G.state === 'play' && !G.paused) { G.paused = true; audApply(); } G.panel = 'settings'; uiScreen(); }, back() { closePanel(); },
+  seg(el) {
+    const k = el.dataset.k, v = el.dataset.v;
+    if (k === 'lang') { G.panel = 'settings'; langSet(v); }
+    else if (k === 'fs') toggleFullscreen();
+    else if (k === 'quality' && v !== SET.quality) { SET.quality = v; saveSettings(); location.reload(); }
+  },
   lang() { langSet(G.lang === 'tr' ? 'en' : 'tr'); }, speed() { toggleSpeed(); }, pause() { togglePause(); },
   snd() { sfxInit(); sfxMute(!G.muted); const b = $('#b-snd'); if (b) b.innerHTML = G.muted ? ICON.mute : ICON.snd; },
   clearq() { clearQueue(); }
@@ -1929,21 +2193,40 @@ document.addEventListener('click', e => {
   const sl = e.target.closest('.slot.full'); if (sl) { dropTray(+sl.dataset.slot); return; }
   const bub = e.target.closest('.bub[data-t]'); if (bub) { clickTable(+bub.dataset.t); }
 });
-window.addEventListener('keydown', e => {
-  if (e.repeat && e.code === 'Space') return;
-  sfxInit();
-  if (e.code === 'Space') { e.preventDefault(); if (G.state === 'play') togglePause(); else if (G.state === 'title') A.start(); else if (G.state === 'intro') A.begin(); return; }
-  if (G.state === 'play') {
-    const n = parseInt(e.key); if (n >= 1 && n <= 5) { clickStation(STATION_KEYS[n - 1]); return; }
-    if (e.key === 'Escape') clearQueue();
-  }
-  if (e.key === 'm' || e.key === 'M') actions.snd();
+document.addEventListener('input', e => {
+  const k = e.target.dataset && e.target.dataset.set; if (!k) return;
+  SET[k] = (+e.target.value) / 100; audApply(); const o = $('#o-' + k); if (o) o.textContent = e.target.value;
 });
-document.addEventListener('visibilitychange', () => { if (document.hidden && G.state === 'play' && !G.paused) { G.paused = true; G.autoPaused = true; } });
-window.addEventListener('blur', () => { /* keep running, only hidden tabs pause */ });
+document.addEventListener('change', e => { if (e.target.dataset && e.target.dataset.set) { saveSettings(); if (e.target.dataset.set !== 'master') sfxTick(); } });
+document.addEventListener('fullscreenchange', () => { if (G.panel === 'settings') uiScreen(true); });
+window.addEventListener('keydown', e => {
+  if (e.key === 'Tab' || e.key === 'Enter' || e.code === 'Space' || e.key === 'Escape' || e.key === 'p' || e.key === 'P') kbdUser = true;
+  if (e.repeat && (e.code === 'Space' || e.key === 'p' || e.key === 'P' || e.key === 'Escape')) return;
+  sfxInit();
+  const onCtl = e.target.closest && e.target.closest('button,input');
+  // Space / Enter on a focused button or slider keep their normal meaning
+  if (onCtl && (e.code === 'Space' || e.key === 'Enter')) return;
+  if (e.key === 'Escape' || e.key === 'p' || e.key === 'P') {
+    e.preventDefault();
+    if (G.panel) closePanel(); else if (G.state === 'play') togglePause();
+    return;
+  }
+  if (e.code === 'Space') { e.preventDefault(); if (G.state === 'play' && !G.panel) togglePause(); else if (G.state === 'title' && !G.panel) { if (assetState.done) (loadSave() ? A.cont() : A.start()); } else if (G.state === 'intro' && !G.panel) A.begin(); return; }
+  if (e.key === 'm' || e.key === 'M') return toggleVol('music');
+  if (e.key === 'x' || e.key === 'X') return toggleVol('sfx');
+  if (e.key === 'l' || e.key === 'L') return langSet(G.lang === 'tr' ? 'en' : 'tr');
+  if (G.state === 'play' && !G.paused) {
+    const n = parseInt(e.key); if (n >= 1 && n <= 5) { clickStation(STATION_KEYS[n - 1]); return; }
+    if (e.key === 'Backspace') { e.preventDefault(); clearQueue(); }
+  }
+});
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden && G.state === 'play' && !G.paused) { G.paused = true; uiScreen(); }
+  audApply();
+});
 
 /* pointer: click / pan / pinch */
-const ptrs = new Map(); let pinch0 = 0, zoom0 = 1;
+const ptrs = new Map(); let pinch0 = 0, zoom0 = 1, pinched = false;
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
 function pickAt(cx, cy) {
   ndc.set((cx / VIEW.w) * 2 - 1, -(cy / VIEW.h) * 2 + 1); ray.setFromCamera(ndc, cam);
@@ -1954,7 +2237,7 @@ function pickAt(cx, cy) {
 canvas.addEventListener('pointerdown', e => {
   sfxInit(); try { canvas.setPointerCapture(e.pointerId); } catch (_) { }
   ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, moved: false });
-  if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch0 = Math.hypot(a.x - b.x, a.y - b.y); zoom0 = VIEW.zoom; }
+  if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch0 = Math.hypot(a.x - b.x, a.y - b.y); zoom0 = VIEW.zoom; pinched = true; }
   if (e.button === 2) { clearQueue(); }
 });
 canvas.addEventListener('pointermove', e => {
@@ -1967,12 +2250,13 @@ canvas.addEventListener('pointermove', e => {
     VIEW.panX = clamp(VIEW.panX - dx * wpp, -5, 5); VIEW.panY = clamp(VIEW.panY + dy * wpp * 1.73, -5, 5); placeCamera();
   } else if (ptrs.size === 2) {
     const [a, b] = [...ptrs.values()]; const d = Math.hypot(a.x - b.x, a.y - b.y);
-    if (pinch0 > 10) { VIEW.zoom = clamp(zoom0 * d / pinch0, .8, 1.8); layoutCamera(); }
+    if (pinch0 > 10) { VIEW.zoom = clamp(zoom0 * d / pinch0, .8, 1.8); applyZoom(); }
   }
 });
 function endPtr(e) {
   const p = ptrs.get(e.pointerId); ptrs.delete(e.pointerId);
-  if (p && !p.moved && ptrs.size === 0 && e.type === 'pointerup') {
+  const wasPinch = pinched; if (ptrs.size === 0) pinched = false; // a pinch never ends in a click
+  if (p && !p.moved && !wasPinch && ptrs.size === 0 && e.type === 'pointerup') {
     const hit = pickAt(e.clientX, e.clientY);
     if (hit) {
       if (hit.kind === 'station') clickStation(hit.id); else if (hit.kind === 'table') clickTable(hit.id); else if (hit.kind === 'cat') petCat();
@@ -1981,7 +2265,7 @@ function endPtr(e) {
 }
 canvas.addEventListener('pointerup', endPtr); canvas.addEventListener('pointercancel', endPtr);
 canvas.addEventListener('contextmenu', e => { e.preventDefault(); clearQueue(); });
-canvas.addEventListener('wheel', e => { e.preventDefault(); VIEW.zoom = clamp(VIEW.zoom * (e.deltaY < 0 ? 1.08 : 1 / 1.08), .8, 1.8); layoutCamera(); }, { passive: false });
+canvas.addEventListener('wheel', e => { e.preventDefault(); VIEW.zoom = clamp(VIEW.zoom * (e.deltaY < 0 ? 1.08 : 1 / 1.08), .8, 1.8); applyZoom(); }, { passive: false });
 function hoverAt(x, y, type) {
   if (type === 'touch') return;
   const h = G.state === 'play' ? pickAt(x, y) : null; _hoverStation = null;
@@ -1992,10 +2276,123 @@ function hoverAt(x, y, type) {
 }
 
 /* ============================================================
+   generated models + cobblestone texture, with the procedural world as fallback
+   ============================================================ */
+// Loaded at start-up while the title screen shows "Loading… n/m" (Play disabled). Each model that loads replaces its
+// procedural part; anything that fails keeps the original. Skipped from file:// and with ?noassets (see USE_MODELS).
+const MODEL_FILES = ['semaver', 'oven', 'coffee', 'ayran', 'sink', 'table', 'window', 'ferry', 'cat'];
+const MODEL_YAW = { oven: Math.PI / 2, coffee: Math.PI / 4, sink: Math.PI / 2, ferry: Math.PI / 2 }; // turns each model to face +X (the sand box was generated at 45°)
+const loadedModels = {}; let groundTex = null;
+async function loadAssets() {
+  const tick = () => { assetState.loaded++; uiLoading(); };
+  assetState.total = ICON_PNG.length + 1 + (USE_MODELS ? MODEL_FILES.length + 1 : 0);
+  const icons = loadIcons(tick); // also from file://
+  if (!USE_MODELS) return icons;
+  let GLTFLoader;
+  try { ({ GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js')); }
+  catch (e) { console.warn('[cay] GLTFLoader not available, keeping the procedural look'); return icons; }
+  const loader = new GLTFLoader();
+  const plain = a => { const o = new Float32Array(a.count * a.itemSize); for (let i = 0; i < a.count; i++) for (let k = 0; k < a.itemSize; k++) o[i * a.itemSize + k] = a.getComponent(i, k); return o; };
+  const one = name => loader.loadAsync(`assets/models/${name}.glb`).then(gltf => {
+    // one non-indexed geometry (position + uv) with the node transforms applied, pivot at the base centre, facing +X
+    const P = [], U = []; let map = null;
+    gltf.scene.updateMatrixWorld(true);
+    gltf.scene.traverse(o => {
+      if (!o.isMesh) return;
+      const g = new THREE.BufferGeometry(), src = o.geometry;
+      g.setAttribute('position', new THREE.BufferAttribute(plain(src.attributes.position), 3));
+      g.setAttribute('uv', new THREE.BufferAttribute(src.attributes.uv ? plain(src.attributes.uv) : new Float32Array(src.attributes.position.count * 2), 2));
+      if (src.index) g.setIndex(src.index.clone());
+      g.applyMatrix4(o.matrixWorld);
+      const n = g.index ? g.toNonIndexed() : g;
+      P.push(...n.attributes.position.array); U.push(...n.attributes.uv.array);
+      map = map || o.material.map;
+    });
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); geo.setAttribute('uv', new THREE.Float32BufferAttribute(U, 2));
+    geo.rotateY(MODEL_YAW[name] || 0);
+    geo.computeBoundingBox();
+    const b = geo.boundingBox;
+    geo.translate(-(b.min.x + b.max.x) / 2, -b.min.y, -(b.min.z + b.max.z) / 2);
+    geo.computeVertexNormals(); geo.computeBoundingBox();
+    loadedModels[name] = { geo, size: geo.boundingBox.getSize(new THREE.Vector3()), mat: new THREE.MeshLambertMaterial({ map, flatShading: true }) };
+  }).catch(err => console.warn('[cay] model not loaded, keeping the procedural one:', name, err && err.message || err)).finally(tick);
+  const tex = new THREE.TextureLoader().loadAsync('assets/textures/cobblestone.webp').then(tx => {
+    tx.colorSpace = THREE.SRGBColorSpace; tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.anisotropy = 4; groundTex = tx;
+  }).catch(() => console.warn('[cay] cobblestone texture not loaded, keeping the tiled ground')).finally(tick);
+  await Promise.all([...MODEL_FILES.map(one), tex, icons]);
+}
+// mean x/z of the vertices in the top `frac` of a (scaled) geometry: finds a chimney on a model
+function topSpot(geo, frac) {
+  const p = geo.attributes.position, y0 = geo.boundingBox.max.y * (1 - frac); let x = 0, z = 0, n = 0;
+  for (let i = 0; i < p.count; i++) if (p.getY(i) >= y0) { x += p.getX(i); z += p.getZ(i); n++; }
+  return n ? [x / n, z / n] : [0, 0];
+}
+function applyAssets() {
+  const M = loadedModels, skip = new Set(Object.keys(M));
+  if (groundTex) skip.add('ground');
+  G.assets = [...skip];
+  if (!skip.size) return;
+  // rebuild the merged world without the parts that now come from models
+  world.remove(worldMeshes.wm, worldMeshes.gm); worldMeshes.wm.geometry.dispose(); worldMeshes.gm.geometry.dispose();
+  Object.assign(worldMeshes, buildWorld(skip));
+  const sh = !FLAG.low;
+  // geometry of model `name` scaled by (sx, sy, sz), pivot still at the base centre
+  const geoOf = (name, sx, sy = sx, sz = sx) => { const g = M[name].geo.clone().scale(sx, sy, sz); g.computeBoundingBox(); return g; };
+  const place = (name, geo, x, y, z) => { const m = new THREE.Mesh(geo, M[name].mat); m.position.set(x, y, z); m.castShadow = sh; m.receiveShadow = sh; world.add(m); return m; };
+  const TOP = 1.12; // counter top
+  if (M.semaver) {
+    const g = geoOf('semaver', 2.0 / M.semaver.size.y);
+    M.semaver.mat.color.setScalar(1.2); // the brass texture is a little dull under the warm light
+    place('semaver', g, CNT_X, TOP, -5.05);
+    const k2 = place('semaver', g, CNT_X, TOP, -3.85); k2.visible = false;
+    world.remove(DYN.kettleB); DYN.kettleB.geometry.dispose(); DYN.kettleB = k2;
+    FIT.teaSteamY = TOP + g.boundingBox.max.y + .05;
+  }
+  if (M.oven) {
+    const sc = 1.6 / M.oven.size.x, g = geoOf('oven', sc), zc = STATION_Z.simit, h = g.boundingBox.max.y;
+    place('oven', g, CNT_X, TOP, zc);
+    const [cx, cz] = topSpot(g, .1);
+    FIT.smoke = [CNT_X + cx, TOP + h + .1, zc + cz];
+    FIT.ringY = TOP + h * .87; FIT.ringX = CNT_X + .15;
+    // the glow sits at the back of the arched mouth (measured on the model with tools/assets/front.mjs:
+    // mouth centre .045 off-centre, 21-46 % of the height, 33 % of the width, back wall .03 behind the centre)
+    DYN.ovenGlow.position.set(CNT_X - .03 * sc, TOP + .32 * sc, zc - .045 * sc); DYN.ovenGlow.scale.set(1, .24 * sc / .62, .33 * sc / .82);
+  }
+  if (M.coffee) {
+    const sc = 1.65 / M.coffee.size.x, g = geoOf('coffee', sc), zc = STATION_Z.coffee;
+    place('coffee', g, CNT_X, TOP, zc);
+    // foam in the mouths of the model's two cezve pots (measured with tools/assets/pots.mjs)
+    FIT.pots = [[CNT_X + .1 * sc, TOP + .34 * sc, zc - .26 * sc], [CNT_X + .1 * sc, TOP + .34 * sc, zc + .31 * sc]]; FIT.potSteamDY = .15;
+  }
+  if (M.ayran) place('ayran', geoOf('ayran', 2.5, 1.8 / M.ayran.size.y, 2.5), CNT_X + .2, TOP, STATION_Z.ayran);
+  if (M.sink) place('sink', geoOf('sink', 1.55 / M.sink.size.z), CNT_X + .3, TOP, STATION_Z.sink);
+  if (M.window) {
+    // back flush with the façade (x = -8.1), under the roof slab
+    const g = geoOf('window', 1.05 / M.window.size.y), im = new THREE.InstancedMesh(g, M.window.mat, 5), wx = -8.1 + g.boundingBox.max.x - .04;
+    for (let i = 0; i < 5; i++) im.setMatrixAt(i, mat(wx, 5.2, -7 + i * 3.25));
+    im.castShadow = sh; world.add(im);
+  }
+  if (M.table) {
+    // white cloth tinted per table by the existing instance colours; top at the old height (.975), pivot moved to y .93
+    const g = geoOf('table', 1.8 / M.table.size.x, .98 / M.table.size.y, 1.8 / M.table.size.z).translate(0, -.93, 0);
+    TB.tops.geometry.dispose(); TB.tops.material.dispose(); TB.tops.geometry = g; TB.tops.material = M.table.mat; TB.legs.visible = false;
+  }
+  if (M.ferry) { const f = ferryObj.children[0]; f.geometry.dispose(); f.material.dispose(); f.geometry = geoOf('ferry', 8 / M.ferry.size.x).translate(0, -.55, 0); f.material = M.ferry.mat; }
+  if (M.cat) { const c = catGrp.children[0]; c.geometry.dispose(); c.material.dispose(); c.geometry = geoOf('cat', .85 / M.cat.size.x); c.material = M.cat.mat; }
+  if (groundTex) {
+    const W = 31.5, D = 23, g = new THREE.PlaneGeometry(W, D).rotateX(-Math.PI / 2);
+    groundTex.repeat.set(W / 5, D / 5); // one texture tile per 5 m
+    const m = new THREE.Mesh(g, new THREE.MeshLambertMaterial({ map: groundTex }));
+    m.position.set(-14 + W / 2, .015, -9 + D / 2); m.receiveShadow = sh; world.add(m);
+  }
+}
+
+/* ============================================================
    main loop
    ============================================================ */
 window.addEventListener('error', e => { G.errors.push((e.message || 'error') + (e.lineno ? ' @' + e.lineno : '')); if (G.errors.length > 5) G.errors.shift(); });
-window.addEventListener('unhandledrejection', e => { G.errors.push('promise: ' + (e.reason && e.reason.message || e.reason)); });
+window.addEventListener('unhandledrejection', e => { G.errors.push('promise: ' + (e.reason && e.reason.message || e.reason)); if (G.errors.length > 5) G.errors.shift(); });
 if (FLAG.debug) dbgEl.style.display = 'block';
 
 let lastT = performance.now(), acc = 0, fpsT = 0, fpsN = 0;
@@ -2054,12 +2451,22 @@ function clickTest() {
 }
 if (Q.has('audiotest')) {
   sfxInit(); const fns = { sfxBell, sfxClink, sfxCash, sfxPip, sfxPing, sfxTick, sfxPour, sfxWash, sfxHiss, sfxWhistle, sfxGrumble, sfxFanfare, sfxLose, sfxGull, sfxHorn, sfxMeow }; let okc = 0;
-  Aud.ctx.resume().then(() => { for (const k in fns) { try { fns[k](); okc++; } catch (e) { G.errors.push(k + ': ' + e.message); } } G.testOut = 'audio state=' + Aud.ctx.state + ' called=' + okc + '/' + Object.keys(fns).length; }).catch(e => G.errors.push('audio ' + e.message));
+  if (!Aud.ctx) G.testOut = 'audio: no Web Audio';
+  else Aud.ctx.resume().then(() => { for (const k in fns) { try { fns[k](); okc++; } catch (e) { G.errors.push(k + ': ' + e.message); } } G.testOut = 'audio state=' + Aud.ctx.state + ' called=' + okc + '/' + Object.keys(fns).length; }).catch(e => G.errors.push('audio ' + e.message));
 }
 if (Q.has('clicktest')) { try { clickTest(); } catch (e) { G.errors.push('clicktest: ' + e.message); } }
 if (FLAG.bench) { try { window.cayBench(FLAG.bench, 1); } catch (e) { G.errors.push('bench: ' + e.message); } }
 if (FLAG.sim > 0) { try { window.caySim(FLAG.sim); } catch (e) { G.errors.push('sim: ' + e.message + ' ' + (e.stack || '').split('\n')[1]); } }
 requestAnimationFrame(frame);
+// the title screen waits for the models (Play disabled); after 15 s the game goes on with whatever has loaded.
+// ?auto starts at once as before and the models swap in when they arrive, so bot runs stay comparable.
+// G.assetsReady / G.assets: test hooks (which generated assets replaced their procedural part)
+G.assets = [];
+if (!NOASSETS) Promise.race([loadAssets(), new Promise(r => setTimeout(r, 15000))]).then(() => {
+  try { applyAssets(); } catch (e) { G.errors.push('assets: ' + e.message); }
+  assetState.done = true; G.assetsReady = true;
+  uiStatic(); uiScreen(true); // the icon PNGs are in now
+});
 
 </script>
 </body>
