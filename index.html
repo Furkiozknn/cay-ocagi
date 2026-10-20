@@ -211,6 +211,13 @@ body.low #screen{backdrop-filter:none}
 }
 @media (max-width:700px){#top .hud-gear{display:none}} /* settings stay reachable from the pause menu */
 @media (max-width:420px){#t-clkbar{display:none}}
+/* landscape phones: a one-row top bar and compact cards, so the main buttons fit without scrolling */
+@media (max-height:500px) and (orientation:landscape){
+ #top .logo{display:none}
+ .card{padding:10px 16px}.card .biglogo{display:none}.card h1{font-size:30px}.card h2{font-size:21px;margin:2px 0}.card p{margin:3px 0}
+ .how{grid-template-columns:1fr 1fr;margin:6px 0;gap:5px}.how li{font-size:12px;padding:5px 8px}
+ .btn{padding:6px 22px;min-height:44px;margin:3px}.col{margin:3px 0}.set{gap:6px}.foot{margin-top:4px}
+}
 @media (pointer:coarse){.ibtn{min-width:44px;height:44px}.slot{width:44px;height:44px}.st{min-height:64px}.btn.sm{min-height:44px}.seg button{min-height:44px}}
 </style>
 </head>
@@ -2342,7 +2349,7 @@ function applyAssets() {
   const place = (name, geo, x, y, z) => { const m = new THREE.Mesh(geo, M[name].mat); m.position.set(x, y, z); m.castShadow = sh; m.receiveShadow = sh; world.add(m); return m; };
   const TOP = 1.12; // counter top
   if (M.semaver) {
-    const g = geoOf('semaver', 2.0 / M.semaver.size.y);
+    const g = geoOf('semaver', 1.6 / M.semaver.size.y); // 1.6 m: taller models hide the teapot crown behind the awning valance
     M.semaver.mat.color.setScalar(1.2); // the brass texture is a little dull under the warm light
     place('semaver', g, CNT_X, TOP, -5.05);
     const k2 = place('semaver', g, CNT_X, TOP, -3.85); k2.visible = false;
