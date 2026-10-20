@@ -2,6 +2,10 @@
 
 **[▶ Play in your browser](https://furkiozknn.github.io/cay-ocagi/)** · Türkçe & English · desktop & mobile · free, no install
 
+🏟️ Part of **[Claude Game Arena](https://github.com/Furkiozknn/claude-game-arena)**: four games, each built by a different Claude model. This is game #2, built by **Claude Sonnet 5.5**. [See all games and the scorecard →](https://furkiozknn.github.io/claude-game-arena/)
+
+![Gameplay clip](docs/gameplay.gif)
+
 A low-poly 3D time-management game in a **single `index.html`** (Three.js, no build step, no asset files).
 Run a tiny tea house on an Istanbul quay for seven busy days: brew tea, warm simit, cook Turkish coffee
 without letting it boil over, serve every table before patience runs out, and keep the glasses washed.
@@ -72,6 +76,7 @@ screen in Turkish and English and a 390 px phone layout.
 | 1 | [Hisar](https://github.com/Furkiozknn/kale-savunmasi) | Tower defense, 3D | Claude Opus 5.5 |
 | 2 | **Çay Ocağı** | Time management, 3D | Claude Sonnet 5.5 |
 | 3 | [Çini Ustası](https://github.com/Furkiozknn/cini-ustasi) | Puzzle, 3D | Claude Fable 5.1 |
+| 4 | [Martı](https://github.com/Furkiozknn/marti) | Arcade flyer, 3D | Claude Haiku 5.5 |
 
 ## Tech
 
