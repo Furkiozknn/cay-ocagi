@@ -1,0 +1,77 @@
+{
+  "schema_version": "1.0.0",
+  "id": "cay-ocagi",
+  "owner": "Furkiozknn",
+  "repository": "https://github.com/Furkiozknn/cay-ocagi",
+  "homepage": "https://furkiozknn.github.io/cay-ocagi/",
+  "releases": null,
+  "status": "active",
+  "category": "game",
+  "platform": [
+    "web"
+  ],
+  "primary_language": "JavaScript",
+  "technologies": [
+    "Three.js r170",
+    "Web Audio API",
+    "Higgsfield (Tripo text-to-3D, GPT Image)",
+    "glTF-Transform"
+  ],
+  "version": null,
+  "license": "MIT",
+  "topics": [
+    "browser-game",
+    "threejs",
+    "time-management-game",
+    "cooking-game",
+    "claude-code",
+    "claude-game-arena"
+  ],
+  "summary": "3D tea house time-management game on an Istanbul quay, built by Claude Sonnet 5.5 · İstanbul rıhtımında 3D çay ocağı zaman yönetimi oyunu, Claude Sonnet 5.5 yaptı",
+  "key_features": [
+    "Four items on five stations: tea brews in the semaver, simit warms in the oven, coffee boils over if left, dirty glasses go to the sink",
+    "Seven 3-minute days with a coin target and 1-3 stars, new items and customer types each day, then an endless shift",
+    "A shop between days: second semaver, bigger tray (3 to 5 items), faster oven, extra tables, an apprentice, comfy stools",
+    "The ?auto bot plays with the same actions as a player and won 84 of 90 seeded games",
+    "60 fps on an Intel UHD GPU at 1280x720 on a busy day 6 with 31 draw calls; generated models with a procedural fallback"
+  ],
+  "media": {
+    "hero": "docs/card.jpg",
+    "screenshots": [
+      "docs/card.jpg"
+    ],
+    "gifs": [
+      "docs/gameplay.gif"
+    ],
+    "videos": [
+      "docs/gameplay.mp4"
+    ]
+  },
+  "tests": null,
+  "ci": {
+    "workflows": [],
+    "badge": null
+  },
+  "docs": {
+    "readme": "README.md",
+    "changelog": null,
+    "version_history": null,
+    "roadmap": null,
+    "security": null,
+    "contributing": null,
+    "license_file": "LICENSE"
+  },
+  "social": {
+    "headline": "Run a tiny Istanbul tea house: brew tea, warm simit, serve every table in time · Küçük bir çay ocağı işlet: çay demle, simit ısıt, her masaya yetiş",
+    "hashtags": [
+      "claudecode",
+      "indiegame"
+    ],
+    "primary_link": "https://furkiozknn.github.io/cay-ocagi/"
+  },
+  "provenance": {
+    "generated_at": "2026-10-27",
+    "generator": "hand-written",
+    "rule": "mechanical fields read from the repository; editorial fields hand-written from the README, index.html and docs/assets.md; no field is generated from a guess"
+  }
+}
