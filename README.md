@@ -2,7 +2,7 @@
 
 **[▶ Play in your browser](https://furkiozknn.github.io/cay-ocagi/)** · Türkçe & English · desktop & mobile · free, no install
 
-🏟️ Part of **[Claude Game Arena](https://github.com/Furkiozknn/claude-game-arena)**: four games, each built by a different Claude model. This is game #2, built by **Claude Sonnet 5.5**; assets remastered by **Claude Opus 5.5** (orchestrator). [See all games and the scorecard →](https://furkiozknn.github.io/claude-game-arena/)
+🏟️ Part of **[Claude Game Arena](https://furkiozknn.github.io/)**: four games, each built by a different Claude model. This is game #2, built by **Claude Sonnet 5.5**; assets remastered by **Claude Opus 5.5** (orchestrator). [See all games and the scorecard →](https://furkiozknn.github.io/)
 
 🎮 **Godot 4 remake (round 2):** [play](https://furkiozknn.github.io/cay-ocagi-godot/) · [code](https://github.com/Furkiozknn/cay-ocagi-godot), rebuilt by the same model in a real game engine.
 
