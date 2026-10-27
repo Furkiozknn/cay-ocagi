@@ -171,6 +171,10 @@ other games: [Hisar](https://furkiozknn.github.io/kale-savunmasi/) ·
 [Simit Fırını](https://furkiozknn.github.io/simit-firini/) · [Karagöz](https://furkiozknn.github.io/karagoz/) ·
 [Lale Bahçesi](https://furkiozknn.github.io/lale-bahcesi/)
 
+**Round 5:** [Kapadokya Balonu](https://furkiozknn.github.io/kapadokya-balonu/) ·
+[Ebru](https://furkiozknn.github.io/ebru/) · [Kırkpınar](https://furkiozknn.github.io/kirkpinar/) ·
+[Çarşı Kaçışı](https://furkiozknn.github.io/carsi-kacisi/)
+
 ## Türkçe
 
 **Çay Ocağı**, alçak poligon bir İstanbul rıhtımında geçen 3D zaman yönetimi oyunu. Küçük bir çay ocağını yedi yoğun gün
