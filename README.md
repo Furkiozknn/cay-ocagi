@@ -18,6 +18,10 @@
 
 <p align="center"><b>Play online: <a href="https://furkiozknn.github.io/cay-ocagi/">https://furkiozknn.github.io/cay-ocagi/</a></b> (desktop and phone, no install)</p>
 
+<!-- portals:start -->
+<p align="center">Also on: <a href="https://furkiozknn.itch.io/cay-ocagi">itch.io</a></p>
+<!-- portals:end -->
+
 ## Highlights
 
 - **Four items, five stations.** Tea brews in the semaver, simit warms in the oven, Turkish coffee has to be grabbed

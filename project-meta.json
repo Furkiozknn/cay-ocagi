@@ -17,7 +17,7 @@
     "Higgsfield (Tripo text-to-3D, GPT Image)",
     "glTF-Transform"
   ],
-  "version": null,
+  "version": "2.0.0",
   "license": "MIT",
   "topics": [
     "browser-game",
@@ -27,18 +27,26 @@
     "claude-code",
     "claude-game-arena"
   ],
-  "summary": "3D tea house time-management game on an Istanbul quay, built by Claude Sonnet 5.5 · İstanbul rıhtımında 3D çay ocağı zaman yönetimi oyunu, Claude Sonnet 5.5 yaptı",
+  "summary": "3D tea house time-management game on an Istanbul quay, v2 with ferry rushes, tea freshness, tavla regulars and gull thieves, built by Claude Sonnet 5.5 · İstanbul rıhtımında 3D çay ocağı zaman yönetimi oyunu, v2'de vapur saati kalabalığı, taze çay, tavlacı müdavimler ve simit kapan martılar, Claude Sonnet 5.5 yaptı",
   "key_features": [
     "Four items on five stations: tea brews in the semaver, simit warms in the oven, coffee boils over if left, dirty glasses go to the sink",
-    "Seven 3-minute days with a coin target and 1-3 stars, new items and customer types each day, then an endless shift",
-    "A shop between days: second semaver, bigger tray (3 to 5 items), faster oven, extra tables, an apprentice, comfy stools",
-    "The ?auto bot plays with the same actions as a player and won 84 of 90 seeded games",
-    "60 fps on an Intel UHD GPU at 1280x720 on a busy day 6 with 31 draw calls; generated models with a procedural fallback"
+    "v2: ferry rushes from day 3 (a horn warns 8 s ahead, then 2-3 parties arrive at once), tea that goes stale, tavla regulars who ask for refills and gulls that steal simit unless shooed",
+    "v2: Play goes straight into day 1 with coach marks; fact cards, tea house ranks and the kitten on the shop and summary screens",
+    "Seven 3-minute days with a coin target and 1-3 stars, a shop between days, then an endless shift",
+    "The ?auto bot plays with the same actions as a player and finishes 7/7 days; 60 fps at 1280x720 with 27 draw calls"
   ],
   "media": {
-    "hero": "docs/card.jpg",
+    "hero": "docs/rush_en.png",
     "screenshots": [
-      "docs/card.jpg"
+      "docs/card.jpg",
+      "docs/rush_en.png",
+      "docs/gull_en.png",
+      "docs/briefing_en.png",
+      "docs/busy_d6_en.png",
+      "docs/shop_en.png",
+      "docs/summary_en.png",
+      "docs/pause_en.png",
+      "docs/mobile_final.png"
     ],
     "gifs": [
       "docs/gameplay.gif"
@@ -70,8 +78,9 @@
     "primary_link": "https://furkiozknn.github.io/cay-ocagi/"
   },
   "provenance": {
-    "generated_at": "2026-10-27",
+    "generated_at": "2026-10-28",
     "generator": "hand-written",
-    "rule": "mechanical fields read from the repository; editorial fields hand-written from the README, index.html and docs/assets.md; no field is generated from a guess"
+    "rule": "mechanical fields read from the repository; editorial fields hand-written from the README, index.html and docs/assets.md; no field is generated from a guess",
+    "note": "v2 upgrade 2026-10-28"
   }
 }
