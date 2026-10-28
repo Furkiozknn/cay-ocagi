@@ -13,7 +13,7 @@
 <p align="center"><b>A 3D time-management game on a low-poly Istanbul quay: run a tiny tea house for seven busy days, brew tea, warm simit, cook Turkish coffee without letting it boil over and serve every table before patience runs out.</b></p>
 
 <p align="center">
-  <img src="docs/gameplay.gif" width="640" alt="Çay Ocağı gameplay: the waiter carries tea from the counter to the tables">
+  <img src="docs/gameplay.gif" width="640" alt="Çay Ocağı gameplay: a ferry rush fills the tables on day 3 while the waiter serves tea and simit and a gull lands to steal one">
 </p>
 
 <p align="center"><b>Play online: <a href="https://furkiozknn.github.io/cay-ocagi/">https://furkiozknn.github.io/cay-ocagi/</a></b> (desktop and phone, no install)</p>
@@ -93,10 +93,34 @@ follows the browser language.
 | `?day=N` | start a new game on day N, with 150 coins per skipped day |
 | `?lang=en` / `?lang=tr` | language |
 | `?seed=N` | fixed simulation seed |
+| `?selftest` | run the v2 mechanics checks by simulation; results in `window.cay.selfTest` |
 
 The live state is on `window.cay` (day, clock, coins, target, tables, waiter, errors).
 
 </details>
+
+## v2 update
+
+Upgraded by Claude Sonnet 5.5 with Claude Code from [prompts/cay-ocagi-v2.md](prompts/cay-ocagi-v2.md).
+
+- **Straight into day 1.** Play starts the first shift at once; three pulsing coach marks (tea station, first customer,
+  table) advance on the real action and show once. Later days keep their briefing. Repeated toasts refresh instead of
+  stacking.
+- **Ferry rush (from day 3).** The ferry's horn is the warning ("Ferry arriving", 8 s ahead); then 2 to 3 parties step
+  off within 10 s. The day's customer count stays the same, the rush only moves arrivals together.
+- **Tea freshness.** A poured glass is fresh for 25 s, then its bar fades; stale tea is greyer, pays half the tip and
+  draws a grumble. A pot left on the counter until cold is tipped out and re-brewed.
+- **Regulars play tavla.** After the first serve a regular stays about 2.5x longer, shows a dice icon and asks for "one
+  more tea" every 14 to 18 s; each refill adds tip and a small streak.
+- **Gull thieves (from day 3).** A gull lands on the quay rail, then dives at a served simit; click or tap it to shoo it
+  away, otherwise that simit's coins are lost. One gull at a time, never in the first 20 s.
+- **Facts and ranks.** A "Did you know?" card on each day briefing and summary (six sourced facts, see
+  [CREDITS.md](CREDITS.md)) and a cosmetic rank from lifetime coins: Çırak, Kalfa, Usta. A sleeping Van kitten sits on the
+  shop and summary screens.
+- **Order urgency.** Bubbles shake and redden in the last quarter of patience, the coffee pot shows a shrinking ring
+  during its 3.6 s window and a perfect grab (first second) rings a bell and adds a tip.
+- `window.cay` now exposes `rushes`, `refill`, `gull`, `thief`, `trayFresh()` and `perfects`; `?selftest` runs the new
+  mechanics by simulation. The `?auto` bot still wins 86 of 90 seeded games in `?auto&bench=90`.
 
 ## Screenshots
 
@@ -110,6 +134,10 @@ The live state is on `window.cay` (day, clock, coins, target, tables, waiter, er
     <td><img src="docs/shop_en.png" alt="The shop between days"><br><sub>The shop between days</sub></td>
     <td><img src="docs/summary_en.png" alt="Day complete with three stars"><br><sub>Day complete, three stars</sub></td>
     <td><img src="docs/pause_en.png" alt="Pause menu"><br><sub>Pause menu</sub></td>
+  </tr>  <tr>
+    <td><img src="docs/rush_en.png" alt="The ferry-rush warning banner"><br><sub>Ferry rush warning</sub></td>
+    <td><img src="docs/gull_en.png" alt="A gull on the quay rail after being shooed"><br><sub>Gull thief</sub></td>
+    <td><img src="docs/briefing_en.png" alt="Day briefing with a Did you know card"><br><sub>Day briefing and fact card</sub></td>
   </tr>
 </table>
 
@@ -123,7 +151,7 @@ The live state is on `window.cay` (day, clock, coins, target, tables, waiter, er
   </tr>
   <tr>
     <td><img src="docs/mobile_title_tr.png" alt="Title screen on a phone in Turkish"><br><sub>Phone, title in Turkish</sub></td>
-    <td><img src="docs/mobile_final.png" alt="Day 4 on a phone"><br><sub>Phone, day 4</sub></td>
+    <td><img src="docs/mobile_final.png" alt="Day 3 on a phone"><br><sub>Phone, day 3</sub></td>
   </tr>
 </table>
 
@@ -191,3 +219,5 @@ masaüstünde ve telefonda tarayıcıda oynanır. Claude Sonnet 5.5 tarafından 
 ## License
 
 MIT, see [LICENSE](LICENSE).
+
+Like the game? You can support new rounds on [Buy Me a Coffee](https://buymeacoffee.com/furkiozkann). The game stays free.

@@ -7,7 +7,9 @@
 <meta name="description" content="A low-poly 3D tea house time-management game. Brew, serve, collect tips.">
 <meta property="og:title" content="Çay Ocağı · Tea House Rush">
 <meta property="og:description" content="Run a tiny Istanbul tea house for 7 busy days: brew tea, warm simit, cook Turkish coffee and serve before patience runs out.">
-<meta property="og:image" content="https://furkiozknn.github.io/cay-ocagi/docs/busy_d6_en.png">
+<meta property="og:image" content="https://furkiozknn.github.io/cay-ocagi/docs/card.jpg">
+<meta property="og:image:width" content="960">
+<meta property="og:image:height" content="540">
 <meta property="og:url" content="https://furkiozknn.github.io/cay-ocagi/">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6.5 3.5h11c0 5.200-1.600 8.400-3.300 9.800v2.200h-4.400v-2.200C8.100 11.900 6.500 8.700 6.500 3.500z' fill='%23c2410c'/%3E%3C/svg%3E">
@@ -94,14 +96,21 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
 .bub.mini svg{width:26px;height:26px}
 .bub.dirty{animation:bob 1s ease-in-out infinite}
 @keyframes bob{50%{margin-top:-5px}}
-.bub.urgent .ring{animation:shake .5s linear infinite}
+.bub.urgent{background:rgba(255,222,212,.97);box-shadow:0 4px 14px rgba(200,40,20,.55),0 0 0 2px rgba(214,48,28,.75)}
+.bub.urgent::after{background:rgba(255,222,212,.97)}
+.bub.urgent .ring,.bub.urgent .it,.bub.urgent .say{animation:shake .46s linear infinite}
 @keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+.bub .say{font-size:12px;font-weight:900;color:var(--ink);max-width:70px;white-space:normal;line-height:1.05;text-align:left}
+.bub.tavla svg{width:26px;height:26px}
 .sbadge{position:absolute;left:0;top:0;pointer-events:none;will-change:transform;display:none}
 .fl{position:absolute;left:0;top:0;font-weight:900;font-size:24px;color:#fff;text-shadow:0 2px 0 #7c2d12,0 0 8px rgba(124,45,18,.6);animation:rise 1.3s ease-out forwards;white-space:nowrap}
 .fl small{font-size:14px;color:#ffe08a}
 .fl.bad{color:#ffd0c0}
 @keyframes rise{0%{opacity:0;margin-top:0;scale:.6}15%{opacity:1;scale:1.15}100%{opacity:0;margin-top:-56px;scale:1}}
 #toasts{position:fixed;left:50%;top:76px;transform:translateX(-50%);display:flex;flex-direction:column;gap:6px;align-items:center;z-index:6;pointer-events:none}
+#banner{order:-1;padding:8px 18px;border-radius:20px;background:rgba(58,35,20,.9);color:#fff6e5;font-weight:800;font-size:14px;text-align:center;max-width:min(92vw,560px);animation:bin .35s ease both;box-shadow:0 4px 14px rgba(60,25,5,.3)}
+#banner.ferry{background:rgba(35,88,120,.95)}
+@keyframes bin{from{opacity:0;transform:translateY(-8px)}}
 .toast{padding:8px 16px;border-radius:20px;background:rgba(58,35,20,.88);color:#fff6e5;font-weight:800;font-size:14px;animation:tin 2.4s ease forwards;white-space:nowrap}
 .toast.bad{background:rgba(160,40,25,.92)}.toast.good{background:rgba(52,120,62,.93)}
 @keyframes tin{0%{opacity:0;transform:translateY(-8px)}8%{opacity:1;transform:none}85%{opacity:1}100%{opacity:0}}
@@ -164,6 +173,39 @@ body.low #screen{backdrop-filter:none}
 .foot{margin:12px 0 0;font-size:12px;font-weight:700;color:var(--ink2)}
 .foot a{color:var(--amber);text-decoration:none;font-weight:900}
 .foot a:hover{text-decoration:underline}
+/* v2: coach marks, coffee window ring, gull marker, fact card, rank, mascot */
+.coach{position:absolute;left:0;top:0;display:none;pointer-events:none;will-change:transform;z-index:2}
+.coach .cm{position:relative;display:flex;flex-direction:column;align-items:center}
+.coach .tx{padding:6px 12px;border-radius:14px;background:var(--amber);color:#fff;font-weight:900;font-size:13px;text-align:center;max-width:220px;line-height:1.2;box-shadow:0 4px 12px rgba(90,30,5,.4)}
+.coach .ar{width:0;height:0;border:9px solid transparent;border-top-color:var(--amber);margin-top:-1px}
+.coach .pl{position:absolute;left:50%;bottom:-19px;width:38px;height:38px;margin-left:-19px;border-radius:50%;border:3px solid var(--amber);animation:cping 1.1s ease-out infinite}
+@keyframes cping{0%{transform:scale(.5);opacity:.95}100%{transform:scale(1.7);opacity:0}}
+.st.coachst{animation:pulse 1.2s ease-in-out infinite}
+.cring{position:absolute;left:0;top:0;width:46px;height:46px;display:none;pointer-events:none;will-change:transform}
+.cring svg{width:46px;height:46px;transform:rotate(-90deg)}
+.gmark{position:absolute;left:0;top:0;display:none;width:48px;height:48px;border-radius:50%;background:rgba(255,252,244,.96);place-items:center;pointer-events:auto;cursor:pointer;will-change:transform;animation:gping .7s ease-out infinite}
+.gmark svg{width:34px;height:34px}
+@keyframes gping{from{box-shadow:0 0 0 0 rgba(194,65,12,.7),0 4px 12px rgba(80,40,10,.35)}to{box-shadow:0 0 0 12px rgba(194,65,12,0),0 4px 12px rgba(80,40,10,.35)}}
+.slot .fb{position:absolute;left:4px;right:4px;bottom:2px;height:4px;border-radius:3px;background:rgba(80,40,10,.2);overflow:hidden}
+.slot .fb i{display:block;height:100%;background:var(--ok)}
+.slot .fb.mid i{background:#d4a017}.slot .fb.old i{background:#9a9088}
+.st .u.stale i{background:#9a9088;width:100%!important}
+.sfb{display:block;position:absolute;left:9px;right:9px;bottom:2px;height:3px;border-radius:2px;background:rgba(80,40,10,.2);overflow:hidden}
+.sfb i{display:block;height:100%}
+.fact{margin:10px 0 2px;padding:9px 12px;border-radius:12px;background:rgba(255,255,255,.55);text-align:left;font-size:13px;font-weight:700;line-height:1.35;color:#5a3d2a}
+.fact b{display:block;font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--amber);margin-bottom:2px}
+.rank{display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 0 2px;font-weight:800;flex-wrap:wrap}
+.rank .rk{padding:3px 14px;border-radius:20px;background:#5a3410;color:#ffe08a;font-weight:900}
+.rank small{color:var(--ink2);font-weight:700;font-size:12px}
+.rbar{height:6px;border-radius:4px;background:rgba(80,40,10,.18);overflow:hidden;margin:4px auto 6px;max-width:260px}
+.rbar i{display:block;height:100%;background:linear-gradient(90deg,#f3c14f,var(--amber))}
+.cushion{position:relative;display:inline-block;isolation:isolate;flex:none}
+.cushion::after{content:"";position:absolute;left:6%;right:6%;bottom:3px;height:16px;border-radius:50%;background:radial-gradient(#ee8a43,#c2410c);z-index:-1}
+.mascot{display:block;width:76px;height:76px;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(90,40,10,.25))}
+.sumrow{display:flex;align-items:center;justify-content:center;gap:8px}
+.shophead{display:flex;align-items:flex-end;justify-content:center;gap:10px;flex-wrap:wrap}
+.shophead .sem{width:50px;height:50px;border-radius:14px;background:#fff;display:grid;place-items:center;align-self:center}
+.shophead .sem svg{width:36px;height:36px}
 .rec{display:inline-block;margin:4px 0;padding:4px 14px;border-radius:20px;background:#f2b632;color:#5a3410;font-weight:900;animation:starpop .6s cubic-bezier(.2,1.6,.4,1) both .4s}
 /* settings */
 .set{display:grid;gap:8px;margin:12px 0;text-align:left}
@@ -225,7 +267,7 @@ body.low #screen{backdrop-filter:none}
 <canvas id="c" tabindex="0"></canvas>
 <div id="wl"></div>
 <header id="top" class="glass"></header>
-<div id="toasts"></div>
+<div id="toasts"><div id="banner" style="display:none"></div></div>
 <div id="dock"></div>
 <div id="screen"></div>
 <div id="dbg"></div>
@@ -250,10 +292,10 @@ const SET = (() => {
   let s = store.get(KEY.settings, null);
   if (!s) {
     const old = store.get('cay_prefs', {});
-    s = { master: .8, music: .6, sfx: .8, lang: old.lang || null, quality: 'high', muted: !!old.muted };
+    s = { master: .8, music: .6, sfx: .8, lang: old.lang || null, quality: 'high', muted: !!old.muted, coached: false };
     const ob = store.get('cay_best', null); if (ob && !store.get(KEY.best, null)) store.set(KEY.best, ob);
   }
-  return Object.assign({ master: .8, music: .6, sfx: .8, lang: null, quality: 'high', muted: false }, s);
+  return Object.assign({ master: .8, music: .6, sfx: .8, lang: null, quality: 'high', muted: false, coached: false }, s); // coached: day-1 coach marks were shown
 })();
 function saveSettings() { store.set(KEY.settings, SET); }
 const FLAG = {
@@ -315,6 +357,8 @@ const ICON = {
   table: `<svg viewBox="0 0 24 24"><ellipse cx="12" cy="9" rx="9.500" ry="4" fill="#e9825a" stroke="#8a3a1a" stroke-width="1.200"/><path d="M12 13v7M8 21h8" stroke="#6a3a1a" stroke-width="2" stroke-linecap="round"/></svg>`,
   stool: `<svg viewBox="0 0 24 24"><ellipse cx="12" cy="8" rx="7.500" ry="3.300" fill="#f19b4a" stroke="#8a4a14" stroke-width="1.200"/><path d="M7 10l-2 10M17 10l2 10M12 11v9" stroke="#6a3a1a" stroke-width="1.800" stroke-linecap="round"/></svg>`,
   gear: `<svg viewBox="0 0 24 24"><path d="M10.3 2.5h3.4l.5 2.6 1.6.9 2.5-.9 1.7 2.9-2 1.8v1.9l2 1.8-1.7 2.9-2.5-.9-1.6.9-.5 2.6h-3.4l-.5-2.6-1.6-.9-2.5.9-1.7-2.9 2-1.8v-1.9l-2-1.8 1.7-2.9 2.5.9 1.6-.9z" fill="currentColor"/><circle cx="12" cy="12" r="3.1" fill="#fff8eb"/></svg>`,
+  dice: `<svg viewBox="0 0 24 24"><rect x="3.500" y="3.500" width="17" height="17" rx="4" fill="#fffaf0" stroke="#5a3418" stroke-width="1.500"/><circle cx="8.500" cy="8.500" r="1.600" fill="#5a3418"/><circle cx="15.500" cy="8.500" r="1.600" fill="#5a3418"/><circle cx="12" cy="12" r="1.600" fill="#c2410c"/><circle cx="8.500" cy="15.500" r="1.600" fill="#5a3418"/><circle cx="15.500" cy="15.500" r="1.600" fill="#5a3418"/></svg>`,
+  gull: `<svg viewBox="0 0 24 24"><path d="M2 11q4-5 8-1.500l2 1.300 2-1.300q4-3.500 8 1.500q-4-1.200-7 1.800l-1.500 4.500h-3L9 12.300Q6 9.800 2 11z" fill="#fafafa" stroke="#7a8794" stroke-width="1.200" stroke-linejoin="round"/><path d="M10.500 16.800l1.500 3.200 1.500-3.200z" fill="#f2a03a" stroke="#a96e0c" stroke-width=".8" stroke-linejoin="round"/><circle cx="12" cy="13" r=".7" fill="#1b1410"/></svg>`,
   tulip: `<svg viewBox="0 0 24 24"><path d="M6.500 3.500h11c0 5.200-1.600 8.400-3.300 9.800v2.200h-4.400v-2.200C8.100 11.900 6.500 8.700 6.500 3.500z" fill="#c2410c"/></svg>`
 };
 // generated icon set (assets/ui/icons, sliced from one sheet). Each PNG sits inside an <svg> wrapper so every size rule
@@ -383,7 +427,15 @@ const TXT = {
     quality: 'Kalite', qLow: 'Düşük', qHigh: 'Yüksek', qNote: 'Kalite değişince sayfa yeniden yüklenir (gün baştan başlar).',
     fullscreen: 'Tam ekran', on: 'Açık', off: 'Kapalı', resume: 'Devam et', restart: 'Günü baştan başlat', retryShop: 'Dükkân ve tekrar',
     newRecord: 'Yeni rekor!', lastOrders: 'Son siparişler! Yeni müşteri gelmeyecek.',
-    footer: 'Claude Game Arena · {0} yaptı · varlıklar yenilendi'
+    footer: 'Claude Game Arena · {0} yaptı · varlıklar yenilendi',
+    coach1: 'Çay istasyonuna tıkla: çay demlenir', coach1b: 'Çay hazır! Tekrar tıkla, bardak tepsine girsin', coach2: 'Müşteri çay istiyor. Balona tıkla, garson götürsün', coach3: 'Garson masaya gidiyor: servis yap, altın kazan!',
+    coachDone: 'Harika! Gerisi sende.',
+    ferryWarn: 'Vapur geliyor! Çay demle, simit ısıt', ferryRush: 'Vapurdan yolcular iniyor!',
+    coldTossed: 'Soğuyan çay döküldü, yenisi demleniyor', staleTea: 'Soğuk çay: bahşiş yarıya düştü', perfect: 'Tam zamanında!',
+    refillSay: 'bir çay daha', refillMiss: 'Müdavim çayı beklemedi', refillDone: 'Bir çay daha!', combo: 'seri',
+    gullLand: 'Martı! Simidi kapmadan kov', gullShoo: 'Martı kovalandı', gullSteal: 'Martı simidi kaptı! -{0}',
+    didYouKnow: 'Biliyor muydun?', rankT: 'Rütbe', rankLine: '{0} · toplam {1} altın', rankNext: '{0} için {1} altın daha', rankTop: 'En üst rütbe', rankUp: 'Yeni rütbe: {0}!',
+    rank0: 'Çırak', rank1: 'Kalfa', rank2: 'Usta', kitten: 'Uyuyan Van kedisi yavrusu'
   },
   en: {
     tagline: 'A tiny tea house by the Bosphorus. Brew, serve, collect tips.',
@@ -425,7 +477,15 @@ const TXT = {
     quality: 'Quality', qLow: 'Low', qHigh: 'High', qNote: 'Changing quality reloads the page (the day starts over).',
     fullscreen: 'Fullscreen', on: 'On', off: 'Off', resume: 'Resume', restart: 'Restart the day', retryShop: 'Shop & retry',
     newRecord: 'New record!', lastOrders: 'Last orders! No new customers today.',
-    footer: 'Claude Game Arena · built by {0} · assets remastered'
+    footer: 'Claude Game Arena · built by {0} · assets remastered',
+    coach1: 'Click the tea station to brew', coach1b: 'Tea is ready! Click again to put a glass on your tray', coach2: 'This customer wants tea. Click the bubble to send the waiter', coach3: 'The waiter is on the way: serve, earn coins!',
+    coachDone: 'Great! The rest is up to you.',
+    ferryWarn: 'Ferry arriving! Brew tea, warm simit', ferryRush: 'Passengers are coming off the ferry!',
+    coldTossed: 'Cold tea tipped out, brewing fresh', staleTea: 'Cold tea: tip halved', perfect: 'Perfect timing!',
+    refillSay: 'one more tea', refillMiss: 'The regular gave up waiting', refillDone: 'One more tea!', combo: 'streak',
+    gullLand: 'Gull! Shoo it before it grabs the simit', gullShoo: 'Gull shooed away', gullSteal: 'A gull stole a simit! -{0}',
+    didYouKnow: 'Did you know?', rankT: 'Rank', rankLine: '{0} · {1} coins lifetime', rankNext: '{1} more coins to {0}', rankTop: 'Top rank', rankUp: 'New rank: {0}!',
+    rank0: 'Apprentice (Çırak)', rank1: 'Journeyman (Kalfa)', rank2: 'Master (Usta)', kitten: 'A sleeping Turkish Van kitten'
   }
 };
 
@@ -441,6 +501,9 @@ const G = window.cay = {
   tables: [], parties: [], waiter: null, apprentice: null, stations: null,
   vt: 0, simming: false, halt: false, botHold: false,
   drawCalls: 0, maxDrawCalls: 0, fps: 0, errors: [], log: [], stars: 0,
+  // v2: ferry rushes (all days so far), regulars' refills and the gull thief, counted per day
+  rushes: [], rushQ: [], rushSoon: false, rushDay: 0, refill: { asked: 0, done: 0, missed: 0 }, combo: 0, perfects: 0,
+  gull: { landed: 0, shooed: 0, stolen: 0 }, gullEvents: [], life: 0, rank: 0,
   flags: FLAG, version: 1
 };
 function t(k, ...a) {
@@ -461,8 +524,34 @@ const CUST = {
   normal: { patience: 42, items: [1, 3], size: 1, tip: 1.0, eat: 5 },
   office: { patience: 25, items: [1, 2], size: 1, tip: 1.4, eat: 3.2 },
   group: { patience: 56, items: [3, 5], size: 3, tip: 1.0, eat: 6.5 },
-  regular: { patience: 46, items: [1, 3], size: 1, tip: 2.0, eat: 5.5 }
+  regular: { patience: 46, items: [1, 3], size: 1, tip: 2.0, eat: 5.5, tavla: true } // regulars play tavla after the first serve (TAVLA)
 };
+/* v2 data tables: the sim, the UI and the ?auto bot all read these */
+const FERRY_V = 1.1; // strait ferry speed (units/s); it loops every ~78 s
+const TEA = { fresh: 25, fade: 15 }; // a poured glass is fresh for 25 s, then its freshness bar fades to stale over 15 s
+const STALE_TIP = 0.5; // stale tea (or a cold refill) pays this share of its tip
+const PERFECT = { win: 1.0, tip: 2 }; // coffee grabbed in the first 1 s of its COOK_WIN earns +2 tip when served
+const RUSH = { fromDay: 3, hornX: -14, warn: 8, window: 10, first: 22, parties: [2, 3], endCut: 32 }; // ferry rush: warn 8 s ahead, 2-3 parties in 10 s, none after endCut s before closing
+const TAVLA = { stay: [40, 48], gap: [14, 18], wait: 28, tip: 2, combo: 4 }; // regulars: ~2.5x a normal table stay, a tea refill every 14-18 s
+const GULL = { fromDay: 3, quiet: 20, first: [4, 20], gap: [30, 55], perch: [2.6, 4.2], dive: 1.5, wait: 6, flee: 2.2 }; // gull thief timings (s)
+const RANKS = [{ id: 0, from: 0 }, { id: 1, from: 600 }, { id: 2, from: 2500 }]; // cosmetic rank from lifetime coins (arena.cay.best.life)
+/* In-game facts. Source URL per entry in the comment above it; TR and EN text as given in the research pool. */
+const FACTS = [
+  // https://ich.unesco.org/en/RL/01685
+  { tr: "UNESCO, çay kültürünü 2022'de Azerbaycan ile ortak dosyayla Somut Olmayan Kültürel Miras Temsili Listesi'ne aldı.", en: 'In 2022 UNESCO inscribed tea culture, a joint file with Azerbaijan, on its Representative List of the Intangible Cultural Heritage.' },
+  // https://www.ntv.com.tr/galeri/n-life/n-lezzetler/rize-cayina-98-yil-sonra-tescil,v3ZWxvy0OUS_XSPfFi1s7w
+  { tr: "Rize'de çay tarımı 1924'te başladı; \"Rize Çayı\" 2022'de coğrafi işaret aldı.", en: 'Tea farming in Rize began in 1924, and "Rize Çayı" received a geographical indication in 2022.' },
+  // https://www.ntv.com.tr/galeri/n-life/n-lezzetler/rize-cayina-98-yil-sonra-tescil,v3ZWxvy0OUS_XSPfFi1s7w
+  { tr: 'Çay yaklaşık 830 bin dekarda yetişiyor; yıllık yaş çay üretimi yaklaşık 1,35 milyon ton.', en: 'Tea grows on about 830,000 decares, and the annual fresh-leaf harvest is about 1.35 million tonnes.' },
+  // https://www.rtb.org.tr/uploads/files/110-Çay_Sektörü_Raporu_Ocak_2026.doc
+  { tr: "2025'te 1.338.662.452 kg yaş çay işlendi; %61,46'sı ÇAYKUR'da, %38,54'ü özel sektörde.", en: 'In 2025, 1,338,662,452 kg of fresh tea leaf was processed: 61.46% by ÇAYKUR and 38.54% by the private sector.' },
+  // https://en.wikipedia.org/wiki/Simit
+  { tr: "1593'te Üsküdar'da simidin ağırlığı ve fiyatı standartlaştırıldı.", en: 'In 1593, the weight and price of simit were standardised in Üsküdar.' },
+  // https://en.wikipedia.org/wiki/Simit
+  { tr: "Evliya Çelebi 1630'larda İstanbul'da 70 simit fırını saydı.", en: 'In the 1630s Evliya Çelebi counted 70 simit bakeries in Istanbul.' }
+];
+const factFor = n => FACTS[((n % FACTS.length) + FACTS.length) % FACTS.length];
+const rankOf = life => { let r = 0; for (const k of RANKS) if (life >= k.from) r = k.id; return r; };
 const DAYS = [
   { menu: ['tea'], types: { normal: 1 }, gap: 10.5, target: 65, nk: 'new1', ni: 'tea' },
   { menu: ['tea', 'simit'], types: { normal: 1 }, gap: 9.0, target: 95, nk: 'new2', ni: 'simit' },
@@ -604,20 +693,27 @@ function resetWorldForDay() {
   for (const p of G.parties) for (const pe of p.persons) freePerson(pe);
   G.parties = [];
   newTables(); resetStations(); rebuildGrid();
-  G.waiter = { x: LANE_X, z: 0.5, face: -Math.PI / 2, path: [], q: [], cur: null, state: 'idle', workT: 0, tray: [], moving: false, sx: 0, sz: 0 };
+  // tray[k] is the item name, meta[k] its extras: { age } for tea (seconds since it was poured), { perfect } for coffee
+  G.waiter = { x: LANE_X, z: 0.5, face: -Math.PI / 2, path: [], q: [], cur: null, state: 'idle', workT: 0, tray: [], meta: [], moving: false, sx: 0, sz: 0 };
   G.apprentice = G.up.apprentice ? { x: -4.3, z: 5.9, face: 0, path: [], state: 'idle', t: 0, tb: null, moving: false } : null;
   G.clock = 0; G.dayCoins = 0; G.dayTips = 0; G.happy = 0; G.angry = 0; G.served = 0; G.missed = 0;
   G.spawnT = 2.2; G.spawnCount = 0; G.walkby = 0; G.lastCall = false;
+  G.rushQ = []; G.rushSoon = false; G.rushDay = 0; G.refill = { asked: 0, done: 0, missed: 0 }; G.combo = 0; G.perfects = 0; G.gull = { landed: 0, shooed: 0, stolen: 0 };
+  thief.state = 'none'; thief.tb = -1; thief.next = 1e9;
 }
 let _snap = null;
-function beginDay() {
+function beginDay(direct) {
   const cfg = dayCfg(G.day);
   _snap = { coins: G.coins, up: { ...G.up }, total: G.totalEarned };
   G.target = cfg.target;
   resetWorldForDay();
+  // every day starts the ferry at the same spot, so its horn (the rush warning) always comes RUSH.first seconds in
+  ferry.x = RUSH.hornX - RUSH.first * FERRY_V; ferry.horn = false; ferry.rushed = false;
+  thief.next = GULL.quiet + rr(GULL.first[0], GULL.first[1]);
   G.state = 'play'; G.paused = false;
   uiScreen(); uiRefreshAll();
-  if (G.day === 1 && !G.won) toast(t('welcome'), 'good');
+  // the first day starts straight from the title: the briefing becomes a banner for 3 s
+  if (direct) banner(`${t(G.endless ? 'dayEndless' : 'dayOf', G.day)} · ${t('target')} ${cfg.target} · ${t('newThing')}: ${t(cfg.nk)}`, 3000);
 }
 function ratingStars() {
   const c = G.dayCoins, T = G.target, tot = G.happy + G.angry, ratio = tot ? G.happy / tot : 1;
@@ -631,16 +727,20 @@ function endDay() {
   // closing time: tables that were fully served and are still eating pay their bill and tip now
   for (const p of G.parties) if (p.state === 'eat') payParty(p);
   const stars = ratingStars(); G.stars = stars;
-  const rec = { day: G.day, coins: G.dayCoins, target: G.target, tips: G.dayTips, happy: G.happy, angry: G.angry, stars, passed: stars > 0, served: G.served, spawned: G.spawnCount, blocked: G.walkby | 0 };
+  const rec = { day: G.day, coins: G.dayCoins, target: G.target, tips: G.dayTips, happy: G.happy, angry: G.angry, stars, passed: stars > 0, served: G.served, spawned: G.spawnCount, blocked: G.walkby | 0,
+    rushes: G.rushDay, refills: { ...G.refill }, gulls: { ...G.gull }, perfects: G.perfects };
   G.log.push(rec);
   G.lastResult = rec;
   for (const p of G.parties) for (const pe of p.persons) freePerson(pe);
-  G.parties = [];
+  G.parties = []; thief.state = 'none'; G.rushQ = []; G.rushSoon = false;
   const best = store.get(KEY.best, { day: 0, total: 0 });
   const reached = rec.passed ? G.day : G.day - 1;
   // no record for a run that earned nothing or started on a later day (?day)
   G.newRecord = reached > 0 && G.totalEarned > 0 && FLAG.day <= 1 && (reached > best.day || (reached === best.day && G.totalEarned > best.total));
-  if (G.newRecord && !FLAG.nosave) store.set(KEY.best, { day: reached, total: G.totalEarned });
+  // lifetime coins for the cosmetic rank live in the same record (field `life`); test runs do not write it
+  const lifeBefore = (best.life || 0) + (FLAG.nosave ? G.totalEarned - G.dayCoins : 0);
+  G.life = lifeBefore + G.dayCoins; G.rank = rankOf(G.life); G.rankUp = G.rank > rankOf(lifeBefore);
+  if (!FLAG.nosave) store.set(KEY.best, Object.assign({}, best, G.newRecord ? { day: reached, total: G.totalEarned } : {}, { life: (best.life || 0) + G.dayCoins }));
   if (rec.passed) { G.state = 'summary'; sfxFanfare(); } else { G.state = 'gameover'; sfxLose(); }
   // failed-day rule (same in the Godot port): the coins earned on a failed day are kept, and the retry goes through
   // the shop, so the player can buy an upgrade before trying the same day again
@@ -657,7 +757,10 @@ function saveGame(resume, over = {}) {
 }
 function loadSave() { const s = store.get(KEY.save, null); return s && s.v === 1 && s.day >= 1 && s.up ? s : null; }
 const A = G.act = {
-  start() { sfxInit(); G.retrying = false; G.coins = 0; G.totalEarned = 0; G.log = []; G.won = false; G.endless = false; G.up = { kettle: 0, tray: 0, oven: 0, apprentice: 0, table: 0, stool: 0 }; G.day = FLAG.day || 1; if (G.day > 1) { G.coins = 150 * (G.day - 1); G.endless = G.day > 7; G.won = G.day > 7; } A.intro(); },
+  start() { sfxInit(); G.retrying = false; G.coins = 0; G.totalEarned = 0; G.log = []; G.won = false; G.endless = false; G.up = { kettle: 0, tray: 0, oven: 0, apprentice: 0, table: 0, stool: 0 }; G.day = FLAG.day || 1; if (G.day > 1) { G.coins = 150 * (G.day - 1); G.endless = G.day > 7; G.won = G.day > 7; }
+    // a fresh game goes straight into day 1 (one click from the title); later days keep their briefing
+    if (G.day === 1) { saveGame('intro'); beginDay(true); } else A.intro();
+  },
   cont() {
     const s = loadSave(); if (!s) return A.start();
     sfxInit();
@@ -666,7 +769,7 @@ const A = G.act = {
     if (s.resume === 'shop') A.shop(); else A.intro();
   },
   intro() { G.state = 'intro'; G.panel = null; resetWorldForDay(); G.target = dayCfg(G.day).target; saveGame('intro'); uiScreen(); checkStop(); },
-  begin() { beginDay(); },
+  begin() { beginDay(false); },
   afterSummary() { if (G.day === 7 && !G.won) { G.won = true; G.endless = true; G.state = 'victory'; uiScreen(); sfxFanfare(); confetti(); checkStop(); } else { A.shop(); } },
   shop() { G.state = 'shop'; saveGame('shop'); uiScreen(); checkStop(); },
   buy(id) {
@@ -678,7 +781,7 @@ const A = G.act = {
   next() { if (G.retrying) G.retrying = false; else G.day++; A.intro(); },
   retryShop() { G.retrying = true; A.shop(); },
   // pause menu: the day starts over with the coins and upgrades it began with
-  restart() { if (_snap) { G.coins = _snap.coins; G.up = { ..._snap.up }; G.totalEarned = _snap.total; } beginDay(); },
+  restart() { if (_snap) { G.coins = _snap.coins; G.up = { ..._snap.up }; G.totalEarned = _snap.total; } beginDay(false); },
   endlessMode() { G.endless = true; A.shop(); },
   menu() { G.state = 'title'; G.paused = false; G.panel = null; resetWorldForDay(); uiScreen(); audApply(); }
 };
@@ -713,11 +816,11 @@ function pickItem(menu) {
   for (const i of menu) { r -= ITEM_W[i]; if (r <= 0) return i; }
   return menu[0];
 }
-function spawnParty() {
+function spawnParty(forceType) {
   const cfg = dayCfg(G.day);
   const free = G.tables.filter(tb => tb.unlocked && !tb.party && !tb.dirty && !tb.claimed);
   if (!free.length) return false;
-  const type = pickType(cfg), cc = CUST[type];
+  const type = forceType || pickType(cfg), cc = CUST[type];
   if (personFree.length < cc.size) return false;
   const tb = free[(rnd() * free.length) | 0];
   const n = cc.items[0] + ((rnd() * (cc.items[1] - cc.items[0] + 1)) | 0);
@@ -742,10 +845,16 @@ function spawnParty() {
   sfxBell();
   return true;
 }
-function slotFor(tb, item) {
+function slotFor(tb, item, stale) {
   const kind = item === 'simit' ? 'plate' : 'glass';
-  tb.slots.push({ kind, item, dirty: false });
+  tb.slots.push({ kind, item, dirty: false, stale: !!stale });
 }
+/* tea freshness: 1 for TEA.fresh seconds after pouring, then fading to 0 (stale) over TEA.fade seconds */
+const teaFresh = age => age <= TEA.fresh ? 1 : clamp(1 - (age - TEA.fresh) / TEA.fade, 0, 1);
+const trayFresh = k => { const w = G.waiter; return w.tray[k] === 'tea' ? teaFresh(w.meta[k].age) : 0; };
+function trayPush(it, meta) { const w = G.waiter; w.tray.push(it); w.meta.push(meta || { age: 0 }); }
+function trayTake(k) { const w = G.waiter; w.tray.splice(k, 1); w.meta.splice(k, 1); }
+G.trayFresh = () => G.waiter ? G.waiter.tray.map((it, k) => it === 'tea' ? +trayFresh(k).toFixed(2) : null) : []; // debug / test hook
 function finishLeave(p, angry) {
   const tb = G.tables[p.tb];
   p.state = 'leave'; tb.party = null;
@@ -760,11 +869,26 @@ function finishLeave(p, angry) {
   }
 }
 function payParty(p) {
-  let base = 0; p.order.forEach(o => base += PRICE[o.item]);
-  const tip = Math.round(base * 0.4 * p.finalFrac * p.cc.tip);
+  // a simit a gull stole pays nothing; stale tea pays STALE_TIP of its tip share; a perfect coffee adds PERFECT.tip
+  let base = 0, tipBase = 0, bonus = 0;
+  p.order.forEach(o => { if (o.stolen) return; base += PRICE[o.item]; tipBase += PRICE[o.item] * (o.stale ? STALE_TIP : 1); if (o.perfect) bonus += PERFECT.tip; });
+  const tip = Math.round(tipBase * 0.4 * p.finalFrac * p.cc.tip) + bonus;
   const tb = G.tables[p.tb];
   addCoins(base + tip, tb.x, tb.z, tip);
   G.happy++; G.served += p.persons.length;
+}
+/* regulars pay when served, then sit and play tavla: every TAVLA.gap seconds they ask for a tea refill */
+function startTavla(p) {
+  payParty(p);
+  p.state = 'tavla'; p.stayT = rr(TAVLA.stay[0], TAVLA.stay[1]); p.nextRefill = rr(TAVLA.gap[0], TAVLA.gap[1]); p.refill = null;
+}
+function refillDone(p, stale) {
+  const tb = G.tables[p.tb];
+  G.combo = Math.min(TAVLA.combo, G.combo + 1); G.refill.done++;
+  const tip = Math.round((TAVLA.tip + G.combo - 1) * (stale ? STALE_TIP : 1));
+  addCoins(PRICE.tea + tip, tb.x, tb.z, tip);
+  if (G.combo >= 2) floatText(tb.x, 3.1, tb.z, `${t('combo')} ×${G.combo}`);
+  p.refill = null; p.nextRefill = Math.max(p.nextRefill, 4); // the next request keeps its 14-18 s rhythm, with a short breather
 }
 function partiesUpdate(dt) {
   for (let i = G.parties.length - 1; i >= 0; i--) {
@@ -783,6 +907,19 @@ function partiesUpdate(dt) {
     } else if (p.state === 'eat') {
       p.timer -= dt;
       if (p.timer <= 0) { payParty(p); finishLeave(p, false); }
+    } else if (p.state === 'tavla') {
+      p.stayT -= dt; p.nextRefill -= dt; // requests come every 14-18 s, counted from the previous request
+      if (p.refill) {
+        p.refill.patience -= dt;
+        if (p.refill.patience <= 0) {
+          // the regular gives up on this refill (no anger, no penalty besides the lost tip and the combo)
+          p.refill = null; G.refill.missed++; G.combo = 0; p.nextRefill = Math.max(p.nextRefill, 4);
+          toast(t('refillMiss'), 'bad'); sfxGrumble();
+        }
+      } else if (p.nextRefill <= 0 && p.stayT > 3) {
+        p.refill = { item: 'tea', done: false, patience: TAVLA.wait, max: TAVLA.wait }; G.refill.asked++; p.nextRefill = rr(TAVLA.gap[0], TAVLA.gap[1]); sfxPip();
+      }
+      if (p.stayT <= 0 && !p.refill) finishLeave(p, false);
     } else if (p.state === 'leave') {
       if (p.persons.every(pe => pe.done)) { p.persons.forEach(freePerson); G.parties.splice(i, 1); }
     }
@@ -807,7 +944,8 @@ function peopleUpdate(dt) {
 function stationsUpdate(dt) {
   const S = G.stations;
   S.kettles.forEach((k, i) => {
-    if (k.st === 'brewing') { k.t += dt; if (k.t >= BREW_T) { k.st = 'ready'; k.t = 0; k.n = TEA_N; sfxWhistle(); toast(t('toastTeaReady'), 'good'); } }
+    if (k.st === 'brewing') { k.t += dt; if (k.t >= BREW_T) { k.st = 'ready'; k.t = 0; k.n = TEA_N; sfxWhistle(); toast(t('toastTeaReady'), 'good'); burst('steam', CNT_X, FIT.teaSteamY, i ? -3.85 : -5.05, 8); } }
+    else if (k.st === 'ready') k.t += dt; // seconds since the pot was poured: its tea freshness
   });
   const o = S.oven;
   if (o.st === 'baking') { o.t += dt; if (o.t >= ovenTime()) { o.st = 'ready'; o.t = 0; o.n = OVEN_N; sfxPing(); toast(t('toastSimitReady'), 'good'); } }
@@ -821,21 +959,32 @@ function doStation(id) {
   const full = w.tray.length >= cap;
   if (id === 'tea') {
     const kr = S.kettles.slice(0, 1 + G.up.kettle);
-    const ready = kr.find(k => k.st === 'ready' && k.n > 0);
-    if (ready) { if (full) return toast(t('toastTray'), 'bad'); ready.n--; if (ready.n <= 0) { ready.st = 'empty'; ready.t = 0; } w.tray.push('tea'); sfxPour(); return true; }
+    const ready = kr.filter(k => k.st === 'ready' && k.n > 0).sort((a, b) => a.t - b.t)[0]; // the freshest pot first
+    if (ready) {
+      // tea that sat on the counter until it went stale is tipped out and a fresh pot is brewed
+      if (teaFresh(ready.t) <= 0) { ready.st = 'brewing'; ready.t = 0; ready.n = 0; sfxPour(); burst('steam', CNT_X, FIT.teaSteamY, kr.indexOf(ready) ? -3.85 : -5.05, 6); return toast(t('coldTossed')); }
+      if (full) return toast(t('toastTray'), 'bad');
+      trayPush('tea', { age: ready.t }); ready.n--; if (ready.n <= 0) { ready.st = 'empty'; ready.t = 0; } sfxPour(); return true;
+    }
     const empty = kr.find(k => k.st === 'empty');
     if (empty) { empty.st = 'brewing'; empty.t = 0; sfxPour(); toast(t('toastBrewStart')); return true; }
     return toast(t('toastBrewing'));
   }
   if (id === 'simit') {
     const o = S.oven;
-    if (o.st === 'ready' && o.n > 0) { if (full) return toast(t('toastTray'), 'bad'); o.n--; if (o.n <= 0) { o.st = 'empty'; o.t = 0; } w.tray.push('simit'); sfxClink(); return true; }
+    if (o.st === 'ready' && o.n > 0) { if (full) return toast(t('toastTray'), 'bad'); o.n--; if (o.n <= 0) { o.st = 'empty'; o.t = 0; } trayPush('simit'); sfxClink(); return true; }
     if (o.st === 'empty') { o.st = 'baking'; o.t = 0; sfxClink(); toast(t('toastWarm')); return true; }
     return toast(t('toastBrewing'));
   }
   if (id === 'coffee') {
     const rd = S.pots.find(p => p.st === 'ready');
-    if (rd) { if (full) return toast(t('toastTray'), 'bad'); rd.st = 'empty'; rd.t = 0; w.tray.push('coffee'); sfxClink(); return true; }
+    if (rd) {
+      if (full) return toast(t('toastTray'), 'bad');
+      const perfect = rd.t <= PERFECT.win; // grabbed inside the first second of the window
+      rd.st = 'empty'; rd.t = 0; trayPush('coffee', { perfect });
+      if (perfect) { G.perfects++; sfxPerfect(); const q = FIT.pots[S.pots.indexOf(rd)]; floatText(q[0], 2.6, q[2], `<small>${t('perfect')}</small>`); burst('spark', q[0], q[1] + .6, q[2], 6); } else sfxClink();
+      return true;
+    }
     const sp = S.pots.find(p => p.st === 'spilled');
     if (sp) { sp.st = 'empty'; sp.t = 0; toast(t('toastClean')); sfxClink(); return true; }
     const em = S.pots.find(p => p.st === 'empty');
@@ -844,10 +993,11 @@ function doStation(id) {
   }
   if (id === 'ayran') {
     if (full) return toast(t('toastTray'), 'bad');
-    w.tray.push('ayran'); sfxPour(); return true;
+    trayPush('ayran'); sfxPour(); return true;
   }
   if (id === 'sink') {
-    const before = w.tray.length; w.tray = w.tray.filter(x => x !== 'dirty');
+    const before = w.tray.length;
+    for (let k = w.tray.length - 1; k >= 0; k--) if (w.tray[k] === 'dirty') trayTake(k);
     if (w.tray.length === before) return toast(t('toastNothingToWash'));
     sfxWash(); burst('spark', CNT_X, 1.8, STATION_Z.sink, 6); toast(t('toastWash')); return true;
   }
@@ -856,22 +1006,32 @@ function deliverMask(p) { return p.order.map(o => o.done ? 1 : 0).join(''); }
 function doTable(i) {
   const w = G.waiter, tb = G.tables[i], p = tb.party; let did = false;
   if (p && p.state === 'think') return toast(t('toastNoOrder'));
-  if (p && p.state === 'wait') {
-    for (let k = w.tray.length - 1; k >= 0; k--) {
-      const it = w.tray[k]; if (it === 'dirty') continue;
-      const o = p.order.find(o => !o.done && o.item === it);
-      if (o) {
-        o.done = true; w.tray.splice(k, 1); did = true; slotFor(tb, it);
-        p.patience = Math.min(p.maxP, p.patience + p.maxP * 0.08);
-        sfxClink(); burst('spark', tb.x, 1.4, tb.z, 3);
-      }
+  const refill = !!(p && p.state === 'tavla' && p.refill);
+  if (p && (p.state === 'wait' || refill)) {
+    const orders = refill ? [p.refill] : p.order, cand = [], used = []; let stale = false;
+    for (let k = 0; k < w.tray.length; k++) if (w.tray[k] !== 'dirty') cand.push(k);
+    cand.sort((a, b) => trayFresh(b) - trayFresh(a)); // the freshest glasses go out first
+    for (const k of cand) {
+      const it = w.tray[k], o = orders.find(o => !o.done && o.item === it); if (!o) continue;
+      const m = w.meta[k]; o.done = true; used.push(k); did = true;
+      if (it === 'tea' && teaFresh(m.age) <= 0) { o.stale = true; stale = true; }
+      if (it === 'coffee' && m.perfect) o.perfect = true;
+      slotFor(tb, it, o.stale);
+      if (!refill) p.patience = Math.min(p.maxP, p.patience + p.maxP * 0.08);
+      sfxClink(); burst('spark', tb.x, 1.4, tb.z, 3);
     }
-    if (did && p.order.every(o => o.done)) { p.state = 'eat'; p.timer = p.cc.eat * rr(0.8, 1.2); p.finalFrac = clamp(p.patience / p.maxP, 0, 1); }
+    used.sort((a, b) => b - a).forEach(trayTake);
+    if (stale) { sfxGrumble(); toast(t('staleTea'), 'bad'); }
+    if (refill) { if (did) refillDone(p, stale); }
+    else if (did && p.order.every(o => o.done)) {
+      p.finalFrac = clamp(p.patience / p.maxP, 0, 1);
+      if (p.cc.tavla) startTavla(p); else { p.state = 'eat'; p.timer = p.cc.eat * rr(0.8, 1.2); }
+    }
     if (!did) return toast(t('toastWrong'), 'bad');
   }
   if (!p && tb.dirty) {
     if (w.tray.length >= trayCap()) return toast(t('toastTray'), 'bad');
-    w.tray.push('dirty'); tb.dirty = false; tb.slots = []; did = true; sfxClink();
+    trayPush('dirty'); tb.dirty = false; tb.slots = []; did = true; sfxClink();
     // the apprentice was on its way to this table: send it back instead of clearing a clean table
     if (tb.claimed) { tb.claimed = false; const a = G.apprentice; if (a && a.tb === tb) { a.tb = null; a.state = 'back'; a.path = findPath(a.x, a.z, -4.3, 5.9); } }
   }
@@ -887,7 +1047,7 @@ function stationLocked(id) { const m = dayCfg(G.day).menu; return (id === 'simit
 function clickStation(id) { if (G.paused) return false; if (G.state === 'play' && stationLocked(id)) return toast(t('toastNothing')); return enqueue({ type: 'station', id }); }
 function clickTable(i) { return !G.paused && G.tables[i] && G.tables[i].unlocked && enqueue({ type: 'table', id: i }); }
 // dirty glasses cannot be thrown away: they have to go through the sink
-function dropTray(k) { const w = G.waiter; if (!w || G.paused || w.tray[k] == null) return; if (w.tray[k] === 'dirty') return toast(t('toastDirtyDrop'), 'bad'); w.tray.splice(k, 1); sfxTick(); }
+function dropTray(k) { const w = G.waiter; if (!w || G.paused || w.tray[k] == null) return; if (w.tray[k] === 'dirty') return toast(t('toastDirtyDrop'), 'bad'); trayTake(k); sfxTick(); }
 function clearQueue() { if (G.waiter) G.waiter.q.length = 0; }
 function actTarget(a) {
   if (a.type === 'station') return { x: LANE_X, z: STATION_Z[a.id], face: -Math.PI / 2 };
@@ -896,6 +1056,7 @@ function actTarget(a) {
 }
 function waiterUpdate(dt) {
   const w = G.waiter;
+  for (let k = 0; k < w.meta.length; k++) if (w.meta[k].age != null) w.meta[k].age += dt; // tea on the tray gets older
   if (!w.cur && w.q.length) {
     w.cur = w.q.shift(); const tg = actTarget(w.cur); w.tgt = tg;
     w.path = findPath(w.x, w.z, tg.x, tg.z); w.state = 'walk';
@@ -935,9 +1096,29 @@ function apprenticeUpdate(dt) {
     if (followPath(a, WALK * 0.7, dt)) a.state = 'idle';
   }
 }
+/* ferry rush (from day 3): the ferry's horn is the warning, RUSH.warn seconds later its passengers fill 2-3 free tables
+   within RUSH.window seconds. The rush replaces that many regular arrivals (spawnT is pushed back), so a day still
+   brings the same number of customers, just in waves. */
+function rushWarn() {
+  if (G.day < RUSH.fromDay || G.clock > G.dayLen - RUSH.endCut - RUSH.warn) return;
+  G.rushSoon = true; banner(t('ferryWarn'), RUSH.warn * 1000 / G.speed, 'ferry');
+}
+function rushStart() {
+  G.rushSoon = false;
+  if (G.day < RUSH.fromDay || G.clock > G.dayLen - RUSH.endCut) return;
+  const cfg = dayCfg(G.day), free = G.tables.filter(tb => tb.unlocked && !tb.party && !tb.dirty && !tb.claimed).length;
+  const n = Math.min(free, RUSH.parties[0] + ((rnd() * (RUSH.parties[1] - RUSH.parties[0] + 1)) | 0));
+  if (n < 1) return;
+  const rush = 1 - 0.22 * Math.sin(Math.PI * clamp(G.clock / G.dayLen, 0, 1));
+  G.spawnT += n * cfg.gap * rush;
+  const at = [G.clock + .6]; for (let i = 1; i < n; i++) at.push(G.clock + rr(2, RUSH.window));
+  G.rushQ = at.sort((a, b) => a - b); G.rushDay++; G.rushes.push({ day: G.day, at: Math.round(G.clock), n });
+  toast(t('ferryRush'), 'good');
+}
 function spawnUpdate(dt) {
   // the last 20 s nobody new comes in: say so once ("last orders"), the HUD clock turns red
   if (G.clock > G.dayLen - 20) { if (!G.lastCall) { G.lastCall = true; toast(t('lastOrders')); sfxBell(); } return; }
+  while (G.rushQ.length && G.clock >= G.rushQ[0]) { G.rushQ.shift(); if (!spawnParty()) G.walkby++; }
   G.spawnT -= dt;
   if (G.spawnT <= 0) {
     const cfg = dayCfg(G.day);
@@ -948,6 +1129,9 @@ function spawnUpdate(dt) {
   }
 }
 
+// test hook: seat a regular at a free table right now (any day), to look at the tavla refills
+window.cay.spawnRegular = function () { return G.state === 'play' && spawnParty('regular'); };
+
 /* ---------------- main sim step ---------------- */
 function simStep(dt) {
   G.vt += dt;
@@ -957,6 +1141,7 @@ function simStep(dt) {
     stationsUpdate(dt);
     spawnUpdate(dt);
     partiesUpdate(dt);
+    gullUpdate(dt);
     waiterUpdate(dt);
     apprenticeUpdate(dt);
     peopleUpdate(dt);
@@ -966,8 +1151,11 @@ function simStep(dt) {
 }
 
 /* ---------------- auto player (?auto) ---------------- */
-const bot = { t: 0, scr: 0, think: 0 };
-function unmetFor(p) { return p.order.filter(o => !o.done).map(o => o.item); }
+const bot = { t: 0, scr: 0, think: 0, gull: null, gullDone: false };
+// a party asks for something while it waits for its order or, for a regular playing tavla, while a tea refill is open
+const asking = p => p.state === 'wait' || (p.state === 'tavla' && !!p.refill);
+function unmetFor(p) { return p.state === 'tavla' ? ['tea'] : p.order.filter(o => !o.done).map(o => o.item); }
+const patOf = p => p.state === 'tavla' ? p.refill.patience : p.patience;
 function botDecide() {
   const w = G.waiter, S = G.stations, cap = trayCap();
   if (w.q.length >= 2) return;
@@ -977,7 +1165,7 @@ function botDecide() {
   if (w.cur) queued.push(w.cur);
   const tray = w.tray;
   const trayCount = it => tray.filter(x => x === it).length;
-  const waiting = G.parties.filter(p => p.state === 'wait');
+  const waiting = G.parties.filter(asking);
   // 1. can we serve someone with what we carry?
   let best = null, bestP = 1e9, bestFull = false;
   for (const p of waiting) {
@@ -987,7 +1175,7 @@ function botDecide() {
     let matched = 0; const un2 = un.slice();
     for (const it of Object.keys(have)) { for (let k = 0; k < have[it]; k++) { const ix = un2.indexOf(it); if (ix >= 0) { un2.splice(ix, 1); matched++; } } }
     if (!matched) continue;
-    if (p.patience < bestP) { bestP = p.patience; best = p; bestFull = un2.length === 0; }
+    if (patOf(p) < bestP) { bestP = patOf(p); best = p; bestFull = un2.length === 0; }
   }
   const usefulInTray = tray.filter(x => x !== 'dirty').length;
   // demand still to fetch
@@ -999,7 +1187,7 @@ function botDecide() {
   for (const it of ITEMS) {
     if ((need[it] || 0) - pendingStation(it) <= 0) continue;
     // urgency = min patience of a table needing it
-    let urg = 1e9; waiting.forEach(p => { if (unmetFor(p).includes(it)) urg = Math.min(urg, p.patience); });
+    let urg = 1e9; waiting.forEach(p => { if (unmetFor(p).includes(it)) urg = Math.min(urg, patOf(p)); });
     let can = false;
     if (it === 'tea') { const ks = S.kettles.slice(0, 1 + G.up.kettle); can = ks.some(k => k.st === 'ready' && k.n > 0) || (ks.some(k => k.st === 'empty') && !ks.some(k => k.st === 'brewing') ); }
     if (it === 'simit') { can = (S.oven.st === 'ready' && S.oven.n > 0) || S.oven.st === 'empty'; }
@@ -1023,11 +1211,11 @@ function botDecide() {
   else if (dirtyT.length && trayRoom > 0) { clickTable(dirtyT[0].i); return; }
   if (tray.includes('dirty') && !queued.some(a => a.id === 'sink')) { clickStation('sink'); return; }
   // pre-warm: start idle stations when customers are around
-  if (G.parties.length) {
+  if (G.parties.length || G.rushSoon) { // the ferry horn is a warning: have tea and simit ready
     const menu = dayCfg(G.day).menu;
     const ks = S.kettles.slice(0, 1 + G.up.kettle);
     if (ks.some(k => k.st === 'empty') && !ks.some(k => k.st === 'brewing') && !ks.some(k => k.st === 'ready') && qStation('tea') === 0) { clickStation('tea'); return; }
-    if (menu.includes('simit') && S.oven.st === 'empty' && qStation('simit') === 0 && G.parties.length >= 2) { clickStation('simit'); return; }
+    if (menu.includes('simit') && S.oven.st === 'empty' && qStation('simit') === 0 && (G.parties.length >= 2 || G.rushSoon)) { clickStation('simit'); return; }
   }
   // clean spilled coffee pot
   if (S.pots.some(p => p.st === 'spilled') && qStation('coffee') === 0) { clickStation('coffee'); return; }
@@ -1039,6 +1227,11 @@ function botUpdate(dt) {
   bot.t += dt;
   if (G.state === 'play') {
     bot.scr = 0;
+    // shoo the gull thief: a short reaction time, then the same click action a player uses
+    if (thief.state === 'perch' || thief.state === 'dive') {
+      if (bot.gull === null) bot.gull = rr(.5, 1.3) / Math.max(.3, FLAG.skill);
+      else if ((bot.gull -= dt) <= 0 && !bot.gullDone) { bot.gullDone = true; if (rnd() < .9) clickGull(); }
+    } else { bot.gull = null; bot.gullDone = false; }
     bot.think -= dt;
     if (bot.think <= 0) {
       bot.think = rr(0.55, 0.95) / Math.max(0.3, FLAG.skill);
@@ -1134,6 +1327,8 @@ function sfxGrumble() { if (!sOK('grumble', .3)) return; const c = Aud.ctx, t0 =
 function sfxFanfare() { if (!sOK('fan', .5)) return;[523, 659, 784, 1047].forEach((f, i) => tone(f, .4, 'triangle', .09, 0, i * .13)); tone(1319, .7, 'sine', .07, 0, .55); }
 function sfxLose() { if (!sOK('lose', .5)) return;[392, 349, 311, 262].forEach((f, i) => tone(f, .4, 'triangle', .09, 0, i * .18)); }
 function sfxGull() { if (!sOK('gull', 1)) return; const d = Math.random() * .1; tone(1500, .22, 'sawtooth', .02, 700, 0); tone(1100, .2, 'sawtooth', .02, 900, .24 + d); tone(1700, .3, 'sawtooth', .018, -800, .5 + d); }
+function sfxPerfect() { if (!sOK('perfect', .2)) return; tone(2093, .5, 'sine', .08); tone(2637, .6, 'sine', .06, 0, .08); tone(3136, .5, 'triangle', .04, 0, .16); }
+function sfxSquawk() { if (!sOK('squawk', .3)) return; tone(1300, .14, 'sawtooth', .05, 500, 0); tone(900, .16, 'sawtooth', .045, 700, .12); tone(1500, .2, 'sawtooth', .04, -600, .26); }
 function sfxHorn() { if (!sOK('horn', 2)) return; tone(98, 1.4, 'sawtooth', .05); tone(147, 1.4, 'sawtooth', .035); }
 function sfxMeow() { if (!sOK('meow', .5)) return; tone(700, .35, 'triangle', .07, 400); tone(1000, .2, 'sine', .03, -300, .05); }
 function startAmbience() {
@@ -1535,7 +1730,15 @@ const ITM = (() => {
     simit(m) { m.cyl(0, 0, 0, .19, .16, .03, 0xf6efe2, 12, 0); m.add(new THREE.TorusGeometry(.105, .048, 6, 12).rotateX(Math.PI / 2), mat(0, .072, 0), 0xc7802f, 0); },
     plate(m) { m.cyl(0, 0, 0, .19, .16, .03, 0xe6dccb, 12, 0); m.sph(.05, .035, .03, .02, 0xb07a3a, 1, .6, 1, 4, 3, 0); m.sph(-.06, .035, -.02, .016, 0xb07a3a, 1, .6, 1, 4, 3, 0); },
     coffee(m) { saucer(m, .12); lathe(m, [[0, .025], [.045, .025], [.062, .06], [.068, .125]], 0xfbf6ec); m.cyl(0, .108, 0, .062, .062, .01, 0x3b2414, 10, 0); m.box(.075, .06, 0, .03, .045, .018, 0xfbf6ec, 0, 0, 0, 0); },
-    ayran(m) { lathe(m, [[0, 0], [.058, 0], [.077, .19]], 0xfbfaf4); m.cyl(0, .07, 0, .07, .066, .045, 0x7fb3d5, 10, 0); m.cyl(0, .19, 0, .079, .079, .008, 0xeef3f6, 10, 0); }
+    ayran(m) { lathe(m, [[0, 0], [.058, 0], [.077, .19]], 0xfbfaf4); m.cyl(0, .07, 0, .07, .066, .045, 0x7fb3d5, 10, 0); m.cyl(0, .19, 0, .079, .079, .008, 0xeef3f6, 10, 0); },
+    // stale tea: the same glass in greys
+    teaOld(m) { saucer(m, .13); lathe(m, tulip, 0x9b958c); m.cyl(0, .2, 0, .07, .07, .012, 0x6f665c, 10, 0); m.cyl(0, .228, 0, .079, .076, .014, 0xd9d3c8, 10, 0); },
+    // tavla board on a regular's table (long side across the player's view), two dice
+    board(m) {
+      m.box(0, 0, 0, .36, .04, .54, 0x5a3418, 0, 0, 0, 0); m.box(0, .04, 0, .31, .01, .49, 0xdcc9a0, 0, 0, 0, 0); m.box(0, .05, 0, .03, .014, .49, 0x5a3418, 0, 0, 0, 0);
+      for (let i = 0; i < 6; i++) for (const sd of [-1, 1]) m.box(sd * .08, .05, -.21 + i * .08 + (i > 2 ? .03 : 0), .1, .012, .05, (i + (sd > 0 ? 1 : 0)) % 2 ? 0xb85a2a : 0x2d3d3f, 0, 0, 0, 0);
+      m.box(.1, .05, -.06, .04, .04, .04, 0xfbfaf4, .4, 0, 0, 0); m.box(.12, .05, .05, .04, .04, .04, 0xfbfaf4, -.3, 0, 0, 0);
+    }
   };
   const out = {}, N = 44; // 7 tray slots + 36 table slots + the apprentice's glass
   for (const k in B) {
@@ -1572,6 +1775,7 @@ hoverRing.visible = false; hoverRing.position.y = .05; world.add(hoverRing);
     const m = new THREE.Mesh(new THREE.CylinderGeometry(1.45, 1.45, 1.8, 12), inv); m.position.set(TABLE_POS[i][0], .9, TABLE_POS[i][1]); m.visible = false; world.add(m); pickables.push({ mesh: m, kind: 'table', id: i });
   }
   const cm = new THREE.Mesh(new THREE.SphereGeometry(.7, 8, 6), inv); cm.visible = false; world.add(cm); pickables.push({ mesh: cm, kind: 'cat', id: 0 }); DYN.catPick = cm;
+  const gp = new THREE.Mesh(new THREE.SphereGeometry(.95, 8, 6), inv); gp.visible = false; gp.position.y = -50; world.add(gp); pickables.push({ mesh: gp, kind: 'gull', id: 0 }); DYN.gullPick = gp;
 })();
 
 /* ---------- characters ---------- */
@@ -1626,7 +1830,7 @@ const gullIM = (() => {
   const m = new Merger(); m.sph(0, 0, 0, .2, 0xfafafa, 1.6, .7, .7, 6, 4, 0);
   m.box(-.02, 0, .08, .24, .025, .5, 0xe8e8ea, 0, .3, 0, 0); m.box(-.02, 0, -.08, .24, .025, .5, 0xe8e8ea, 0, -.3, 0, 0);
   m.cone(.34, -.03, 0, .035, .1, 0xf2a03a, 4, 0, 0, -Math.PI / 2);
-  const im = new THREE.InstancedMesh(m.geometry(), matIV(), 4); im.frustumCulled = false; world.add(im); return im;
+  const im = new THREE.InstancedMesh(m.geometry(), matIV(), 5); im.frustumCulled = false; world.add(im); return im; // 4 circling gulls + the thief
 })();
 const ferryObj = (() => {
   const m = new Merger();
@@ -1670,7 +1874,8 @@ const PK = {
   smoke: { c: [.62, .56, .52], a: .45, s0: 10, s1: 26, vy: .8, vs: .25, life: 2.0, g: 0 },
   spark: { c: [1, .84, .3], a: 1, s0: 10, s1: 3, vy: 2.2, vs: 1.4, life: .7, g: -5 },
   heart: { c: [1, .42, .55], a: .95, s0: 18, s1: 22, vy: .9, vs: .15, life: 1.3, g: 0 },
-  anger: { c: [.92, .24, .14], a: .85, s0: 14, s1: 20, vy: 1.3, vs: .9, life: .9, g: 0 }
+  anger: { c: [.92, .24, .14], a: .85, s0: 14, s1: 20, vy: 1.3, vs: .9, life: .9, g: 0 },
+  feather: { c: [1, 1, 1], a: .9, s0: 11, s1: 6, vy: 1.6, vs: 2.2, life: 1.1, g: -2.6 }
 };
 function burst(kind, x, y, z, n = 1) {
   if (G.simming) return;
@@ -1701,12 +1906,60 @@ function particlesUpdate(dt) {
    ============================================================ */
 const CATHOME = { x: -7.55, z: -7.6 };
 const cat = { x: CATHOME.x, z: CATHOME.z, y: .3, face: Math.PI / 2, state: 'sleep', t: 14 + Math.random() * 10, path: [], moving: false, pet: 0 };
-const ferry = { x: -44, bob: 0, horn: false };
+const ferry = { x: -44, bob: 0, horn: false, rushed: false };
+/* gull thief (from day 3): lands on the quay rail, then dives at a served simit; click it (or the marker) to shoo it away */
+const thief = G.thief = { state: 'none', t: 0, next: 1e9, x: 0, y: 1.55, z: -9.35, x0: 0, y0: 0, z0: 0, tb: -1, wait: 0, face: 0 };
+function gullTarget() {
+  const c = G.tables.filter(tb => tb.party && tb.party.state === 'eat' && tb.party.order.some(o => o.item === 'simit' && o.done && !o.stolen));
+  return c.length ? c[(rnd() * c.length) | 0].i : -1;
+}
+function gullLeave(res) {
+  thief.state = 'flee'; thief.t = GULL.flee; thief.next = G.clock + rr(GULL.gap[0], GULL.gap[1]);
+  G.gullEvents.push({ day: G.day, at: Math.round(G.clock), ev: res });
+}
+function gullUpdate(dt) {
+  const g = thief;
+  if (g.state === 'none') {
+    if (G.day >= GULL.fromDay && G.clock >= g.next && G.clock < G.dayLen - GULL.quiet) {
+      g.state = 'perch'; g.t = rr(GULL.perch[0], GULL.perch[1]); g.wait = 0; g.tb = -1; g.x = rr(-1.5, 4.5); g.y = 1.55; g.z = -9.35; g.face = Math.PI * .5;
+      G.gull.landed++; G.gullEvents.push({ day: G.day, at: Math.round(G.clock), ev: 'landed' }); sfxGull(); toast(t('gullLand'), 'bad');
+    }
+  } else if (g.state === 'perch') {
+    g.t -= dt;
+    if (g.t <= 0) {
+      const tb = gullTarget();
+      if (tb >= 0) { g.state = 'dive'; g.tb = tb; g.t = GULL.dive; g.x0 = g.x; g.y0 = g.y; g.z0 = g.z; }
+      else { g.wait += dt; if (g.wait > GULL.wait) gullLeave('left'); }
+    }
+  } else if (g.state === 'dive') {
+    const tb = G.tables[g.tb], p = tb.party;
+    if (!(p && p.state === 'eat')) { gullLeave('left'); return; } // the table emptied meanwhile
+    g.t -= dt; const f = clamp(1 - g.t / GULL.dive, 0, 1);
+    g.x = lerp(g.x0, tb.x, f); g.z = lerp(g.z0, tb.z, f); g.y = lerp(g.y0, 1.3, f); g.face = Math.atan2(tb.x - g.x0, tb.z - g.z0) - Math.PI / 2;
+    if (f >= 1) {
+      const o = p.order.find(o => o.item === 'simit' && o.done && !o.stolen);
+      if (o) {
+        o.stolen = true; const k = tb.slots.findIndex(sl => sl.item === 'simit' && !sl.dirty); if (k >= 0) tb.slots.splice(k, 1);
+        G.gull.stolen++; toast(t('gullSteal', PRICE.simit), 'bad'); sfxSquawk(); floatText(tb.x, 2.4, tb.z, '-' + PRICE.simit, 'bad'); burst('feather', tb.x, 1.4, tb.z, 8);
+      }
+      gullLeave('stolen');
+    }
+  } else if (g.state === 'flee') {
+    g.t -= dt; g.x += 5 * dt; g.y += 3 * dt; g.z -= 3 * dt;
+    if (g.t <= 0) g.state = 'none';
+  }
+}
+// the click action (pointer hit on the gull, its marker, or the bot): shoo it before the simit is gone
+function clickGull() {
+  const g = thief; if (G.paused || G.state !== 'play' || (g.state !== 'perch' && g.state !== 'dive')) return false;
+  G.gull.shooed++; burst('feather', g.x, g.y, g.z, 12); sfxSquawk(); toast(t('gullShoo'), 'good'); gullLeave('shooed'); return true;
+}
 const gulls = [{ a: 0, r: 6.5, cx: 1, cz: -13, h: 8.5, sp: .32 }, { a: 2.1, r: 8, cx: -2, cz: -12, h: 10.5, sp: -.27 }, { a: 4.2, r: 5.5, cx: 5, cz: -11, h: 7.5, sp: .4 }, { a: 5.5, r: 9, cx: 0, cz: -14, h: 12, sp: -.22 }];
 function ambientUpdate(dt) {
-  ferry.x += dt * 1.1; ferry.bob += dt;
-  if (ferry.x > 40) { ferry.x = -46; ferry.horn = false; }
-  if (!ferry.horn && ferry.x > -14) { ferry.horn = true; sfxHorn(); }
+  ferry.x += dt * FERRY_V; ferry.bob += dt;
+  if (ferry.x > 40) { ferry.x = -46; ferry.horn = false; ferry.rushed = false; }
+  if (!ferry.horn && ferry.x > RUSH.hornX) { ferry.horn = true; sfxHorn(); if (G.state === 'play') rushWarn(); }
+  if (!ferry.rushed && ferry.x > RUSH.hornX + RUSH.warn * FERRY_V) { ferry.rushed = true; if (G.state === 'play') rushStart(); }
   gulls.forEach(g => g.a += g.sp * dt);
   switch (cat.state) {
     case 'sleep': cat.t -= dt; cat.moving = false; if (cat.t <= 0) { cat.state = 'wake'; cat.t = 1.4; } break;
@@ -1749,8 +2002,9 @@ function syncVisuals(dt) {
     }
     for (let k = 0; k < 6; k++) {
       const sl = on ? (tb.slots || [])[k] : null, a = k * 1.047 + .5, gx = x + Math.cos(a) * .45, gz = z + Math.sin(a) * .45;
-      if (sl) itemPut(sl.dirty ? ITEM_USED[sl.item] : sl.item, gx, .98, gz, -a, sl.dirty ? USED_TINT[sl.item] : undefined);
+      if (sl) itemPut(sl.dirty ? ITEM_USED[sl.item] : sl.item === 'tea' && sl.stale ? 'teaOld' : sl.item, gx, .98, gz, -a, sl.dirty ? USED_TINT[sl.item] : undefined);
     }
+    if (on && tb.party && tb.party.state === 'tavla') itemPut('board', x, .975, z, 0);
   }
   [TB.tops, TB.legs, TB.stools, TB.cush].forEach(m => { if (!m.visible) return; m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; });
 
@@ -1779,7 +2033,7 @@ function syncVisuals(dt) {
     steamAcc += dt;
     if (steamAcc > .13) {
       steamAcc = 0;
-      S.kettles.forEach((k, i) => { if (i > G.up.kettle) return; const z = i ? -3.85 : -5.05; if (k.st === 'brewing') burst('steam', CNT_X, FIT.teaSteamY, z, 1); else if (k.st === 'ready' && Math.random() < .35) burst('steam', CNT_X, FIT.teaSteamY, z, 1); });
+      S.kettles.forEach((k, i) => { if (i > G.up.kettle) return; const z = i ? -3.85 : -5.05; if (k.st === 'brewing') burst('steam', CNT_X, FIT.teaSteamY, z, 1); else if (k.st === 'ready' && Math.random() < .35 * teaFresh(k.t)) burst('steam', CNT_X, FIT.teaSteamY, z, 1); }); // the steam is the freshness cue: cold tea stops steaming
       if (S.oven.st === 'baking' || S.oven.st === 'ready') burst('smoke', FIT.smoke[0], FIT.smoke[1], FIT.smoke[2], 1);
       S.pots.forEach((p, k) => { if (p.st === 'cook' && p.t > COOK_T * .5 || p.st === 'ready') { const q = FIT.pots[k]; burst('steam', q[0], q[1] + FIT.potSteamDY, q[2], 1); } });
     }
@@ -1795,7 +2049,7 @@ function syncVisuals(dt) {
       // local tray centre is (0,1.06,.5)
       const ox = lx, oz = lz + .2 - .3;
       const wx = w.x + ox * cs + oz * sn, wz = w.z - ox * sn + oz * cs;
-      itemPut(it === 'dirty' ? 'glass' : it, wx, 1.07 + bobW, wz, w.face);
+      itemPut(it === 'dirty' ? 'glass' : it === 'tea' && trayFresh(k) <= 0 ? 'teaOld' : it, wx, 1.07 + bobW, wz, w.face);
     }
   }
   /* apprentice */
@@ -1840,6 +2094,14 @@ function syncVisuals(dt) {
     const flap = 0.55 + Math.abs(Math.sin(vt * 5 + i * 1.7)) * .9;
     gullIM.setMatrixAt(i, mat(x, y, z, 1.3, flap, 1.3, -g.a * Math.sign(g.sp) + (g.sp > 0 ? 0 : Math.PI), 0, Math.sin(vt * 5 + i) * .12));
   });
+  { // the thief: folded on the rail, wings beating in the dive, and the pick proxy follows it
+    const th = thief, on = th.state !== 'none';
+    if (on) {
+      const flap = th.state === 'perch' ? .22 : .55 + Math.abs(Math.sin(vt * 14)) * .9, bob = th.state === 'perch' ? Math.sin(vt * 3) * .02 : 0;
+      gullIM.setMatrixAt(4, mat(th.x, th.y + bob, th.z, 1.5, flap, 1.5, th.state === 'perch' ? th.face + Math.sin(vt * .8) * .35 : th.state === 'flee' ? -.6 : th.face, 0, th.state === 'dive' ? .35 : 0));
+    } else gullIM.setMatrixAt(4, mat(0, -50, 0, 0, 0, 0));
+    DYN.gullPick.position.set(th.x, on && (th.state === 'perch' || th.state === 'dive') ? th.y : -50, th.z);
+  }
   gullIM.instanceMatrix.needsUpdate = true;
   /* ferry + waves */
   ferryObj.position.set(ferry.x, Math.sin(ferry.bob * 1.2) * .06, -13.6); ferryObj.rotation.z = Math.sin(ferry.bob * .9) * .01;
@@ -1882,6 +2144,22 @@ function starsHTML(n, anim) { let h = ''; for (let i = 0; i < 3; i++) h += `<spa
 
 // elements updated every frame, looked up once per uiStatic()
 const UI = { sts: [] };
+const WL = {}; // v2 world overlays (coffee window rings, gull marker, coach mark), built once in uiStatic()
+/* day-1 coach marks, derived from the live game state (so they follow what the player really does) and shown once:
+   tea station (brew, then grab) -> the first customer's bubble -> the table. null once the first table has been served. */
+function coachState() {
+  if (G.state !== 'play' || G.paused || G.day !== 1 || G.won || SET.coached || FLAG.auto || FLAG.bench || G.simming) return null;
+  const w = G.waiter, S = G.stations; if (!w || !S) return null;
+  if (G.happy > 0 || G.parties.some(p => p.state === 'eat' || p.state === 'leave')) {
+    SET.coached = true; if (!FLAG.nosave) saveSettings(); toast(t('coachDone'), 'good'); return null;
+  }
+  const act = [w.cur, ...w.q].find(a => a && a.type === 'table');
+  if (act) return { tb: act.id, y: 1.4, txt: t('coach3') };
+  const wp = G.parties.find(p => p.state === 'wait');
+  if (wp && w.tray.includes('tea')) return { tb: wp.tb, y: 2.7, off: 62, txt: t('coach2') };
+  if (!w.tray.includes('tea')) { const k = S.kettles[0]; return { st: 'tea', txt: k.st === 'ready' ? t('coach1b') : k.st === 'brewing' ? t('toastBrewStart') : t('coach1') }; }
+  return null;
+}
 function uiStatic() {
   topEl.innerHTML = `
     <div class="logo">${ICON.tulip}<span>Çay Ocağı</span></div>
@@ -1919,7 +2197,18 @@ function uiStatic() {
     wlEl.dataset.built = 1;
     for (let i = 0; i < 6; i++) { const b = document.createElement('div'); b.className = 'bub'; b.dataset.t = i; wlEl.appendChild(b); }
     ['tea', 'simit', 'coffee'].forEach(k => { const b = document.createElement('div'); b.className = 'bub mini sbadge'; b.dataset.s = k; b.style.pointerEvents = 'none'; wlEl.appendChild(b); });
+    // v2 overlays: a shrinking ring over each coffee pot's grab window, the gull marker, the day-1 coach mark
+    WL.cr = [0, 1].map(() => {
+      const c = document.createElement('div'); c.className = 'cring';
+      c.innerHTML = '<svg viewBox="0 0 46 46"><circle cx="23" cy="23" r="19" fill="rgba(255,248,235,.6)" stroke="rgba(80,40,10,.25)" stroke-width="5"/><circle class="cr" cx="23" cy="23" r="19" fill="none" stroke="#f2b632" stroke-width="5" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="0"/></svg>';
+      wlEl.appendChild(c); return c;
+    });
+    WL.crc = WL.cr.map(c => c.querySelector('.cr'));
+    WL.gm = document.createElement('button'); WL.gm.className = 'gmark'; WL.gm.dataset.a = 'gull'; WL.gm.setAttribute('aria-label', 'Gull'); wlEl.appendChild(WL.gm);
+    WL.co = document.createElement('div'); WL.co.className = 'coach'; WL.co.innerHTML = '<div class="cm"><div class="tx"></div><div class="ar"></div><div class="pl"></div></div>'; wlEl.appendChild(WL.co);
+    WL.cot = WL.co.querySelector('.tx');
   }
+  WL.gm.innerHTML = ICON.gull;
   for (const b of wlEl.children) b._sig = null; // icons may have changed (PNG set loaded)
   uiFrame(0, true);
 }
@@ -1948,15 +2237,19 @@ function uiFrame(dt, force) {
   setVis(topEl, 'v-top', play || G.state === 'intro' ? 'flex' : 'none');
   setVis(wlEl, 'v-wl', play || G.state === 'intro' || G.state === 'title' ? 'block' : 'none');
   const cfg = dayCfg(G.day), w = G.waiter, S = G.stations;
-  /* tray */
+  const CS = play ? coachState() : null;
+  /* tray: tea glasses carry a freshness bar and turn grey as the tea goes cold */
   if (w) {
     const cap = trayCap();
-    const sig = w.tray.join(',') + '|' + cap;
+    const sig = w.tray.join(',') + '|' + cap + '|' + w.tray.map((it, k) => it === 'tea' ? Math.round(trayFresh(k) * 10) : '-').join('');
     if (C_cache.get('tray') !== sig) {
       C_cache.set('tray', sig);
       UI.slots.forEach((el, i) => {
-        const it = w.tray[i]; el.className = 'slot' + (it ? ' full' : '') + (i >= cap ? ' lock' : '');
-        el.innerHTML = it ? ICON[it] : ''; el.title = it ? (it === 'dirty' ? t('dirty') : t(it)) : '';
+        const it = w.tray[i], f = it === 'tea' ? trayFresh(i) : 1; el.className = 'slot' + (it ? ' full' : '') + (i >= cap ? ' lock' : '');
+        el.innerHTML = !it ? '' : it === 'tea'
+          ? ICON.tea.replace('<svg', `<svg style="filter:grayscale(${(1 - f).toFixed(2)})"`) + `<div class="fb ${f <= 0 ? 'old' : f < 1 ? 'mid' : ''}"><i style="width:${Math.round(f * 100)}%"></i></div>`
+          : ICON[it];
+        el.title = it ? (it === 'dirty' ? t('dirty') : t(it) + (it === 'tea' ? ` ${Math.round(f * 100)}%` : '')) : '';
       });
     }
     const qs = w.q.map(a => a.type === 'station' ? a.id : 'T' + (a.id + 1)).join(',') + (w.cur ? '*' : '');
@@ -1973,7 +2266,7 @@ function uiFrame(dt, force) {
       if (C_cache.get('lk' + k) !== locked) { C_cache.set('lk' + k, locked); el.classList.toggle('lock', locked); }
       us.forEach((u, j) => {
         let cls = 'u', wd = 0;
-        if (k === 'tea') { const hide = j > G.up.kettle; setVis(u, 'uh' + j, hide ? 'none' : ''); if (hide) return; const kk = S.kettles[j]; if (kk.st === 'brewing') wd = kk.t / BREW_T * 100; else if (kk.st === 'ready') { cls += ' ready'; ready = true; cnt += kk.n; } }
+        if (k === 'tea') { const hide = j > G.up.kettle; setVis(u, 'uh' + j, hide ? 'none' : ''); if (hide) return; const kk = S.kettles[j]; if (kk.st === 'brewing') wd = kk.t / BREW_T * 100; else if (kk.st === 'ready') { const f = teaFresh(kk.t); cls += f >= 1 ? ' ready' : f > 0 ? ' warn' : ' stale'; wd = f * 100; ready = true; cnt += kk.n; } }
         else if (k === 'simit') { const o = S.oven; if (o.st === 'baking') wd = o.t / ovenTime() * 100; else if (o.st === 'ready') { cls += ' ready'; ready = true; cnt += o.n; } }
         else if (k === 'coffee') { const p = S.pots[j]; if (p.st === 'cook') wd = p.t / COOK_T * 100; else if (p.st === 'ready') { cls += ' warn'; wd = (1 - p.t / COOK_WIN) * 100; ready = true; cnt++; if (COOK_WIN - p.t < 1.3) cls += ' blink'; } else if (p.st === 'spilled') cls += ' bad'; }
         const key = k + j; const v = cls + '|' + Math.round(wd);
@@ -1981,9 +2274,9 @@ function uiFrame(dt, force) {
       });
       if (k === 'sink') { cnt = w ? w.tray.filter(x => x === 'dirty').length : 0; }
       const cv = cnt ? String(cnt) : ''; if (C_cache.get('c' + k) !== cv) { C_cache.set('c' + k, cv); ce.textContent = cv; ce.style.display = cv ? 'grid' : 'none'; }
-      if (k === 'tea' && G.day === 1 && !G.won && G.clock < 40 && S.kettles[0].st === 'empty' && w && !w.q.length && !w.cur) ready = true;
-      const rv = (ready && k !== 'sink') + '|' + (_hoverStation === k);
-      if (C_cache.get('r' + k) !== rv) { C_cache.set('r' + k, rv); el.classList.toggle('ready', ready && k !== 'sink'); el.classList.toggle('hov', _hoverStation === k); }
+      const co = !!(CS && CS.st === k);
+      const rv = (ready && k !== 'sink') + '|' + (_hoverStation === k) + '|' + co;
+      if (C_cache.get('r' + k) !== rv) { C_cache.set('r' + k, rv); el.classList.toggle('ready', ready && k !== 'sink'); el.classList.toggle('hov', _hoverStation === k); el.classList.toggle('coachst', co); }
     }
   }
   /* world overlays: table bubbles */
@@ -1996,43 +2289,71 @@ function uiFrame(dt, force) {
         if (p && p.state === 'think') { mode = 'think'; sig = 'think'; }
         else if (p && p.state === 'wait') { mode = 'wait'; sig = 'wait' + p.type + deliverMask(p) + p.order.map(o => o.item[0]).join(''); }
         else if (p && p.state === 'eat') { mode = 'eat'; sig = 'eat'; }
+        else if (p && p.state === 'tavla') { if (p.refill) { mode = 'refill'; sig = 'refill'; } else { mode = 'tavla'; sig = 'tavla'; } }
         else if (!p && tb.dirty) { mode = 'dirty'; sig = 'dirty'; }
       }
       if (mode === 'none') { if (el.style.display !== 'none') el.style.display = 'none'; continue; }
       if (el._sig !== sig) {
-        el._sig = sig; el.className = 'bub' + (mode === 'think' ? ' think' : mode === 'dirty' || mode === 'eat' ? ' mini' : '') + (mode === 'dirty' ? ' dirty' : '');
+        el._sig = sig; el.className = 'bub' + (mode === 'think' ? ' think' : mode === 'dirty' || mode === 'eat' || mode === 'tavla' ? ' mini' : '') + (mode === 'dirty' ? ' dirty' : '') + (mode === 'tavla' ? ' tavla' : '');
         if (mode === 'think') el.textContent = '…';
         else if (mode === 'dirty') el.innerHTML = ICON.dirty;
         else if (mode === 'eat') el.innerHTML = ICON.happy;
-        else {
+        else if (mode === 'tavla') el.innerHTML = ICON.dice;
+        else if (mode === 'refill') {
+          el.innerHTML = `<div class="ring"><svg class="r" viewBox="0 0 38 38"><circle cx="19" cy="19" r="16" fill="none" stroke="rgba(80,40,10,.18)" stroke-width="4"/><circle class="pr" cx="19" cy="19" r="16" fill="none" stroke="#4fa65a" stroke-width="4" stroke-linecap="round" stroke-dasharray="100.5" stroke-dashoffset="0"/></svg><div class="av">${ICON.regular}</div></div><div class="it"><span>${ICON.tea}</span></div><div class="say">${t('refillSay')}</div>`;
+        } else {
           const p = tb.party;
           el.innerHTML = `<div class="ring"><svg class="r" viewBox="0 0 38 38"><circle cx="19" cy="19" r="16" fill="none" stroke="rgba(80,40,10,.18)" stroke-width="4"/><circle class="pr" cx="19" cy="19" r="16" fill="none" stroke="#4fa65a" stroke-width="4" stroke-linecap="round" stroke-dasharray="100.5" stroke-dashoffset="0"/></svg><div class="av">${ICON[p.type === 'normal' ? 'person' : p.type]}</div></div><div class="it">${p.order.map(o => `<span class="${o.done ? 'done' : ''}">${ICON[o.item]}</span>`).join('')}</div>`;
         }
       }
-      if (mode === 'wait') {
-        const p = tb.party, f = clamp(p.patience / p.maxP, 0, 1), pr = el.querySelector('.pr');
+      if (mode === 'wait' || mode === 'refill') {
+        // the ring drains; in the last 25 % the whole bubble reddens and shakes
+        const p = tb.party, f = mode === 'wait' ? clamp(p.patience / p.maxP, 0, 1) : clamp(p.refill.patience / p.refill.max, 0, 1), pr = el.querySelector('.pr');
         if (pr) { pr.style.strokeDashoffset = (100.5 * (1 - f)).toFixed(1); pr.style.stroke = `hsl(${Math.round(f * 120)},62%,44%)`; }
         el.classList.toggle('urgent', f < .25);
       }
-      toScreen(tb.x, mode === 'dirty' || mode === 'eat' ? 1.9 : 2.7, tb.z, _sp);
+      toScreen(tb.x, mode === 'dirty' || mode === 'eat' || mode === 'tavla' ? 1.9 : 2.7, tb.z, _sp);
       el.style.display = 'flex';
       el.style.transform = `translate(${Math.round(_sp.x)}px,${Math.round(_sp.y)}px) translate(-50%,-100%) translateY(-8px)`;
     }
     ['tea', 'simit', 'coffee'].forEach((k, j) => {
       const el = wlEl.children[6 + j]; if (!el || !S || !play) { if (el) el.style.display = 'none'; return; }
-      let cnt = 0, urgent = false;
-      if (k === 'tea') S.kettles.slice(0, 1 + G.up.kettle).forEach(x => { if (x.st === 'ready') cnt += x.n; });
+      let cnt = 0, urgent = false, fr = 0;
+      if (k === 'tea') S.kettles.slice(0, 1 + G.up.kettle).forEach(x => { if (x.st === 'ready') { cnt += x.n; fr = Math.max(fr, teaFresh(x.t)); } });
       if (k === 'simit' && S.oven.st === 'ready') cnt = S.oven.n;
       if (k === 'coffee') S.pots.forEach(x => { if (x.st === 'ready') { cnt++; if (COOK_WIN - x.t < 1.3) urgent = true; } });
       if (!cnt) { el.style.display = 'none'; return; }
-      setHTML(el, 'sb' + k, `${ICON[k]}<b style="font-size:13px">×${cnt}</b>`);
+      setHTML(el, 'sb' + k, (k === 'tea' ? ICON.tea.replace('<svg', `<svg style="filter:grayscale(${(1 - fr).toFixed(1)})"`) : ICON[k]) + `<b style="font-size:13px">×${cnt}</b>` + (k === 'tea' ? `<span class="sfb"><i style="width:${Math.round(fr * 10) * 10}%;background:${fr >= 1 ? '#3f8f4a' : fr > 0 ? '#d4a017' : '#9a9088'}"></i></span>` : ''));
       toScreen(CNT_X, k === 'tea' ? 3.9 : 3.35, k === 'tea' ? -4.45 : STATION_Z[k], _sp);
       el.style.display = 'flex'; el.style.transform = `translate(${Math.round(_sp.x)}px,${Math.round(_sp.y)}px) translate(-50%,-100%)`;
       el.style.outline = urgent ? '3px solid #c0392b' : '';
     });
+    /* coffee window: a ring over each ready pot shrinks over COOK_WIN; gold while a grab still counts as perfect */
+    for (let k = 0; k < 2; k++) {
+      const el = WL.cr[k], p = S && play ? S.pots[k] : null;
+      if (!p || p.st !== 'ready') { if (el.style.display !== 'none') el.style.display = 'none'; continue; }
+      const q = FIT.pots[k], f = clamp(p.t / COOK_WIN, 0, 1);
+      WL.crc[k].style.strokeDashoffset = (119.4 * f).toFixed(1);
+      WL.crc[k].style.stroke = p.t <= PERFECT.win ? '#f2b632' : `hsl(${Math.round((1 - f) * 100)},72%,46%)`;
+      toScreen(q[0], q[1] + 1.15, q[2], _sp);
+      el.style.display = 'block'; el.style.transform = `translate(${Math.round(_sp.x)}px,${Math.round(_sp.y)}px) translate(-50%,-50%)`;
+    }
+    /* gull marker (also the tap target on touch screens) */
+    { const th = thief, el = WL.gm;
+      if (!(play && (th.state === 'perch' || th.state === 'dive'))) { if (el.style.display !== 'none') el.style.display = 'none'; }
+      else { toScreen(th.x, th.y + .8, th.z, _sp); el.style.display = 'grid'; el.style.transform = `translate(${Math.round(clamp(_sp.x, 34, VIEW.w - 34))}px,${Math.round(clamp(_sp.y, 112, VIEW.h - 130))}px) translate(-50%,-100%)`; } }
+    /* day-1 coach mark */
+    if (!CS) { if (WL.co.style.display !== 'none') WL.co.style.display = 'none'; }
+    else {
+      if (C_cache.get('coach') !== CS.txt) { C_cache.set('coach', CS.txt); WL.cot.textContent = CS.txt; }
+      if (CS.st) toScreen(CNT_X, 4.1, STATION_Z.tea, _sp); else { const tb = G.tables[CS.tb]; toScreen(tb.x, CS.y, tb.z, _sp); _sp.y -= CS.off || 0; }
+      WL.co.style.display = 'block'; WL.co.style.transform = `translate(${Math.round(clamp(_sp.x, 110, VIEW.w - 110))}px,${Math.round(Math.max(_sp.y, 150))}px) translate(-50%,-100%)`;
+    }
   }
+  if (!(play || G.state === 'intro')) [...WL.cr, WL.gm, WL.co].forEach(e => { if (e.style.display !== 'none') e.style.display = 'none'; });
   if (FLAG.debug) {
-    const v = [`fps ${G.fps}  calls ${G.drawCalls} (max ${G.maxDrawCalls})  tris ${renderer.info.render.triangles}  geo ${renderer.info.memory.geometries}`,`state ${G.state} day ${G.day} t ${G.clock.toFixed(0)}s  coins ${G.dayCoins}/${G.target} wallet ${G.coins}`,`happy ${G.happy} angry ${G.angry}  parties ${G.parties.length}  speed ${G.speed}`,G.log.map(r => `d${r.day} ${r.coins}/${r.target} h${r.happy} a${r.angry} *${r.stars}`).join(' | '),G.benchOut || '', G.testOut || '',...G.errors.map(e => '<span class="err">' + e + '</span>')].join('\n');
+    const v = [`fps ${G.fps}  calls ${G.drawCalls} (max ${G.maxDrawCalls})  tris ${renderer.info.render.triangles}  geo ${renderer.info.memory.geometries}`,`state ${G.state} day ${G.day} t ${G.clock.toFixed(0)}s  coins ${G.dayCoins}/${G.target} wallet ${G.coins}`,`happy ${G.happy} angry ${G.angry}  parties ${G.parties.length}  speed ${G.speed}`,
+      `fresh tray [${G.trayFresh().join(',')}] pots [${G.stations ? G.stations.kettles.map(k => k.st === 'ready' ? teaFresh(k.t).toFixed(2) : '-').join(',') : ''}]  rushes ${G.rushes.length} soon ${G.rushSoon}  refills ${G.refill.asked}/${G.refill.done}/${G.refill.missed}  gull ${thief.state} ${G.gull.landed}/${G.gull.shooed}/${G.gull.stolen}  perfect ${G.perfects}`,G.log.map(r => `d${r.day} ${r.coins}/${r.target} h${r.happy} a${r.angry} *${r.stars}`).join(' | '),G.benchOut || '', G.testOut || '',...G.errors.map(e => '<span class="err">' + e + '</span>')].join('\n');
     if (C_cache.get('dbg') !== v) { C_cache.set('dbg', v); dbgEl.innerHTML = v; }
   }
 }
@@ -2040,10 +2361,25 @@ function uiRefreshAll() { uiFrame(0, true); }
 
 function toast(msg, kind = '') {
   if (G.simming) return false;
-  while (toastsEl.children.length >= 3) toastsEl.removeChild(toastsEl.firstChild);
+  // the same message while it is still showing refreshes that toast instead of stacking a second one
+  const same = Array.from(toastsEl.querySelectorAll('.toast')).find(e => e.textContent === msg);
+  if (same) {
+    clearTimeout(same._tm); same.style.animation = 'none'; void same.offsetWidth; same.style.animation = ''; same.className = 'toast ' + kind;
+    same._tm = setTimeout(() => same.remove(), 2400); return false;
+  }
+  const all = toastsEl.querySelectorAll('.toast');
+  for (let i = 0; i <= all.length - 3; i++) all[i].remove();
   const d = document.createElement('div'); d.className = 'toast ' + kind; d.textContent = msg; toastsEl.appendChild(d);
-  setTimeout(() => d.remove(), 2400); return false;
+  d._tm = setTimeout(() => d.remove(), 2400); return false;
 }
+// one banner at a time above the toasts (day card, ferry warning)
+let _bannerTm = 0;
+function banner(html, ms = 3000, cls = '') {
+  if (G.simming) return;
+  const b = $('#banner'); b.className = cls; b.innerHTML = html; b.style.display = 'block';
+  clearTimeout(_bannerTm); _bannerTm = setTimeout(() => { b.style.display = 'none'; }, ms);
+}
+function bannerHide() { const b = $('#banner'); if (b) b.style.display = 'none'; clearTimeout(_bannerTm); }
 function floatText(wx, wy, wz, html, cls = '') {
   if (G.simming) return;
   const e = document.createElement('div'); e.className = 'fl ' + cls; e.innerHTML = html; toScreen(wx, wy, wz, _sp);
@@ -2072,7 +2408,15 @@ function coinFly(wx, wz, n) {
 }
 
 /* ---------- screens ---------- */
-function bestLine() { const b = store.get(KEY.best, { day: 0, total: 0 }); return b.day ? t('best', b.day, b.total) : t('noBest'); }
+function bestLine() { const b = store.get(KEY.best, { day: 0, total: 0 }); return b.day ? t('best', b.day, b.total) + ' · ' + t('rankT') + ': ' + t('rank' + rankOf(b.life || 0)) : t('noBest'); }
+const factHTML = n => `<div class="fact"><b>${t('didYouKnow')}</b>${factFor(n)[G.lang] || factFor(n).tr}</div>`;
+// the sleeping Turkish Van kitten (2D corner image, skipped with ?noassets or if the file is missing)
+const kitHTML = () => NOASSETS ? '' : `<span class="cushion"><img class="mascot" src="assets/mascot/kedi-uyuyor.png" width="76" height="76" alt="${t('kitten')}" onerror="this.parentNode.style.display='none'"></span>`;
+function rankHTML() {
+  const r = G.rank, nx = RANKS[r + 1];
+  const bar = nx ? `<div class="rbar"><i style="width:${Math.round(clamp((G.life - RANKS[r].from) / (nx.from - RANKS[r].from), 0, 1) * 100)}%"></i></div><small>${t('rankNext', t('rank' + nx.id), nx.from - G.life)}</small>` : `<small>${t('rankTop')}</small>`;
+  return `${G.rankUp ? `<div class="rec">${t('rankUp', t('rank' + r))}</div>` : ''}<div class="rank"><span class="rk">${t('rankT')}</span><span>${t('rankLine', t('rank' + r), G.life)}</span></div>${bar}`;
+}
 function rowk(a, b) { return `<div class="rowk"><span>${a}</span><span>${b}</span></div>`; }
 function coinHTML(n) { return `<span style="display:inline-flex;align-items:center;gap:5px">${ICON.coin.replace('<svg', '<svg width="18" height="18"')}${n}</span>`; }
 const recHTML = () => G.newRecord ? `<div class="rec">${t('newRecord')}</div>` : '';
@@ -2090,6 +2434,8 @@ function settingsHTML() {
 }
 function uiScreen(force) {
   const st = G.state, pause = st === 'play' && G.paused;
+  scrEl.classList.toggle('day-summary', (st === 'summary' || st === 'gameover') && !G.panel); // stable hook for portal builds: set while the day result is shown
+  if (st !== 'play') bannerHide();
   if (st === 'play' && !pause && !G.panel) { if (scrEl.style.display !== 'none') { scrEl.style.display = 'none'; scrEl.innerHTML = ''; } C_cache.delete('scr'); return; }
   const sig = st + G.day + G.lang + G.panel + pause + (st === 'shop' ? G.coins + JSON.stringify(G.up) : '') + (st === 'title' ? assetState.done + '' + !!loadSave() : '');
   if (!force && C_cache.get('scr') === sig) { scrEl.style.display = 'flex'; return; }
@@ -2123,12 +2469,12 @@ function uiScreen(force) {
       ${rowk(t('target'), coinHTML(cfg.target))}
       <div class="chipnew">${ICON[cfg.ni] || ICON.star}<span>${t('newThing')}: ${t(cfg.nk)}</span></div>
       <p style="margin:2px 0;font-size:13px">${t('menuToday')}</p><div class="menurow">${cfg.menu.map(i => `<span>${ICON[i]}</span>`).join('')}</div>
-      <p style="font-size:13px"><b>${t('hint')}:</b> ${tip}</p><button class="btn" data-a="begin">${t('startDay')}</button><br>${menuBtn}</div>`;
+      <p style="font-size:13px"><b>${t('hint')}:</b> ${tip}</p>${factHTML(G.day - 1)}<button class="btn" data-a="begin">${t('startDay')}</button><br>${menuBtn}</div>`;
   } else if (st === 'summary') {
     const r = G.lastResult;
-    h = `<div class="card glass"><h2>${t('dayDone')}</h2>${starsHTML(r.stars, true)}<p style="font-weight:900;color:var(--amber)">${[, t('stars1'), t('stars2'), t('stars3')][r.stars]}</p>${recHTML()}
+    h = `<div class="card glass"><h2>${t('dayDone')}</h2><div class="sumrow">${kitHTML()}${starsHTML(r.stars, true)}</div><p style="font-weight:900;color:var(--amber)">${[, t('stars1'), t('stars2'), t('stars3')][r.stars]}</p>${recHTML()}
       ${rowk(t('earned'), coinHTML(r.coins) + ' / ' + r.target)}${rowk(t('tips'), coinHTML(r.tips))}${rowk(t('happyC'), r.happy)}${rowk(t('angryC'), r.angry)}
-      <button class="btn" data-a="aftersum">${G.day === 7 && !G.won ? t('cont') : t('toShop')}</button>${menuBtn}</div>`;
+      ${rankHTML()}${factHTML(G.day + 2)}<button class="btn" data-a="aftersum">${G.day === 7 && !G.won ? t('cont') : t('toShop')}</button>${menuBtn}</div>`;
   } else if (st === 'shop') {
     let cards = '';
     UPG.forEach(u => {
@@ -2137,7 +2483,7 @@ function uiScreen(force) {
       cards += `<div class="up ${can ? 'can' : ''}"><div class="ic">${ICON[u.icon]}</div><div class="tx"><b>${t('u_' + u.id)}</b><small>${t('u_' + u.id + '_d')}</small><div class="pips">${pips}</div></div>
         <button class="buy ${maxed ? 'max' : ''}" data-a="buy" data-id="${u.id}" ${can ? '' : 'disabled'}>${maxed ? t('maxed') : ICON.coin + cost}</button></div>`;
     });
-    h = `<div class="card glass" style="width:min(760px,100%)"><h2>${t('shop')}</h2><div class="wallet">${ICON.coin}${G.coins}</div><div class="shop">${cards}</div>
+    h = `<div class="card glass" style="width:min(760px,100%)"><h2>${t('shop')}</h2><div class="shophead"><span class="sem">${ICON.kettle}</span>${kitHTML()}<div class="wallet">${ICON.coin}${G.coins}</div></div><div class="shop">${cards}</div>
       <button class="btn" data-a="next">${G.retrying ? t('retry') : t('nextDay')}</button>${menuBtn}</div>`;
   } else if (st === 'victory') {
     h = `<div class="card glass"><div class="big">${ICON.star}</div><h1 style="font-size:38px">${t('victory')}</h1><p>${t('victoryTxt')}</p>${recHTML()}
@@ -2197,7 +2543,7 @@ const actions = {
   },
   lang() { langSet(G.lang === 'tr' ? 'en' : 'tr'); }, speed() { toggleSpeed(); }, pause() { togglePause(); },
   snd() { sfxInit(); sfxMute(!G.muted); const b = $('#b-snd'); if (b) b.innerHTML = G.muted ? ICON.mute : ICON.snd; },
-  clearq() { clearQueue(); }
+  clearq() { clearQueue(); }, gull() { clickGull(); }
 };
 document.addEventListener('click', e => {
   sfxInit();
@@ -2244,7 +2590,11 @@ const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
 function pickAt(cx, cy) {
   ndc.set((cx / VIEW.w) * 2 - 1, -(cy / VIEW.h) * 2 + 1); ray.setFromCamera(ndc, cam);
   const hits = ray.intersectObjects(pickables.map(p => p.mesh), false);
-  for (const h of hits) { const p = pickables.find(q => q.mesh === h.object); if (p.kind === 'table' && !(G.tables[p.id] && G.tables[p.id].unlocked)) continue; return p; }
+  for (const h of hits) {
+    const p = pickables.find(q => q.mesh === h.object); if (p.kind === 'table' && !(G.tables[p.id] && G.tables[p.id].unlocked)) continue;
+    if (p.kind === 'gull' && !(thief.state === 'perch' || thief.state === 'dive')) continue; // the proxy only exists while a gull is catchable
+    return p;
+  }
   return null;
 }
 canvas.addEventListener('pointerdown', e => {
@@ -2272,7 +2622,7 @@ function endPtr(e) {
   if (p && !p.moved && !wasPinch && ptrs.size === 0 && e.type === 'pointerup') {
     const hit = pickAt(e.clientX, e.clientY);
     if (hit) {
-      if (hit.kind === 'station') clickStation(hit.id); else if (hit.kind === 'table') clickTable(hit.id); else if (hit.kind === 'cat') petCat();
+      if (hit.kind === 'station') clickStation(hit.id); else if (hit.kind === 'table') clickTable(hit.id); else if (hit.kind === 'cat') petCat(); else if (hit.kind === 'gull') clickGull();
     }
   }
 }
@@ -2282,7 +2632,7 @@ canvas.addEventListener('wheel', e => { e.preventDefault(); VIEW.zoom = clamp(VI
 function hoverAt(x, y, type) {
   if (type === 'touch') return;
   const h = G.state === 'play' ? pickAt(x, y) : null; _hoverStation = null;
-  if (!h || h.kind === 'cat') { hoverRing.visible = false; canvas.style.cursor = h ? 'pointer' : 'default'; return; }
+  if (!h || h.kind === 'cat' || h.kind === 'gull') { hoverRing.visible = false; canvas.style.cursor = h ? 'pointer' : 'default'; return; }
   canvas.style.cursor = 'pointer'; hoverRing.visible = true;
   if (h.kind === 'station') { _hoverStation = h.id; hoverRing.position.set(CNT_X + .35, .06, h.id === 'tea' ? -4.45 : STATION_Z[h.id]); hoverRing.scale.set(1.2, 1, h.id === 'tea' ? 2.1 : 1.3); }
   else { const tb = G.tables[h.id]; hoverRing.position.set(tb.x, .06, tb.z); hoverRing.scale.set(1.5, 1, 1.5); }
@@ -2462,8 +2812,62 @@ function clickTest() {
   window.caySim(4); out.push('waiter state=' + G.waiter.state + ' tray=' + G.waiter.tray.join('+'));
   G.testOut = out.join(' | ');
 }
+/* ?selftest: checks the v2 mechanics by simulation (no rendering) and writes PASS/FAIL lines to window.cay.selfTest */
+function selfTest() {
+  const out = [], ok = (name, cond, info = '') => out.push((cond ? 'PASS ' : 'FAIL ') + name + (info ? ' ' + info : ''));
+  const keepSpeed = G.speed; G.botHold = true; _seed = 4242;
+  // 1. one click from the title into a running day 1
+  G.state = 'title'; A.start(); ok('start goes straight to play', G.state === 'play' && G.day === 1, G.state);
+  // 2. toasts do not stack
+  toast('same'); toast('same'); ok('toast dedupe', toastsEl.querySelectorAll('.toast').length === 1);
+  toastsEl.querySelectorAll('.toast').forEach(e => e.remove());
+  // 3. tea freshness: fresh for TEA.fresh s on the tray, stale after TEA.fresh + TEA.fade
+  G.simming = true; G.stations.kettles[0] = { st: 'ready', t: 0, n: TEA_N }; doStation('tea');
+  const f0 = G.trayFresh()[0]; for (let i = 0; i < 60 * 33; i++) waiterUpdate(STEP); const f1 = G.trayFresh()[0]; for (let i = 0; i < 60 * 10; i++) waiterUpdate(STEP); const f2 = G.trayFresh()[0];
+  ok('tea fresh then fading then stale', f0 === 1 && f1 > 0 && f1 < 1 && f2 === 0, `${f0} ${f1} ${f2}`);
+  const tip = ord => { const b = G.dayTips; payParty({ order: [1, 2, 3].map(() => ({ item: 'tea', done: true, ...ord })), finalFrac: 1, cc: CUST.normal, persons: [1], tb: 0 }); return G.dayTips - b; };
+  const tFresh = tip({}), tStale = tip({ stale: true });
+  ok('stale tea pays less tip', tStale < tFresh, `${tFresh} vs ${tStale}`);
+  // cold pot is tipped out and re-brewed
+  G.stations.kettles[0] = { st: 'ready', t: TEA.fresh + TEA.fade + 1, n: 3 }; doStation('tea');
+  ok('cold pot is re-brewed', G.stations.kettles[0].st === 'brewing');
+  // 4. perfect coffee
+  G.waiter.tray.length = 0; G.waiter.meta.length = 0; G.stations.pots[0] = { st: 'ready', t: .3 }; doStation('coffee');
+  const b0 = G.dayTips; payParty({ order: [{ item: 'coffee', done: true, perfect: G.waiter.meta[0].perfect }], finalFrac: 1, cc: CUST.normal, persons: [1], tb: 0 });
+  ok('perfect coffee adds tip', G.perfects === 1 && G.dayTips - b0 >= PERFECT.tip, `${G.perfects} +${G.dayTips - b0}`);
+  // 5. gull thief: steals an unshooed simit, a click shoos it
+  G.day = 3; beginDay(false); G.simming = true;
+  const tb = G.tables[0], party = { state: 'eat', tb: 0, order: [{ item: 'simit', done: true }], cc: CUST.normal, persons: [1], finalFrac: 1 };
+  tb.party = party; tb.slots = [{ kind: 'plate', item: 'simit', dirty: false }];
+  Object.assign(thief, { state: 'dive', tb: 0, t: .01, x0: 0, y0: 1.5, z0: -9, x: 0, y: 1.5, z: -9 }); G.clock = 60; gullUpdate(.05); gullUpdate(.05);
+  ok('gull steals the simit', party.order[0].stolen === true && tb.slots.length === 0 && G.gull.stolen === 1);
+  Object.assign(thief, { state: 'perch', t: 3 }); const shooed = clickGull();
+  ok('click shoos the gull', shooed && thief.state === 'flee' && G.gull.shooed === 1);
+  tb.party = null;
+  // 6. ferry rush on day 3: horn warning, then 2-3 parties inside 10 s, same customer count
+  G.up.table = 3; G.day = 3; beginDay(false); G.simming = true; const wasWarn = []; let rushAt = -1, partiesAt = 0;
+  for (let i = 0; i < 60 * 60; i++) {
+    simStep(STEP); if (G.rushSoon) wasWarn.push(G.clock);
+    if (G.clock > 29.2 && G.clock < 29.3) for (const p of G.parties.splice(0)) { p.persons.forEach(freePerson); G.tables[p.tb].party = null; } // empty room just before the ferry arrives (no bot here)
+    if (G.rushes.length && rushAt < 0) rushAt = G.clock;
+    if (rushAt > 0 && G.clock > rushAt + 11 && !partiesAt) partiesAt = G.parties.length + G.walkby;
+  }
+  const r0 = G.rushes[G.rushes.length - 1];
+  ok('rush warns, then fills tables', !!r0 && r0.n >= 2 && wasWarn.length > 0 && partiesAt >= 2, `rushes ${G.rushes.length} n=${r0 && r0.n} warnFrom ${wasWarn[0] && wasWarn[0].toFixed(1)} at ${rushAt.toFixed(1)} parties ${partiesAt}`);
+  // 7. regular: tavla refills (bot serves them), at least 2 asked
+  G.day = 7; beginDay(false); G.simming = true; G.botHold = false; G.stations.kettles[0] = { st: 'ready', t: 0, n: TEA_N };
+  G.up.tray = 2; G.waiter.q.length = 0; window.cay.spawnRegular();
+  for (let i = 0; i < 60 * 150 && G.state === 'play'; i++) { simStep(STEP); if (G.refill.asked >= 2) break; }
+  ok('regular asks for >= 2 refills', G.refill.asked >= 2, `asked ${G.refill.asked} done ${G.refill.done} missed ${G.refill.missed}`);
+  G.botHold = true;
+  // 8. rank thresholds and the facts table
+  ok('ranks', rankOf(0) === 0 && rankOf(RANKS[1].from) === 1 && rankOf(RANKS[2].from) === 2 && FACTS.length === 6);
+  G.simming = false; G.speed = keepSpeed; G.state = 'title'; uiScreen(true);
+  G.selfTest = out; G.testOut = out.join('\n');
+}
+if (Q.has('selftest')) { try { selfTest(); } catch (e) { G.errors.push('selftest: ' + e.message + ' ' + (e.stack || '').split('\n')[1]); } }
 if (Q.has('audiotest')) {
-  sfxInit(); const fns = { sfxBell, sfxClink, sfxCash, sfxPip, sfxPing, sfxTick, sfxPour, sfxWash, sfxHiss, sfxWhistle, sfxGrumble, sfxFanfare, sfxLose, sfxGull, sfxHorn, sfxMeow }; let okc = 0;
+  sfxInit(); const fns = { sfxBell, sfxClink, sfxCash, sfxPip, sfxPing, sfxTick, sfxPour, sfxWash, sfxHiss, sfxWhistle, sfxGrumble, sfxFanfare, sfxLose, sfxGull, sfxHorn, sfxMeow, sfxPerfect, sfxSquawk }; let okc = 0;
   if (!Aud.ctx) G.testOut = 'audio: no Web Audio';
   else Aud.ctx.resume().then(() => { for (const k in fns) { try { fns[k](); okc++; } catch (e) { G.errors.push(k + ': ' + e.message); } } G.testOut = 'audio state=' + Aud.ctx.state + ' called=' + okc + '/' + Object.keys(fns).length; }).catch(e => G.errors.push('audio ' + e.message));
 }
@@ -2482,5 +2886,6 @@ if (!NOASSETS) Promise.race([loadAssets(), new Promise(r => setTimeout(r, 15000)
 });
 
 </script>
+<script data-goatcounter="https://furkiozknn.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
