@@ -19,7 +19,7 @@
 <p align="center"><b>Play online: <a href="https://furkiozknn.github.io/cay-ocagi/">https://furkiozknn.github.io/cay-ocagi/</a></b> (desktop and phone, no install)</p>
 
 <!-- portals:start -->
-<p align="center">Also on: <a href="https://furkiozknn.itch.io/cay-ocagi">itch.io</a></p>
+<p align="center">Also on: <a href="https://furkiozknn.itch.io/cay-ocagi">itch.io</a> &middot; <a href="https://playgama.ai/play/ysmjlykfbkbjew">Playgama</a></p>
 <!-- portals:end -->
 
 ## Highlights
