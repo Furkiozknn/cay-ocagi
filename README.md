@@ -126,6 +126,17 @@ Upgraded by Claude Sonnet 5.5 with Claude Code from [prompts/cay-ocagi-v2.md](pr
 - `window.cay` now exposes `rushes`, `refill`, `gull`, `thief`, `trayFresh()` and `perfects`; `?selftest` runs the new
   mechanics by simulation. The `?auto` bot still wins 86 of 90 seeded games in `?auto&bench=90`.
 
+## Redesign (2026-11)
+
+Art direction: cozy hand-painted 2.5D. Walnut `#5B3A29`, tea amber `#B5651D`, brass `#C9A227`, cream `#F4E9D8` and tile teal `#2E7D7A`, lit by a warm low key light with lamp pools and a cool rim.
+Redesigned by Claude Sonnet 5.5; gameplay, saves, flags and the `?auto` bot are unchanged.
+
+- **World:** brush-stroke texture sampled by world position on all static geometry, a teal and cream tiled terrace with a kilim rug under each table, a teal tile band on the wall, a graded turquoise-to-indigo strait with a foam line, twinkling string lights, a bench, barrels, crates and lemon trees.
+- **Characters and FX:** customers and the waiter get trousers, belts, collars and ears plus squash-and-stretch idles (stride bounce, breathing, angry shiver); tea glasses glow, glint and send up steam wisps; lamps flicker.
+- **UI:** carved-walnut frames with brass bolts, cream paper panels, brass buttons, serif headings and teal accents on every screen (title, briefing, summary, shop, pause, settings, toasts); contrast checked at 4.5:1 or better.
+- **Measured (QA on the branch, desktop, phone and phone landscape, light and dark):** 0 console errors, 59 to 60 fps, about 30 draw calls. No before/after fps was captured for the old look.
+- Not redone: a new tea-glass icon set, and the gallery images below, which still show the pre-redesign look.
+
 ## Screenshots
 
 <table>
