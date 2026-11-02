@@ -22,9 +22,9 @@
 <style>
 :root{--amber:#A8571A;--amber2:#C8741F;--ink:#3a2314;--ink2:#6b4a33;--glass:rgba(255,248,235,.64);--glassb:rgba(255,255,255,.6);--r:16px;--ok:#3f8f4a;--bad:#c0392b}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;overflow:hidden;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--ink);user-select:none;-webkit-user-select:none;touch-action:none;
+html,body{margin:0;height:100%;overflow:hidden;font-family:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--ink);user-select:none;-webkit-user-select:none;
 background:radial-gradient(circle at 78% 16%,#fff0c0 0,#ffc880 8%,rgba(255,170,100,0) 30%),linear-gradient(#5f4a7c,#c4708a 24%,#f0a068 46%,#ffd6a0 70%,#ffe8c8)}
-#c{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;outline:none;touch-action:none}
 .glass{background:var(--glass);backdrop-filter:blur(10px) saturate(1.3);-webkit-backdrop-filter:blur(10px) saturate(1.3);border:1px solid var(--glassb);box-shadow:0 6px 22px rgba(90,40,10,.18),inset 0 1px 0 rgba(255,255,255,.65);border-radius:var(--r)}
 body.low .glass{backdrop-filter:none;-webkit-backdrop-filter:none;background:rgba(255,246,230,.86)}
 svg{display:block}
@@ -56,7 +56,9 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;paddin
 .slot svg{width:28px;height:28px}
 .slot.full{border:2px solid rgba(255,255,255,.9);background:#fff;cursor:pointer}
 .slot.lock{opacity:.28;border-style:dotted}
-.slot.full:hover::after{content:"×";position:absolute;right:-5px;top:-7px;width:17px;height:17px;border-radius:50%;background:var(--bad);color:#fff;font-size:13px;line-height:17px;text-align:center;font-weight:900}
+/* a11y: focusable remove button inside .slot.full instead of hover-only ::after */
+.slot.full .sx{position:absolute;right:-5px;top:-7px;width:17px;height:17px;border-radius:50%;background:var(--bad);color:#fff;font-size:13px;line-height:17px;text-align:center;font-weight:900;opacity:0;pointer-events:none}
+.slot.full:hover .sx,.slot.full:focus-within .sx{opacity:1;pointer-events:auto}
 #queue{display:flex;gap:4px;align-items:center;min-width:0}
 #queue .q{width:22px;height:22px;border-radius:7px;background:var(--amber);color:#fff;font-size:12px;font-weight:900;display:grid;place-items:center}
 #queue .qx{font-size:11px;font-weight:900;color:var(--ink2);text-decoration:underline;cursor:pointer;padding:2px 4px}
@@ -334,7 +336,7 @@ box-shadow:0 4px 0 #5a3d0a,0 9px 14px rgba(40,18,4,.35),inset 0 1px 0 rgba(255,2
 <header id="top" class="glass"></header>
 <div id="toasts"><div id="banner" style="display:none"></div></div>
 <div id="dock"></div>
-<div id="screen"></div>
+<div id="screen" role="dialog" aria-modal="true"></div>
 <div id="dbg"></div>
 <div id="fatal">Three.js could not be loaded (internet connection needed for the CDN). Please reload when online.</div>
 <script type="module">
@@ -460,7 +462,7 @@ const TXT = {
     how3: 'Müşterilerin sabrı tükenmeden servis yap. Hızlı servis daha çok bahşiş getirir.',
     how4: 'P / Esc: duraklat · Geri tuşu ya da sağ tık: sırayı temizle · M müzik · X efekt · L dil · Sürükle: kaydır · Tekerlek: yakınlaştır.',
     day: 'Gün', dayOf: 'Gün {0}/7', dayEndless: 'Gün {0} ∞', target: 'Hedef', newThing: 'Yeni', menuToday: 'Bugünün menüsü',
-    startDay: 'Günü başlat', today: 'Bugün', tray: 'Tepsi', clearQ: 'temizle',
+    startDay: 'Günü başlat', today: 'Bugün', tray: 'Tepsi', clearQ: 'temizle', dropSlot: '{0} bırak',
     tea: 'Çay', simit: 'Simit', coffee: 'Kahve', ayran: 'Ayran', sink: 'Lavabo', dirty: 'Kirli bardak',
     new1: 'Demli çay', new2: 'Sıcak simit', new3: 'Türk kahvesi', new4: 'Soğuk ayran',
     new5: 'Aceleci ofis çalışanı: sabrı kısa', new6: '3 kişilik grup: büyük sipariş', new7: 'Müdavim: bahşişi iki katı',
@@ -510,7 +512,7 @@ const TXT = {
     how3: 'Serve before patience runs out. Fast service earns bigger tips.',
     how4: 'P / Esc: pause · Backspace or right-click: clear queue · M music · X effects · L language · Drag: pan · Wheel: zoom.',
     day: 'Day', dayOf: 'Day {0}/7', dayEndless: 'Day {0} ∞', target: 'Target', newThing: 'New', menuToday: "Today's menu",
-    startDay: 'Start the day', today: 'Today', tray: 'Tray', clearQ: 'clear',
+    startDay: 'Start the day', today: 'Today', tray: 'Tray', clearQ: 'clear', dropSlot: 'Discard {0}',
     tea: 'Tea', simit: 'Simit', coffee: 'Coffee', ayran: 'Ayran', sink: 'Sink', dirty: 'Dirty glass',
     new1: 'Fresh brewed tea', new2: 'Warm simit', new3: 'Turkish coffee', new4: 'Cold ayran',
     new5: 'Hurried office worker: short patience', new6: 'Group of 3: big orders', new7: 'Regular: tips double',
@@ -2350,11 +2352,11 @@ function uiStatic() {
     <div class="chip cc" title="${t('angryC')}">${ICON.angry}<b id="t-angry">0</b></div>
     <div class="sp"></div>
     <div class="btns">
-      <button class="ibtn" data-a="speed" title="${t('speedT')}" id="b-speed">1×</button>
+      <button class="ibtn" data-a="speed" title="${t('speedT')}" aria-label="${t('speedT')}" id="b-speed">1×</button>
       <button class="ibtn" data-a="pause" title="${t('pauseT')} (P / Esc)" aria-label="${t('pauseT')}" id="b-pause">${ICON.pause}</button>
       <button class="ibtn" data-a="snd" title="${t('soundT')}" aria-label="${t('soundT')}" id="b-snd">${G.muted ? ICON.mute : ICON.snd}</button>
       <button class="ibtn hud-gear" data-a="settings" title="${t('settings')}" aria-label="${t('settings')}">${ICON.gear}</button>
-      <button class="ibtn" data-a="lang" title="${t('language')} (L)" id="b-lang">${t('langBtn')}</button>
+      <button class="ibtn" data-a="lang" title="${t('language')} (L)" aria-label="${t('language')}" id="b-lang">${t('langBtn')}</button>
     </div>`;
   let slots = ''; for (let i = 0; i < 5; i++) slots += `<div class="slot" data-slot="${i}"></div>`;
   const names = { tea: t('tea'), simit: t('simit'), coffee: t('coffee'), ayran: t('ayran'), sink: t('sink') };
@@ -2425,11 +2427,14 @@ function uiFrame(dt, force) {
     if (C_cache.get('tray') !== sig) {
       C_cache.set('tray', sig);
       UI.slots.forEach((el, i) => {
-        const it = w.tray[i], f = it === 'tea' ? trayFresh(i) : 1; el.className = 'slot' + (it ? ' full' : '') + (i >= cap ? ' lock' : '');
-        el.innerHTML = !it ? '' : it === 'tea'
+        const it = w.tray[i], f = it === 'tea' ? trayFresh(i) : 1, nm = it ? (it === 'dirty' ? t('dirty') : t(it)) : '';
+        el.className = 'slot' + (it ? ' full' : '') + (i >= cap ? ' lock' : '');
+        // a11y: focusable <button class="sx"> with localized aria-label inside .slot.full
+        const del = it ? `<button class="sx" type="button" aria-label="${t('dropSlot', nm)}">×</button>` : '';
+        el.innerHTML = !it ? '' : (it === 'tea'
           ? ICON.tea.replace('<svg', `<svg style="filter:grayscale(${(1 - f).toFixed(2)})"`) + `<div class="fb ${f <= 0 ? 'old' : f < 1 ? 'mid' : ''}"><i style="width:${Math.round(f * 100)}%"></i></div>`
-          : ICON[it];
-        el.title = it ? (it === 'dirty' ? t('dirty') : t(it) + (it === 'tea' ? ` ${Math.round(f * 100)}%` : '')) : '';
+          : ICON[it]) + del;
+        el.title = it ? (nm + (it === 'tea' ? ` ${Math.round(f * 100)}%` : '')) : '';
       });
     }
     const qs = w.q.map(a => a.type === 'station' ? a.id : 'T' + (a.id + 1)).join(',') + (w.cur ? '*' : '');
@@ -2622,7 +2627,7 @@ function uiScreen(force) {
   C_cache.set('scr', sig);
   let h = '';
   const cfg = dayCfg(G.day);
-  const langBtn = `<button class="ibtn lang" data-a="lang" title="${t('language')} (L)">${t('langBtn')}</button>`;
+  const langBtn = `<button class="ibtn lang" data-a="lang" title="${t('language')} (L)" aria-label="${t('language')}">${t('langBtn')}</button>`;
   const gearBtn = `<button class="ibtn gear" data-a="settings" title="${t('settings')}" aria-label="${t('settings')}">${ICON.gear}</button>`;
   const menuBtn = `<button class="btn alt sm" data-a="menu">${t('menu')}</button>`;
   if (G.panel === 'settings') h = settingsHTML();
@@ -2740,6 +2745,15 @@ document.addEventListener('change', e => { if (e.target.dataset && e.target.data
 document.addEventListener('fullscreenchange', () => { if (G.panel === 'settings') uiScreen(true); });
 window.addEventListener('keydown', e => {
   if (e.key === 'Tab' || e.key === 'Enter' || e.code === 'Space' || e.key === 'Escape' || e.key === 'p' || e.key === 'P') kbdUser = true;
+  // a11y: trap Tab focus inside #screen when a modal screen/dialog is open
+  if (e.key === 'Tab' && scrEl.style.display !== 'none') {
+    const f = $$('button:not([disabled]),input:not([disabled]),a[href]', scrEl).filter(el => el.offsetParent !== null);
+    if (f.length) {
+      const i = f.indexOf(document.activeElement);
+      if (e.shiftKey && (i <= 0 || !scrEl.contains(document.activeElement))) { e.preventDefault(); f[f.length - 1].focus(); return; }
+      if (!e.shiftKey && (i === f.length - 1 || !scrEl.contains(document.activeElement))) { e.preventDefault(); f[0].focus(); return; }
+    }
+  }
   if (e.repeat && (e.code === 'Space' || e.key === 'p' || e.key === 'P' || e.key === 'Escape')) return;
   sfxInit();
   const onCtl = e.target.closest && e.target.closest('button,input');
