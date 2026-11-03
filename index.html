@@ -814,7 +814,9 @@ function endDay() {
   if (rec.passed && G.day === 7 && !G.won) saveGame('shop', { won: true, endless: true });
   else if (rec.passed) saveGame('shop');
   else { G.retrying = true; saveGame('shop'); }
-  G.paused = false; G.waiter.q.length = 0;
+  G.paused = false;
+  // reset waiter to idle so mid-walk animation does not run in place behind summary overlay
+  Object.assign(G.waiter, { cur: null, state: 'idle', path: [], moving: false });
   uiScreen(); checkStop();
 }
 /* saved run (arena.cay.save): written at the start of each day and at each shop visit; Continue resumes there */
@@ -1870,7 +1872,7 @@ const BULBS = (() => {
 }
 
 /* ---------- tables, stools, tableware (instanced) ---------- */
-const TB = {};
+const TB = {}, TB_LIST = [];
 {
   const tops = new THREE.InstancedMesh(new THREE.CylinderGeometry(.88, .88, .09, 16), matI(), 6);
   const legs = (() => { const m = new Merger(); m.cyl(0, 0, 0, .34, .4, .06, 0x4a3a30, 10); m.cyl(0, .06, 0, .08, .08, .84, 0x4a3a30, 8); return new THREE.InstancedMesh(m.geometry(), matIV(), 6); })();
@@ -1880,7 +1882,8 @@ const TB = {};
   for (let i = 0; i < 6; i++) tops.setColorAt(i, new THREE.Color(cloth[i]));
   const sc = [0x3f7f86, 0xc2602a, 0x3f7f86, 0xc2602a];
   for (let i = 0; i < 24; i++) { stools.setColorAt(i, new THREE.Color(sc[i % 4])); cush.setColorAt(i, new THREE.Color(0xf08c3a)); }
-  [tops, legs, stools, cush].forEach(m => { m.frustumCulled = false; m.castShadow = !FLAG.low; m.receiveShadow = !FLAG.low; world.add(m); });
+  TB_LIST.push(tops, legs, stools, cush);
+  TB_LIST.forEach(m => { m.frustumCulled = false; m.castShadow = !FLAG.low; m.receiveShadow = !FLAG.low; world.add(m); });
   Object.assign(TB, { tops, legs, stools, cush });
 }
 
@@ -2153,6 +2156,7 @@ function petCat() {
    ============================================================ */
 const _c = new THREE.Color();
 const _tmpV = new THREE.Vector3();
+const TRAY_LX = [-.18, .18, 0, -.2, .2], TRAY_LZ = [0, 0, .2, .38, .38];
 let steamAcc = 0, glintAcc = 0;
 function syncVisuals(dt) {
   const vt = G.vt, w = G.waiter;
@@ -2160,7 +2164,7 @@ function syncVisuals(dt) {
   itemsBegin();
   for (let i = 0; i < 6; i++) {
     const tb = G.tables[i] || { unlocked: i < tableCount() }; const on = tb.unlocked;
-    const [x, z] = TABLE_POS[i], s = on ? 1 : 0;
+    const tp = TABLE_POS[i], x = tp[0], z = tp[1], s = on ? 1 : 0;
     TB.tops.setMatrixAt(i, mat(x, .93, z, s, s, s)); if (TB.legs.visible) TB.legs.setMatrixAt(i, mat(x, 0, z, s, s, s));
     for (let k = 0; k < 4; k++) {
       const a = SEAT_ANG[k], sx = x + Math.cos(a) * .98, sz = z + Math.sin(a) * .98;
@@ -2174,7 +2178,8 @@ function syncVisuals(dt) {
     }
     if (on && tb.party && tb.party.state === 'tavla') itemPut('board', x, .975, z, 0);
   }
-  [TB.tops, TB.legs, TB.stools, TB.cush].forEach(m => { if (!m.visible) return; m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; });
+  // reuse static TB_LIST to avoid allocating a 4-element array every frame
+  for (let j = 0; j < TB_LIST.length; j++) { const m = TB_LIST[j]; if (m.visible) { m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; } }
 
   ITM.tea.im.material.emissiveIntensity = .45 + Math.sin(vt * 3.2) * .22;
   glintAcc += dt;
@@ -2194,7 +2199,7 @@ function syncVisuals(dt) {
   for (let k = 0; k < 3; k++) { const on = S && S.oven.st === 'ready' && k < S.oven.n; DYN.simitRings.setMatrixAt(k, on ? mat(FIT.ringX, FIT.ringY, STATION_Z.simit + (k - 1) * .45, 1, 1, 1, .3 * k) : mat(0, -50, 0, 0, 0, 0)); }
   DYN.simitRings.instanceMatrix.needsUpdate = true;
   for (let k = 0; k < 2; k++) {
-    const p = S && S.pots[k], [px, py, z] = FIT.pots[k];
+    const p = S && S.pots[k], fp = FIT.pots[k], px = fp[0], py = fp[1], z = fp[2];
     let sc = 0, col = 0x6b4226;
     if (p) {
       if (p.st === 'cook') { sc = .02 + (p.t / COOK_T) * .12; col = 0x7a4a2a; }
@@ -2224,7 +2229,7 @@ function syncVisuals(dt) {
   for (let k = 0; k < 7; k++) {
     let it = k < w.tray.length ? w.tray[k] : null;
     if (it) {
-      const sn = Math.sin(w.face), cs = Math.cos(w.face), lx = [-.18, .18, 0, -.2, .2][k] || 0, lz = [0, 0, .2, .38, .38][k] + .3;
+      const sn = Math.sin(w.face), cs = Math.cos(w.face), lx = TRAY_LX[k] || 0, lz = (TRAY_LZ[k] || 0) + .3;
       // local tray centre is (0,1.06,.5)
       const ox = lx, oz = lz + .2 - .3;
       const wx = w.x + ox * cs + oz * sn, wz = w.z - ox * sn + oz * cs;
@@ -2260,7 +2265,7 @@ function syncVisuals(dt) {
   }
   // ambient passers-by on the far street
   ambientPeople(dt);
-  PPL_LIST.forEach(m => { m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; });
+  for (let j = 0; j < PPL_LIST.length; j++) { const m = PPL_LIST[j]; m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; }
 
   /* cat */
   const asleep = cat.state === 'sleep', sit = cat.state === 'sit';
@@ -2271,11 +2276,12 @@ function syncVisuals(dt) {
   catGrp.position.y = cat.y + (cat.moving ? Math.abs(Math.sin(vt * 12)) * .05 : 0);
   DYN.catPick.position.set(cat.x, cat.y + .35, cat.z);
   /* gulls */
-  gulls.forEach((g, i) => {
+  for (let i = 0; i < gulls.length; i++) {
+    const g = gulls[i];
     const x = g.cx + Math.cos(g.a) * g.r, z = g.cz + Math.sin(g.a) * g.r * .6, y = g.h + Math.sin(vt * .9 + i * 2) * .5;
     const flap = 0.55 + Math.abs(Math.sin(vt * 5 + i * 1.7)) * .9;
     gullIM.setMatrixAt(i, mat(x, y, z, 1.3, flap, 1.3, -g.a * Math.sign(g.sp) + (g.sp > 0 ? 0 : Math.PI), 0, Math.sin(vt * 5 + i) * .12));
-  });
+  }
   { // the thief: folded on the rail, wings beating in the dive, and the pick proxy follows it
     const th = thief, on = th.state !== 'none';
     if (on) {
@@ -2298,13 +2304,14 @@ function hidePerson(i) {
 /* three decorative pedestrians that stroll along the far (front) street */
 const strollers = [{ x: -10, dir: 1, sp: 1.1, c: 0x5a7fb0, s: 0xe8b88e, h: 0x2a1a10 }, { x: 6, dir: -1, sp: .9, c: 0xb85a6a, s: 0xb9794f, h: 0x1c1c1c }, { x: 18, dir: -1, sp: 1.3, c: 0x7a9a4a, s: 0xd9a07a, h: 0x4a2c18 }];
 function ambientPeople(dt) {
-  strollers.forEach((p, k) => {
+  for (let k = 0; k < strollers.length; k++) {
+    const p = strollers[k];
     if (!G.paused) { p.x += p.dir * p.sp * dt; if (p.x > 24) p.dir = -1; if (p.x < -12) p.dir = 1; }
     const i = 37 + k, z = 11.2 + k * .5, mv = !G.paused, by = mv ? Math.abs(Math.sin(G.vt * 8 + k)) * .05 : 0, face = p.dir > 0 ? Math.PI / 2 : -Math.PI / 2;
     PPL.body.setMatrixAt(i, mat(p.x, by, z, 1, 1, 1, face)); PPL.head.setMatrixAt(i, mat(p.x, by + 1.02, z, 1, 1, 1, face));
     PPL.hair.setMatrixAt(i, mat(p.x, by + 1.06, z, 1, 1, 1, face)); PPL.cap.setMatrixAt(i, mat(0, -50, 0, 0, 0, 0));
     _c.setHex(p.c); PPL.body.setColorAt(i, _c); _c.setHex(p.s); PPL.head.setColorAt(i, _c); _c.setHex(p.h); PPL.hair.setColorAt(i, _c);
-  });
+  }
 }
 
 /* ============================================================
