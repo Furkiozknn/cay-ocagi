@@ -1,65 +1,59 @@
 <p align="center">
-  <a href="https://furkiozknn.github.io/cay-ocagi/"><img src="docs/banner.svg" width="100%" alt="Çay Ocağı: run a tiny tea house on an Istanbul quay, brew tea and serve every table. Click to play in your browser."></a>
+  <a href="https://furkiozknn.github.io/cay-ocagi/">
+    <img src="docs/card.jpg" width="100%" alt="Çay Ocağı: run a tiny tea house on an Istanbul quay, brew tea and serve every table. Click to play in your browser.">
+  </a>
 </p>
 
 <p align="center">
-  <a href="https://furkiozknn.github.io/cay-ocagi/"><img src="https://img.shields.io/badge/%E2%96%B6_Play_now-in_your_browser-C2410C?style=for-the-badge&labelColor=3A2314" alt="Play now in your browser"></a>
+  <a href="https://furkiozknn.github.io/cay-ocagi/"><img src="https://img.shields.io/badge/%E2%96%B6_Play_free-in_your_browser-C2410C?style=for-the-badge&logo=googlechrome&logoColor=white&labelColor=3A2314" height="40" alt="Play free in your browser"></a>
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/Three.js-r170-EA6A24?style=for-the-badge&logo=threedotjs&logoColor=white&labelColor=3A2314" alt="Three.js r170">
   <img src="https://img.shields.io/badge/built_by-Claude_Sonnet_5.5-7A5A44?style=for-the-badge&logo=claude&logoColor=white&labelColor=3A2314" alt="Built by Claude Sonnet 5.5">
   <a href="LICENSE"><img src="https://img.shields.io/badge/licence-MIT-3F8F4A?style=for-the-badge&labelColor=3A2314" alt="MIT licence"></a>
   <img src="https://img.shields.io/badge/no_install-desktop_%C2%B7_phone-FFF8EB?style=for-the-badge&labelColor=3A2314" alt="No install, desktop and phone">
 </p>
 
-<p align="center"><b>A 3D time-management game on a low-poly Istanbul quay: run a tiny tea house for seven busy days, brew tea, warm simit, cook Turkish coffee without letting it boil over and serve every table before patience runs out.</b></p>
-
-<p align="center">
-  <img src="docs/gameplay.gif" width="640" alt="Çay Ocağı gameplay: a ferry rush fills the tables on day 3 while the waiter serves tea and simit and a gull lands to steal one">
-</p>
-
-<p align="center"><b>Play online: <a href="https://furkiozknn.github.io/cay-ocagi/">https://furkiozknn.github.io/cay-ocagi/</a></b> (desktop and phone, no install)</p>
-
 <!-- portals:start -->
-<p align="center">Also on: <a href="https://furkiozknn.itch.io/cay-ocagi">itch.io</a> &middot; <a href="https://playgama.ai/play/ysmjlykfbkbjew">Playgama</a></p>
+<p align="center">
+  Also on: <a href="https://furkiozknn.itch.io/cay-ocagi"><strong>itch.io</strong></a> &middot; <a href="https://playgama.ai/play/ysmjlykfbkbjew"><strong>Playgama</strong></a>
+</p>
 <!-- portals:end -->
 
-## Highlights
+<p align="center">
+  <strong>A 3D time-management game on a low-poly Istanbul quay: run a tiny tea house for seven busy days, brew tea, warm simit, cook Turkish coffee without letting it boil over and serve every table before patience runs out.</strong>
+</p>
 
-- **Four items, five stations.** Tea brews in the semaver, simit warms in the oven, Turkish coffee has to be grabbed
-  in time or it boils over, ayran is instant, and dirty glasses go to the sink.
-- **Seven days, each with something new.** A new menu item on each of the first four days, then a hurried office
-  worker with little patience, a group of three and a regular who tips double; after day 7 comes an endless shift.
-- **A shop between days.** A second semaver, a bigger tray (3 to 5 items), a faster oven, up to three extra tables, an
-  apprentice who clears tables and comfy stools (+20 % patience per level).
-- **Tips depend on speed.** Customers who wait too long leave angry, customers who find no free table walk by, and the
-  day's coins and happy guests decide 1 to 3 stars.
-- **A living street.** A ferry crossing the strait, gulls, lamp posts, bunting, geraniums and a ginger cat you can pet.
-- **Balanced by a bot.** The `?auto` waiter plays with the same actions as a player and won 84 of 90 seeded games
-  ([measurements](docs/assets.md)).
-- **Light on a laptop GPU.** 60 fps on an Intel UHD GPU at 1280x720 on a busy day 6, with 31 draw calls and about 50 k
-  triangles.
+<!-- gameplay gif -->
+
+## Features
+
+- **Seven-day shift & endless mode:** Serve across 7 busy days with coin targets climbing from 65 coins on day 1 to 250 on day 7, unlocking a new menu item each of the first 4 days, special guests (a hurried worker, a party of 3, and a regular tipping double), followed by an endless shift after day 7.
+- **Four items, five busy stations:** Tea brews in 7 s (yielding 4 glasses with a 25 s freshness window), the oven warms 3 simit at a time, Turkish coffee cooks in 4.2 s with a 3.6 s pickup window before boiling over, ayran serves instantly, and dirty glasses head to the sink with up to 6 queued clicks.
+- **Between-day shop & upgrades:** Reinvest earnings between shifts into a second semaver, an expanded tray (3 to 5 slots), a faster oven, up to 3 extra tables, an apprentice table-clearer, and comfy stools (+20% patience per level) to earn 1 to 3 stars.
+- **Ferry rush & living Istanbul quay:** Weather sudden ferry rushes (2 to 3 arriving parties within 10 s, warned 8 s ahead by horn), shoo gull thieves before they snatch simit, serve tavla regulars every 14 to 18 s, and enjoy a living quay with ferry, gulls, cat, and Web Audio Turkish music.
+- **Ultra-lean web performance:** 60 fps on an Intel UHD GPU at 1280x720 with 31 draw calls (34 max) and ~50k triangles on day 6, verified by an automated bot winning 84 of 90 seeded games (and 86 of 90 in v2 benchmark) with 0 JS errors.
 
 ## How to play
 
 > [!TIP]
-> **Goal:** earn each day's coin target before closing time (65 coins on day 1, 250 on day 7) and clear all seven days.
-> More coins and more happy customers give up to 3 stars; after day 7 the endless shift begins.
+> **Goal:** Earn each day's coin target before closing time (65 coins on day 1, 250 on day 7) and clear all seven days. More coins and more happy customers give up to 3 stars; after day 7 the endless shift begins.
 
-Customers take a free table and show an order bubble with a patience ring. Click a station to start an item or to
-collect it onto your tray, then click the table to serve it; the waiter walks to each target in order. When a party has
-eaten, clear its glasses and take them to the sink before the table can be used again.
+1. **Take orders & prepare:** Customers take a free table and show an order bubble with a patience ring. Click a station (`1`–`5`) or its button to brew tea, warm simit, cook Turkish coffee, or pour ayran.
+2. **Collect & serve:** Click ready items to add them to your tray (holds 3 to 5 items), then click the customer's table to serve; the waiter walks to each target in queue (up to 6 clicks).
+3. **Clear & wash:** When a party finishes eating, click the table to clear dirty glasses and take them to the sink before new customers can sit.
 
 <details>
-<summary><b>More rules</b></summary>
+<summary><b>Rules and mechanics</b></summary>
 
-- A day lasts 3 minutes of game time. "Last orders" is called 20 s before closing and the clock turns red; tables that
-  are still eating when the day ends pay their bill and tip.
-- Tea brews for 7 s and gives 4 glasses. The oven warms 3 simit at a time and gets faster with upgrades. Coffee cooks
-  for 4.2 s and must be taken off within 3.6 s, or it boils over.
-- The tray holds 3 items (up to 5 with upgrades). Clean items can be dropped from the tray; dirty glasses can only go to
-  the sink. You can queue up to six clicks.
-- Stars: 1 for reaching the target, 2 for 125 % of it with at least 70 % happy customers, 3 for 150 % with at least
-  88 % happy customers.
-- A failed day keeps the coins it earned, and the retry goes through the shop, so you can buy an upgrade first.
+- **Day duration & last orders:** A day lasts 3 minutes of game time. "Last orders" is called 20 s before closing and the clock turns red; tables still eating when the day ends pay their bill and tip.
+- **Preparation times:** Tea brews for 7 s and yields 4 glasses (fresh for 25 s; stale tea is greyer and pays half tip). The oven warms 3 simit at a time and speeds up with upgrades. Turkish coffee cooks for 4.2 s and must be picked up within 3.6 s (perfect grab in the first second gives a tip bonus), or it boils over. Ayran pours instantly.
+- **Tray & queue:** The tray holds 3 items (expandable to 5 in the shop). Clean items can be dropped by clicking their tray slot; dirty glasses must go to the sink. You can queue up to 6 clicks.
+- **Star rating:** 1 star for reaching the coin target, 2 stars for 125% target with at least 70% happy customers, 3 stars for 150% target with at least 88% happy customers.
+- **Retries & shop:** A failed day keeps earned coins, and retry routes through the shop so you can buy upgrades before trying again.
+- **Ferry rush & gulls:** From day 3, ferry horn signals a rush (8 s warning) bringing 2 to 3 parties within 10 s. Gulls land on the quay rail and dive for served simit; tap or click to shoo them away before coins are lost.
+- **Regulars:** Regulars stay ~2.5x longer, display a dice icon, and request "one more tea" every 14 to 18 s, adding tips and streak bonuses.
 
 </details>
 
@@ -67,75 +61,40 @@ eaten, clear its glasses and take them to the sink before the table can be used 
 
 | Action | Mouse / touch | Keyboard |
 |---|---|---|
-| Use a station (brew, collect, wash) | click / tap the station or its button | `1`-`5` |
-| Serve or clear a table | click / tap the table or its order bubble | |
-| Drop a clean item from the tray | click / tap the tray slot | |
-| Clear the waiter's queue | right-click | `Backspace` |
-| Pan / zoom | drag / wheel or pinch | |
-| Speed 1x 2x 3x | speed button | |
-| Pause menu | pause button | `P` / `Esc` / `Space` |
-| Music / effects / language | settings | `M` / `X` / `L` |
-| Fullscreen | settings | `F11` |
+| Use a station (brew, collect, wash) | Click / tap station or button | `1`–`5` |
+| Serve or clear a table | Click / tap table or order bubble | |
+| Drop clean item from tray | Click / tap tray slot | |
+| Clear waiter's queue | Right-click | `Backspace` |
+| Pan / zoom | Drag / wheel or pinch | |
+| Speed 1x / 2x / 3x | Speed button | |
+| Pause menu | Pause button | `P` / `Esc` / `Space` |
+| Music / effects / language | Settings | `M` / `X` / `L` |
+| Fullscreen | Settings | `F11` |
 
-Settings (master, music and effects volume, TR / EN, Low / High quality, fullscreen) are saved in `localStorage` under
-`arena.cay.settings`; the run under `arena.cay.save` (written at the start of every day and at every shop visit, so
-**Continue** picks it up), the best result under `arena.cay.best`. Changing the quality reloads the page. The first visit
-follows the browser language.
+- **Audio & hotkeys:** `M` mutes/unmutes music, `X` toggles sound effects, `L` cycles language (TR / EN), `P` / `Esc` / `Space` pauses.
+- **Touch & mobile:** Fully playable on phone or tablet with responsive tap controls, pinch-to-zoom, and touch drag.
+- **Persistence:** Settings (master, music and effects volume, TR / EN, Low / High quality, fullscreen) are saved in `localStorage` under `arena.cay.settings`; the run under `arena.cay.save` (saved at day start and shop visits for **Continue**), and best results under `arena.cay.best`. Changing quality reloads the page. First visit follows browser language.
 
 <details>
 <summary><b>URL flags for testing</b></summary>
 
 | Flag | Effect |
 |---|---|
-| `?auto` | the game plays itself at 3x speed (takes orders, prepares, serves, clears tables, buys upgrades) |
-| `?debug` | draw calls, fps and JS errors on screen; `window.caySim(seconds)` fast-forwards the simulation |
-| `?sim=N` | fast-forward N seconds before the first frame |
-| `?bench=N` | run N full bot games and record per-day results |
-| `?low` | no shadows, pixel ratio 1 |
-| `?noassets` | the original procedural look, without the generated models, icons and texture |
-| `?nosave` | do not read or write the saved run (implied by `?auto` and `?bench`) |
-| `?day=N` | start a new game on day N, with 150 coins per skipped day |
-| `?lang=en` / `?lang=tr` | language |
-| `?seed=N` | fixed simulation seed |
-| `?selftest` | run the v2 mechanics checks by simulation; results in `window.cay.selfTest` |
+| `?auto` | The game plays itself at 3x speed (takes orders, prepares, serves, clears tables, buys upgrades) |
+| `?debug` | Draw calls, FPS, and JS errors on screen; `window.caySim(seconds)` fast-forwards the simulation |
+| `?sim=N` | Fast-forward N seconds before the first frame |
+| `?bench=N` | Run N full bot games and record per-day results |
+| `?low` | No shadows, pixel ratio 1 |
+| `?noassets` | The original procedural look, without generated models, icons, and textures |
+| `?nosave` | Do not read or write the saved run (implied by `?auto` and `?bench`) |
+| `?day=N` | Start a new game on day N, with 150 coins per skipped day |
+| `?lang=en` / `?lang=tr` | Start language |
+| `?seed=N` | Fixed simulation seed |
+| `?selftest` | Run v2 mechanics checks by simulation; results in `window.cay.selfTest` |
 
-The live state is on `window.cay` (day, clock, coins, target, tables, waiter, errors).
+`window.cay` exposes live state (`day`, `clock`, `coins`, `target`, `tables`, `waiter`, `rushes`, `refill`, `gull`, `thief`, `perfects`, `trayFresh()`, `errors`).
 
 </details>
-
-## v2 update
-
-Upgraded by Claude Sonnet 5.5 with Claude Code from [prompts/cay-ocagi-v2.md](prompts/cay-ocagi-v2.md).
-
-- **Straight into day 1.** Play starts the first shift at once; three pulsing coach marks (tea station, first customer,
-  table) advance on the real action and show once. Later days keep their briefing. Repeated toasts refresh instead of
-  stacking.
-- **Ferry rush (from day 3).** The ferry's horn is the warning ("Ferry arriving", 8 s ahead); then 2 to 3 parties step
-  off within 10 s. The day's customer count stays the same, the rush only moves arrivals together.
-- **Tea freshness.** A poured glass is fresh for 25 s, then its bar fades; stale tea is greyer, pays half the tip and
-  draws a grumble. A pot left on the counter until cold is tipped out and re-brewed.
-- **Regulars play tavla.** After the first serve a regular stays about 2.5x longer, shows a dice icon and asks for "one
-  more tea" every 14 to 18 s; each refill adds tip and a small streak.
-- **Gull thieves (from day 3).** A gull lands on the quay rail, then dives at a served simit; click or tap it to shoo it
-  away, otherwise that simit's coins are lost. One gull at a time, never in the first 20 s.
-- **Facts and ranks.** A "Did you know?" card on each day briefing and summary (six sourced facts, see
-  [CREDITS.md](CREDITS.md)) and a cosmetic rank from lifetime coins: Çırak, Kalfa, Usta. A sleeping Van kitten sits on the
-  shop and summary screens.
-- **Order urgency.** Bubbles shake and redden in the last quarter of patience, the coffee pot shows a shrinking ring
-  during its 3.6 s window and a perfect grab (first second) rings a bell and adds a tip.
-- `window.cay` now exposes `rushes`, `refill`, `gull`, `thief`, `trayFresh()` and `perfects`; `?selftest` runs the new
-  mechanics by simulation. The `?auto` bot still wins 86 of 90 seeded games in `?auto&bench=90`.
-
-## Redesign (2026-11)
-
-Art direction: cozy hand-painted 2.5D. Walnut `#5B3A29`, tea amber `#B5651D`, brass `#C9A227`, cream `#F4E9D8` and tile teal `#2E7D7A`, lit by a warm low key light with lamp pools and a cool rim.
-Redesigned by Claude Sonnet 5.5; gameplay, saves, flags and the `?auto` bot are unchanged.
-
-- **World:** brush-stroke texture sampled by world position on all static geometry, a teal and cream tiled terrace with a kilim rug under each table, a teal tile band on the wall, a graded turquoise-to-indigo strait with a foam line, twinkling string lights, a bench, barrels, crates and lemon trees.
-- **Characters and FX:** customers and the waiter get trousers, belts, collars and ears plus squash-and-stretch idles (stride bounce, breathing, angry shiver); tea glasses glow, glint and send up steam wisps; lamps flicker.
-- **UI:** carved-walnut frames with brass bolts, cream paper panels, brass buttons, serif headings and teal accents on every screen (title, briefing, summary, shop, pause, settings, toasts); contrast checked at 4.5:1 or better.
-- **Measured (QA on the branch, desktop, phone and phone landscape, light and dark):** 0 console errors, 59 to 60 fps, about 30 draw calls. No before/after fps was captured for the old look.
-- Not redone: a new tea-glass icon set, and the gallery images below, which still show the pre-redesign look.
 
 ## Screenshots
 
@@ -149,7 +108,8 @@ Redesigned by Claude Sonnet 5.5; gameplay, saves, flags and the `?auto` bot are 
     <td><img src="docs/shop_en.png" alt="The shop between days"><br><sub>The shop between days</sub></td>
     <td><img src="docs/summary_en.png" alt="Day complete with three stars"><br><sub>Day complete, three stars</sub></td>
     <td><img src="docs/pause_en.png" alt="Pause menu"><br><sub>Pause menu</sub></td>
-  </tr>  <tr>
+  </tr>
+  <tr>
     <td><img src="docs/rush_en.png" alt="The ferry-rush warning banner"><br><sub>Ferry rush warning</sub></td>
     <td><img src="docs/gull_en.png" alt="A gull on the quay rail after being shooed"><br><sub>Gull thief</sub></td>
     <td><img src="docs/briefing_en.png" alt="Day briefing with a Did you know card"><br><sub>Day briefing and fact card</sub></td>
@@ -172,64 +132,70 @@ Redesigned by Claude Sonnet 5.5; gameplay, saves, flags and the `?auto` bot are 
 
 </details>
 
-## Balance
+## Redesign & Performance
 
-Prices, brewing and cooking times, customer types, the seven days and the shop are data tables at the top of the
-simulation (`PRICE`, `CUST`, `DAYS`, `UPG`). The `?auto` bot won 11 of 12 games in `?auto&bench=12` and 84 of 90 games
-across three seed bases; with the bot playing on, it reached the endless shift up to day 9 with 0 JS errors. Measured on
-an Intel UHD GPU (i5-10210U) at 1280x720 on a busy day 6: 60 fps, 31 draw calls (34 at most) and about 50 k triangles;
-the same 60 fps on `?low` and with `?noassets`.
+**Art direction:** Cozy hand-painted 2.5D. Walnut `#5B3A29`, tea amber `#B5651D`, brass `#C9A227`, cream `#F4E9D8`, and tile teal `#2E7D7A`, lit by a warm low key light with lamp pools and a cool rim. Redesigned by Claude Sonnet 5.5; gameplay, saves, flags, and the `?auto` bot are untouched.
+
+**Visual updates (rules, controls, bot, and saves are untouched):**
+- **World:** Brush-stroke texture sampled by world position on all static geometry, a teal and cream tiled terrace with a kilim rug under each table, a teal tile band on the wall, a graded turquoise-to-indigo strait with a foam line, twinkling string lights, a bench, barrels, crates, and lemon trees.
+- **Characters and FX:** Customers and the waiter get trousers, belts, collars, and ears plus squash-and-stretch idles (stride bounce, breathing, angry shiver); tea glasses glow, glint, and send up steam wisps; lamps flicker.
+- **UI:** Carved-walnut frames with brass bolts, cream paper panels, brass buttons, serif headings, and teal accents on every screen (title, briefing, summary, shop, pause, settings, toasts); contrast checked at 4.5:1 or better.
+
+**Measured on an Intel UHD GPU (i5-10210U, 1280x720):**
+- Draw calls: 31 calls (34 at most) on a busy day 6; ~50k triangles
+- Page rAF: 59 to 60 fps (rock-solid 60 fps on `?low` and with `?noassets`)
+- QA verification: 0 console/JS errors across desktop, phone, and phone landscape (light and dark themes)
+- Bot balance: `?auto` won 11 of 12 games in `?auto&bench=12`, 84 of 90 across three seed bases, and 86 of 90 in v2 benchmark (`?auto&bench=90`); reached endless shift up to day 9 with 0 JS errors.
+- Note: A tea-glass icon set was not redone, and earlier gallery images show the pre-redesign look.
 
 ## Running locally
 
-Serve the folder over HTTP (opened from `file://`, the browser blocks the model files and the game uses its procedural
-models with the generated icons):
+Serve the folder over HTTP (opened from `file://`, the browser blocks the model files and the game uses its procedural models with the generated icons):
 
-```
+```bash
 python -m http.server 8000
 ```
 
-then open <http://localhost:8000/>.
+Then open <http://localhost:8000/>.
 
-## How it was made
+## Made with Claude Code
 
-Built by **Claude Sonnet 5.5** with Claude Code from one prompt: [prompts/cay-ocagi.md](prompts/cay-ocagi.md). The first
-version made everything in code: the tea house, the street, the customers and the waiter are merged or instanced
-low-poly primitives with vertex colours, and every sound is synthesised with the Web Audio API. A small hicaz music loop
-with a frame drum was added later, also in Web Audio.
+Built by **Claude Sonnet 5.5** with Claude Code from one prompt: [prompts/cay-ocagi.md](prompts/cay-ocagi.md). The first version made everything in code: the tea house, the street, the customers and the waiter are merged or instanced low-poly primitives with vertex colours, and every sound is synthesised with the Web Audio API. A small hicaz music loop with a frame drum was added later, also in Web Audio.
 
-The assets were remastered by the orchestrator, **Claude Opus 5.5**, with generated models and images: Tripo
-text-to-3D (through Higgsfield) for the semaver, simit oven, coffee sand stove, ayran cooler, sink, tables, façade
-windows, ferry and cat, and GPT Image for a 20-icon sheet, the logo and the cobblestone texture. The models were
-processed with glTF-Transform (about 0.9 MB in `assets/`); the served items (tea glass, simit, coffee and ayran cups)
-became small models built in code, and every procedural part stays as the fallback. Prompts, sizes, the rejected asset
-and the before and after measurements: [docs/assets.md](docs/assets.md). A Godot 4 remake was made in round 2.
+The assets were remastered by the orchestrator, **Claude Opus 5.5**, with generated models and images: Tripo text-to-3D (through Higgsfield) for the semaver, simit oven, coffee sand stove, ayran cooler, sink, tables, façade windows, ferry and cat, and GPT Image for a 20-icon sheet, the logo and the cobblestone texture. The models were processed with glTF-Transform (about 0.9 MB in `assets/`); the served items (tea glass, simit, coffee and ayran cups) became small models built in code, and every procedural part stays as the fallback. Prompts, sizes, the rejected asset and the before and after measurements: [docs/assets.md](docs/assets.md). A Godot 4 remake was made in round 2.
 
-Çay Ocağı is part of the **Claude Game Arena** series, where each game is built by a Claude model from one prompt. The
-other games: [Hisar](https://furkiozknn.github.io/kale-savunmasi/) ·
-[Çini Ustası](https://furkiozknn.github.io/cini-ustasi/) · [Martı](https://furkiozknn.github.io/marti/) ·
-[Kervan](https://furkiozknn.github.io/kervan/) ·
-[Dolmuş](https://furkiozknn.github.io/dolmus/) · [Peri Golf](https://furkiozknn.github.io/peri-golf/) ·
-[Mehter](https://furkiozknn.github.io/mehter/) · [Boğaz Vapuru](https://furkiozknn.github.io/bogaz-vapuru/) ·
-[Simit Fırını](https://furkiozknn.github.io/simit-firini/) · [Karagöz](https://furkiozknn.github.io/karagoz/) ·
-[Lale Bahçesi](https://furkiozknn.github.io/lale-bahcesi/)
+### v2 update
 
-**Round 5:** [Kapadokya Balonu](https://furkiozknn.github.io/kapadokya-balonu/) ·
-[Ebru](https://furkiozknn.github.io/ebru/) · [Kırkpınar](https://furkiozknn.github.io/kirkpinar/) ·
-[Çarşı Kaçışı](https://furkiozknn.github.io/carsi-kacisi/)
+Upgraded by **Claude Sonnet 5.5** with Claude Code from [prompts/cay-ocagi-v2.md](prompts/cay-ocagi-v2.md).
 
-**Round 6:** [Topkapı Gecesi](https://furkiozknn.github.io/topkapi-gecesi/) ·
-[Hamsi](https://furkiozknn.github.io/hamsi/) · [Pamukkale](https://furkiozknn.github.io/pamukkale/) ·
-[Mimar Sinan](https://furkiozknn.github.io/mimar-sinan/)
+- **Straight into day 1:** Play starts the first shift at once; three pulsing coach marks (tea station, first customer, table) advance on the real action and show once. Later days keep their briefing. Repeated toasts refresh instead of stacking.
+- **Ferry rush (from day 3):** The ferry's horn is the warning ("Ferry arriving", 8 s ahead); then 2 to 3 parties step off within 10 s. The day's customer count stays the same, the rush only moves arrivals together.
+- **Tea freshness:** A poured glass is fresh for 25 s, then its bar fades; stale tea is greyer, pays half the tip and draws a grumble. A pot left on the counter until cold is tipped out and re-brewed.
+- **Regulars play tavla:** After the first serve a regular stays about 2.5x longer, shows a dice icon and asks for "one more tea" every 14 to 18 s; each refill adds tip and a small streak.
+- **Gull thieves (from day 3):** A gull lands on the quay rail, then dives at a served simit; click or tap it to shoo it away, otherwise that simit's coins are lost. One gull at a time, never in the first 20 s.
+- **Facts and ranks:** A "Did you know?" card on each day briefing and summary (six sourced facts, see [CREDITS.md](CREDITS.md)) and a cosmetic rank from lifetime coins: Çırak, Kalfa, Usta. A sleeping Van kitten sits on the shop and summary screens.
+- **Order urgency:** Bubbles shake and redden in the last quarter of patience, the coffee pot shows a shrinking ring during its 3.6 s window and a perfect grab (first second) rings a bell and adds a tip.
+- **Extended simulation state:** `window.cay` exposes `rushes`, `refill`, `gull`, `thief`, `trayFresh()`, and `perfects`; `?selftest` runs the new mechanics by simulation. The `?auto` bot still wins 86 of 90 seeded games in `?auto&bench=90`.
 
-## Türkçe
+<details>
+<summary><b>Technical notes and simulation architecture</b></summary>
 
-**Çay Ocağı**, alçak poligon bir İstanbul rıhtımında geçen 3D zaman yönetimi oyunu. Küçük bir çay ocağını yedi yoğun gün
-boyunca işlet: semaverde çay demle, fırında simit ısıt, Türk kahvesini taşırmadan pişir ve müşterilerin sabrı tükenmeden
-her masaya yetiş. Günler arasında dükkândan ikinci semaver, büyük tepsi, çırak ve yeni masalar al. Kurulum yok;
-masaüstünde ve telefonda tarayıcıda oynanır. Claude Sonnet 5.5 tarafından Claude Code ile tek bir prompt'tan yapıldı.
+- **Simulation tables (`PRICE`, `CUST`, `DAYS`, `UPG`):** Prices, brewing and cooking times, customer types, the 7 days, and shop progression are data tables at the top of the simulation.
+- **Bot testing:** The `?auto` waiter acts through identical player simulation events: takes orders, prepares, collects, delivers, clears tables, and purchases upgrades at the between-day shop.
+- **Asset pipeline:** Low-poly models processed via glTF-Transform (~0.9 MB total in `assets/`), with seamless procedural primitives as a fallback under `?noassets` or `file://` protocol.
+- **Audio engine:** Fully synthesized Web Audio API sounds for boiling, clinking glasses, coin drops, and ambient water, accompanied by a procedural hicaz music loop with frame drum.
 
-**Oyna:** https://furkiozknn.github.io/cay-ocagi/
+</details>
+
+### Claude Game Arena
+
+Çay Ocağı is part of the **Claude Game Arena** series, where each game is built by a Claude model from one prompt.
+
+[Hisar](https://furkiozknn.github.io/kale-savunmasi/) · [Çini Ustası](https://furkiozknn.github.io/cini-ustasi/) · [Martı](https://furkiozknn.github.io/marti/) · [Kervan](https://furkiozknn.github.io/kervan/) · [Dolmuş](https://furkiozknn.github.io/dolmus/) · [Peri Golf](https://furkiozknn.github.io/peri-golf/) · [Mehter](https://furkiozknn.github.io/mehter/) · [Boğaz Vapuru](https://furkiozknn.github.io/bogaz-vapuru/) · [Simit Fırını](https://furkiozknn.github.io/simit-firini/) · [Karagöz](https://furkiozknn.github.io/karagoz/) · [Lale Bahçesi](https://furkiozknn.github.io/lale-bahcesi/)
+
+**Round 5:** [Kapadokya Balonu](https://furkiozknn.github.io/kapadokya-balonu/) · [Ebru](https://furkiozknn.github.io/ebru/) · [Kırkpınar](https://furkiozknn.github.io/kirkpinar/) · [Çarşı Kaçışı](https://furkiozknn.github.io/carsi-kacisi/)
+
+**Round 6:** [Topkapı Gecesi](https://furkiozknn.github.io/topkapi-gecesi/) · [Hamsi](https://furkiozknn.github.io/hamsi/) · [Pamukkale](https://furkiozknn.github.io/pamukkale/) · [Mimar Sinan](https://furkiozknn.github.io/mimar-sinan/)
 
 ## License
 
