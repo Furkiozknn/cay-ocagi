@@ -3727,6 +3727,12 @@ function gullUpdate(dt) {
 // the click action (pointer hit on the gull, its marker, or the bot): shoo it before the simit is gone
 function clickGull() {
   const g = thief; if (G.paused || G.state !== 'play' || (g.state !== 'perch' && g.state !== 'dive')) return false;
+  try { if (navigator.vibrate) navigator.vibrate(30); } catch (e) {}
+  if (window.Arena && Arena.toast) {
+    // trigger screen flash / shake effect via Arena kit or DOM classes
+    document.body.classList.add('arena-shake');
+    setTimeout(() => document.body.classList.remove('arena-shake'), 300);
+  }
   G.gull.shooed++; burst('feather', g.x, g.y, g.z, 12); sfxSquawk(); toast(t('gullShoo'), 'good'); gullLeave('shooed'); return true;
 }
 const gulls = [{ a: 0, r: 6.5, cx: 1, cz: -13, h: 8.5, sp: .32 }, { a: 2.1, r: 8, cx: -2, cz: -12, h: 10.5, sp: -.27 }, { a: 4.2, r: 5.5, cx: 5, cz: -11, h: 7.5, sp: .4 }, { a: 5.5, r: 9, cx: 0, cz: -14, h: 12, sp: -.22 }];
@@ -4464,10 +4470,18 @@ const ptrs = new Map(); let pinch0 = 0, zoom0 = 1, pinched = false;
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
 function pickAt(cx, cy) {
   ndc.set((cx / VIEW.w) * 2 - 1, -(cy / VIEW.h) * 2 + 1); ray.setFromCamera(ndc, cam);
+  // Double the click/tap radius for gull shooing by temporarily scaling up the gull pick proxy or checking distance in screen space
+  const gullProxy = pickables.find(p => p.kind === 'gull');
+  if (gullProxy && (thief.state === 'perch' || thief.state === 'dive')) {
+    toScreen(thief.x, thief.y + .8, thief.z, _sp);
+    if (Math.hypot(cx - _sp.x, cy - _sp.y) <= 80) { // ~double standard touch target radius
+      return gullProxy;
+    }
+  }
   const hits = ray.intersectObjects(pickables.map(p => p.mesh), false);
   for (const h of hits) {
     const p = pickables.find(q => q.mesh === h.object); if (p.kind === 'table' && !(G.tables[p.id] && G.tables[p.id].unlocked)) continue;
-    if (p.kind === 'gull' && !(thief.state === 'perch' || thief.state === 'dive')) continue; // the proxy only exists while a gull is catchable
+    if (p.kind === 'gull' && !(thief.state === 'perch' || thief.state === 'dive')) continue;
     return p;
   }
   return null;
