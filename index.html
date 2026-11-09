@@ -645,6 +645,54 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   text-align: left;
 }
 .bub.tavla svg { width: 26px; height: 26px; }
+/* named regulars: name tag + hearts over the bubble, panel rows */
+.bub .rtag {
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translate(-50%, -5px);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: #3b2210;
+  color: #fff8eb;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1.3;
+  white-space: nowrap;
+  box-shadow: 0 3px 8px rgba(20, 10, 5, 0.35);
+}
+.bub .rtag em { font-style: normal; color: #f2b632; }
+.hearts { display: inline-flex; gap: 1px; font-size: 12px; line-height: 1; }
+.hearts i { font-style: normal; color: rgba(160, 120, 100, 0.45); }
+.hearts i.f { color: #e0445a; }
+.hearts i.h { color: #e0445a; opacity: 0.5; }
+.bub .rtag .hearts i { color: rgba(255, 248, 235, 0.35); }
+.bub .rtag .hearts i.f, .bub .rtag .hearts i.h { color: #ff6b81; }
+.reglist { display: flex; flex-direction: column; gap: 6px; margin: 8px 0 12px; text-align: left; }
+.regrow { display: flex; align-items: center; gap: 10px; padding: 4px 10px; border-radius: 12px; background: rgba(255, 248, 235, 0.7); border: 1px solid rgba(120, 80, 40, 0.15); }
+.regrow .pt { width: 38px; height: 38px; flex: none; display: grid; place-items: center; border-radius: 50%; background: #efe2cc; font-weight: 900; color: #a08060; }
+.regrow .pt svg { width: 38px; height: 38px; }
+.regrow .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.regrow .tx b { font-size: 14px; }
+.regrow .tx b small { font-weight: 600; color: var(--ink2); }
+.regrow .tx > small { font-size: 12px; color: var(--ink2); }
+.regrow .mi { display: inline-flex; gap: 2px; vertical-align: -3px; }
+.regrow .mi svg { display: inline-block; width: 15px; height: 15px; }
+.regrow .hearts { font-size: 15px; }
+.regrow .rv { font-size: 11px; color: var(--ink2); white-space: nowrap; }
+.regrow .rd { font-weight: 900; min-width: 30px; text-align: right; }
+.regrow .rd.up { color: #2e7d4e; }
+.regrow .rd.down { color: #c0392b; }
+.regrow.unk { opacity: 0.6; }
+.reglist.sm .regrow { padding: 4px 8px; }
+.reglist.sm .regrow .tx > small { display: none; }
+.reglist.sm .regrow .pt, .reglist.sm .regrow .pt svg { width: 30px; height: 30px; }
+.fl.love .hrt { color: #e0445a; }
+@media (max-width: 520px) { .regrow .rv { display: none; } .regrow .hearts { font-size: 13px; } }
 .sbadge {
   position: absolute;
   left: 0; top: 0;
@@ -1549,7 +1597,11 @@ const TXT = {
     refillSay: 'bir çay daha', refillMiss: 'Müdavim çayı beklemedi', refillDone: 'Bir çay daha!', combo: 'seri',
     gullLand: 'Martı! Simidi kapmadan kov', gullShoo: 'Martı kovalandı', gullSteal: 'Martı simidi kaptı! -{0}',
     didYouKnow: 'Biliyor muydun?', rankT: 'Rütbe', rankLine: '{0} · toplam {1} altın', rankNext: '{0} için {1} altın daha', rankTop: 'En üst rütbe', rankUp: 'Yeni rütbe: {0}!',
-    rank0: 'Çırak', rank1: 'Kalfa', rank2: 'Usta', kitten: 'Uyuyan Van kedisi yavrusu'
+    rank0: 'Çırak', rank1: 'Kalfa', rank2: 'Usta', kitten: 'Uyuyan Van kedisi yavrusu',
+    regulars: 'Müdavimler', regArrive: '{0} geldi · her zamanki: {1}', regSurprise: '{0} geldi · bugün sürpriz sipariş!',
+    regUsual: 'Her zamanki', regSurpriseTag: 'Sürpriz!', regUnknown: 'Henüz tanışmadınız', regToday: 'Bugünün müdavimleri',
+    regSub: 'Her zamankini hızlı getir: kalpler dolar, bahşiş büyür, sürpriz siparişler gelir.', regVisits: '{0} ziyaret',
+    regIntro: 'Müdavimler gelmeye başlıyor: her zamankini hızlı getir.', regHearts: '{0}/5 kalp'
   },
   en: {
     tagline: 'A tiny tea house by the Bosphorus. Brew, serve, collect tips.',
@@ -1599,7 +1651,11 @@ const TXT = {
     refillSay: 'one more tea', refillMiss: 'The regular gave up waiting', refillDone: 'One more tea!', combo: 'streak',
     gullLand: 'Gull! Shoo it before it grabs the simit', gullShoo: 'Gull shooed away', gullSteal: 'A gull stole a simit! -{0}',
     didYouKnow: 'Did you know?', rankT: 'Rank', rankLine: '{0} · {1} coins lifetime', rankNext: '{1} more coins to {0}', rankTop: 'Top rank', rankUp: 'New rank: {0}!',
-    rank0: 'Apprentice (Çırak)', rank1: 'Journeyman (Kalfa)', rank2: 'Master (Usta)', kitten: 'A sleeping Turkish Van kitten'
+    rank0: 'Apprentice (Çırak)', rank1: 'Journeyman (Kalfa)', rank2: 'Master (Usta)', kitten: 'A sleeping Turkish Van kitten',
+    regulars: 'Regulars', regArrive: '{0} is here · the usual: {1}', regSurprise: '{0} is here · a surprise order today!',
+    regUsual: 'The usual', regSurpriseTag: 'Surprise!', regUnknown: 'Not met yet', regToday: "Today's regulars",
+    regSub: 'Bring the usual quickly: hearts fill up, tips grow, surprise orders appear.', regVisits: 'visits: {0}',
+    regIntro: 'Regulars start dropping by: bring the usual quickly.', regHearts: '{0}/5 hearts'
   }
 };
 
@@ -1618,6 +1674,7 @@ const G = window.cay = {
   // v2: ferry rushes (all days so far), regulars' refills and the gull thief, counted per day
   rushes: [], rushQ: [], rushSoon: false, rushDay: 0, refill: { asked: 0, done: 0, missed: 0 }, combo: 0, perfects: 0,
   gull: { landed: 0, shooed: 0, stolen: 0 }, gullEvents: [], life: 0, rank: 0,
+  regDay: { seen: [], log: [] }, // named regulars today: ids that came, and { id, d (affection change), s (surprise) } per visit
   flags: FLAG, version: 1
 };
 function t(k, ...a) {
@@ -1648,7 +1705,31 @@ const PERFECT = { win: 1.0, tip: 2 }; // coffee grabbed in the first 1 s of its 
 const RUSH = { fromDay: 3, hornX: -14, warn: 8, window: 10, first: 22, parties: [2, 3], endCut: 32 }; // ferry rush: warn 8 s ahead, 2-3 parties in 10 s, none after endCut s before closing
 const TAVLA = { stay: [40, 48], gap: [14, 18], wait: 28, tip: 2, combo: 4 }; // regulars: ~2.5x a normal table stay, a tea refill every 14-18 s
 const GULL = { fromDay: 3, quiet: 20, first: [4, 20], gap: [30, 55], perch: [2.6, 4.2], dive: 1.5, wait: 6, flee: 2.2 }; // gull thief timings (s)
-const RANKS = [{ id: 0, from: 0 }, { id: 1, from: 600 }, { id: 2, from: 2500 }]; // cosmetic rank from lifetime coins (arena.cay.best.life)
+/* Müdavimler (named regulars): a fixed cast that comes back day after day (from day 2) with the same usual order.
+   A visit takes the place of an ordinary arrival (same table, same patience), so the day's crowd does not grow.
+   Serving the usual quickly (>= REG.quick of the patience left) raises affection (0..REG.max, two points a heart);
+   letting them leave angry lowers it. Affection adds REG.tipPerHeart of tip per heart, and from REG.surpriseAt a
+   visit may bring a surprise order (always with a coffee) that pays REG.surpriseTip extra. Saved in cayocagi.regulars. */
+const REG = { fromDay: 2, chance: 0.22, max: 10, quick: 0.5, gain: 1, surpriseGain: 2, loss: 2, tipPerHeart: 0.08, surpriseAt: 6, surpriseChance: 0.4, surpriseTip: 8, key: 'cayocagi.regulars' };
+// usual / surprise: item lists; a regular only comes on a day whose menu has every item of the usual order
+const REGULARS = [
+  { id: 'hasan', name: { tr: 'Hasan Amca', en: 'Uncle Hasan' }, role: { tr: 'emekli balıkçı', en: 'retired fisherman' }, usual: ['tea', 'tea'], surprise: ['coffee', 'simit'],
+    note: { tr: 'iki açık çay, ikişer şeker', en: 'two light teas, two sugars each' }, body: 0x2f4a6a, skin: 0xd9a07a, hair: 0xe8e8e8, cap: 0x3a4a6a, big: 1.1 },
+  { id: 'ayse', name: { tr: 'Ayşe Teyze', en: 'Auntie Ayşe' }, role: { tr: 'komşu', en: 'neighbour' }, usual: ['tea', 'simit'], surprise: ['coffee', 'tea', 'simit'],
+    note: { tr: 'tavşan kanı çay, susamlı simit', en: 'deep red tea and a sesame simit' }, body: 0xb85a6a, skin: 0xf0c6a0, hair: 0x9a9a9a, cap: 0xd9a43c, big: 1.02 },
+  { id: 'kemal', name: { tr: 'Kemal Usta', en: 'Master Kemal' }, role: { tr: 'simitçi', en: 'simit baker' }, usual: ['tea', 'tea', 'simit'], surprise: ['coffee', 'tea', 'tea'],
+    note: { tr: 'iki demli çay, bir simit', en: 'two strong teas and a simit' }, body: 0xf4efe6, skin: 0xb9794f, hair: 0x1c1c1c, cap: 0xfaf7f0, big: 1.14 },
+  { id: 'selin', name: { tr: 'Selin', en: 'Selin' }, role: { tr: 'mimar', en: 'architect' }, usual: ['coffee'], surprise: ['coffee', 'coffee', 'ayran'],
+    note: { tr: 'sade Türk kahvesi', en: 'plain Turkish coffee' }, body: 0x35465a, skin: 0xe8b88e, hair: 0x6b4426, big: 0.96 },
+  { id: 'zeynep', name: { tr: 'Zeynep Hoca', en: 'Ms Zeynep' }, role: { tr: 'emekli öğretmen', en: 'retired teacher' }, usual: ['tea', 'coffee'], surprise: ['coffee', 'ayran', 'simit'],
+    note: { tr: 'ince belli çay, orta şekerli kahve', en: 'tulip-glass tea, medium-sweet coffee' }, body: 0x8a6bb0, skin: 0xf0c6a0, hair: 0xb0b0b0, big: 1 },
+  { id: 'mert', name: { tr: 'Mert', en: 'Mert' }, role: { tr: 'öğrenci', en: 'student' }, usual: ['ayran', 'simit'], surprise: ['coffee', 'ayran', 'simit'],
+    note: { tr: 'bol köpüklü ayran, bir simit', en: 'frothy ayran and a simit' }, body: 0x7a9a4a, skin: 0xd9a07a, hair: 0x2a1a10, big: 0.95 },
+  { id: 'dursun', name: { tr: 'Dursun Kaptan', en: 'Captain Dursun' }, role: { tr: 'vapur kaptanı', en: 'ferry captain' }, usual: ['tea', 'ayran'], surprise: ['coffee', 'coffee'],
+    note: { tr: 'demli çay, yanında ayran', en: 'strong tea with an ayran' }, body: 0x1f2f4a, skin: 0x8d5a3a, hair: 0x4a4a4a, cap: 0xf4f4f4, big: 1.16 }
+];
+const regById = id => REGULARS.find(r => r.id === id);
+const RANKS = [{ id: 0, from: 0 },{ id: 1, from: 600 }, { id: 2, from: 2500 }]; // cosmetic rank from lifetime coins (arena.cay.best.life)
 /* In-game facts. Source URL per entry in the comment above it; TR and EN text as given in the research pool. */
 const FACTS = [
   // https://ich.unesco.org/en/RL/01685
@@ -1813,12 +1894,13 @@ function resetWorldForDay() {
   G.clock = 0; G.dayCoins = 0; G.dayTips = 0; G.happy = 0; G.angry = 0; G.served = 0; G.missed = 0;
   G.spawnT = 2.2; G.spawnCount = 0; G.walkby = 0; G.lastCall = false;
   G.rushQ = []; G.rushSoon = false; G.rushDay = 0; G.refill = { asked: 0, done: 0, missed: 0 }; G.combo = 0; G.perfects = 0; G.gull = { landed: 0, shooed: 0, stolen: 0 };
+  G.regDay = { seen: [], log: [] };
   thief.state = 'none'; thief.tb = -1; thief.next = 1e9;
 }
 let _snap = null;
 function beginDay(direct) {
   const cfg = dayCfg(G.day);
-  _snap = { coins: G.coins, up: { ...G.up }, total: G.totalEarned };
+  _snap = { coins: G.coins, up: { ...G.up }, total: G.totalEarned, regs: JSON.parse(JSON.stringify(REGS)) };
   G.target = cfg.target;
   resetWorldForDay();
   // every day starts the ferry at the same spot, so its horn (the rush warning) always comes RUSH.first seconds in
@@ -1842,7 +1924,7 @@ function endDay() {
   for (const p of G.parties) if (p.state === 'eat') payParty(p);
   const stars = ratingStars(); G.stars = stars;
   const rec = { day: G.day, coins: G.dayCoins, target: G.target, tips: G.dayTips, happy: G.happy, angry: G.angry, stars, passed: stars > 0, served: G.served, spawned: G.spawnCount, blocked: G.walkby | 0,
-    rushes: G.rushDay, refills: { ...G.refill }, gulls: { ...G.gull }, perfects: G.perfects };
+    rushes: G.rushDay, refills: { ...G.refill }, gulls: { ...G.gull }, perfects: G.perfects, regulars: G.regDay.log.map(e => ({ ...e })) };
   G.log.push(rec);
   G.lastResult = rec;
   for (const p of G.parties) for (const pe of p.persons) freePerson(pe);
@@ -1897,7 +1979,7 @@ const A = G.act = {
   next() { if (G.retrying) G.retrying = false; else G.day++; A.intro(); },
   retryShop() { G.retrying = true; A.shop(); },
   // pause menu: the day starts over with the coins and upgrades it began with
-  restart() { if (_snap) { G.coins = _snap.coins; G.up = { ..._snap.up }; G.totalEarned = _snap.total; } beginDay(false); },
+  restart() { if (_snap) { G.coins = _snap.coins; G.up = { ..._snap.up }; G.totalEarned = _snap.total; setRegs(_snap.regs); } beginDay(false); },
   endlessMode() { G.endless = true; A.shop(); },
   menu() { G.state = 'title'; G.paused = false; G.panel = null; resetWorldForDay(); uiScreen(); audApply(); }
 };
@@ -1921,6 +2003,38 @@ const HAIR = [0x2a1a10, 0x4a2c18, 0x1c1c1c, 0x6b4426, 0x8a5a2a];
 const SHIRT = [0x4c8a8e, 0xc2602a, 0x7a9a4a, 0x8a6bb0, 0xd9a43c, 0xb85a6a, 0x5a7fb0];
 const pick = a => a[(rnd() * a.length) | 0];
 
+/* ---------------- named regulars (müdavimler) ---------------- */
+// affection per regular, kept across days and games; test runs (?auto, ?nosave ...) start empty and never write it
+const REGS = G.regs = (() => {
+  const s = FLAG.nosave ? null : store.get(REG.key, null), out = {};
+  for (const c of REGULARS) {
+    const o = (s && s.v === 1 && s.r && s.r[c.id]) || {};
+    out[c.id] = { aff: clamp(o.aff | 0, 0, REG.max), visits: o.visits | 0, served: o.served | 0, surprises: o.surprises | 0 };
+  }
+  return out;
+})();
+function saveRegs() { if (!FLAG.nosave) store.set(REG.key, { v: 1, r: REGS }); }
+function setRegs(src) { for (const id in REGS) Object.assign(REGS[id], src[id]); saveRegs(); }
+const regFits = (list, menu) => list.every(i => menu.includes(i));
+// one visit per regular per day, only once their usual order is on the menu; day 1 never rolls (it plays as before)
+function pickRegular(cfg) {
+  if (G.day < REG.fromDay) return null;
+  const pool = REGULARS.filter(c => !G.regDay.seen.includes(c.id) && regFits(c.usual, cfg.menu));
+  if (!pool.length || rnd() >= REG.chance) return null;
+  return pool[(rnd() * pool.length) | 0];
+}
+function regServed(p) {
+  const r = REGS[p.reg], tb = G.tables[p.tb];
+  const d = p.finalFrac >= REG.quick ? (p.surprise ? REG.surpriseGain : REG.gain) : 0;
+  const before = r.aff; r.aff = clamp(r.aff + d, 0, REG.max); r.served++; if (p.surprise) r.surprises++;
+  G.regDay.log.push({ id: p.reg, d: r.aff - before, s: !!p.surprise }); saveRegs();
+  if (r.aff > before) { floatText(tb.x, 3.4, tb.z, `<span class="hrt">♥</span> ${regById(p.reg).name[G.lang] || regById(p.reg).name.tr}`, 'love'); sfxPerfect(); }
+}
+function regMissed(p) {
+  const r = REGS[p.reg], before = r.aff; r.aff = clamp(r.aff - REG.loss, 0, REG.max);
+  G.regDay.log.push({ id: p.reg, d: r.aff - before, s: !!p.surprise }); saveRegs();
+}
+
 /* ---------------- customers ---------------- */
 function pickType(cfg) {
   const e = Object.entries(cfg.types); let sum = 0; e.forEach(x => sum += x[1]);
@@ -1932,18 +2046,35 @@ function pickItem(menu) {
   for (const i of menu) { r -= ITEM_W[i]; if (r <= 0) return i; }
   return menu[0];
 }
-function spawnParty(forceType) {
+// forceReg (test hook): { id, surprise } seats that named regular; surprise true/false forces the order kind
+function spawnParty(forceType, forceReg) {
   const cfg = dayCfg(G.day);
   const free = G.tables.filter(tb => tb.unlocked && !tb.party && !tb.dirty && !tb.claimed);
   if (!free.length) return false;
   const type = forceType || pickType(cfg), cc = CUST[type];
   if (personFree.length < cc.size) return false;
   const tb = free[(rnd() * free.length) | 0];
-  const n = cc.items[0] + ((rnd() * (cc.items[1] - cc.items[0] + 1)) | 0);
-  const order = []; for (let i = 0; i < n; i++) order.push({ item: pickItem(cfg.menu), done: false });
+  // a named regular takes the place of a one-person arrival (normal, or a tavla regular from day 7)
+  const reg = forceReg ? regById(forceReg.id) : (!forceType && cc.size === 1 && (type === 'normal' || type === 'regular') ? pickRegular(cfg) : null);
+  let order = [], surprise = false;
+  if (reg) {
+    const rs = REGS[reg.id], canS = regFits(reg.surprise, cfg.menu);
+    surprise = forceReg && forceReg.surprise != null ? !!forceReg.surprise && canS : canS && rs.aff >= REG.surpriseAt && rnd() < REG.surpriseChance;
+    order = (surprise ? reg.surprise : reg.usual).map(item => ({ item, done: false }));
+  } else {
+    const n = cc.items[0] + ((rnd() * (cc.items[1] - cc.items[0] + 1)) | 0);
+    for (let i = 0; i < n; i++) order.push({ item: pickItem(cfg.menu), done: false });
+  }
   const dm = Math.max(0.78, 1 - 0.03 * (G.day - 1));
   const maxP = cc.patience * stoolMul() * dm;
   const party = { id: ++G.spawnCount, type, tb: tb.i, persons: [], order, state: 'enter', timer: 0, patience: maxP, maxP, finalFrac: 1, cc, sig: '' };
+  if (reg) {
+    const rs = REGS[reg.id];
+    Object.assign(party, { reg: reg.id, regAff: rs.aff, surprise });
+    G.regDay.seen.push(reg.id); rs.visits++; saveRegs();
+    const nm = reg.name[G.lang] || reg.name.tr;
+    toast(surprise ? t('regSurprise', nm) : t('regArrive', nm, reg.note[G.lang] || reg.note.tr), 'good');
+  }
   const ap = tableApproach(tb.i);
   const base = findPath(SPAWN.x, SPAWN.z, ap.x, ap.z);
   for (let k = 0; k < cc.size; k++) {
@@ -1954,6 +2085,8 @@ function spawnParty(forceType) {
       delay: k * 0.85, seat, sitting: false, arrived: false, moving: false, body, skin: pick(SKIN),
       hair: type === 'regular' ? 0xe8e8e8 : pick(HAIR), cap: type === 'regular', big: type === 'regular' ? 1.12 : 1, type, mood: 0, speed: type === 'office' ? 3.2 : 2.6, flash: 0, leaving: false, done: false
     };
+    // a named regular always looks the same (the colours above are still drawn, so the sim's random stream does not shift)
+    if (reg) Object.assign(pe, { body: reg.body, skin: reg.skin, hair: reg.hair, cap: reg.cap != null, capC: reg.cap, big: reg.big, speed: 2.4 });
     persons[pe.idx] = pe; party.persons.push(pe);
   }
   tb.party = party; tb.slots = [];
@@ -1988,7 +2121,9 @@ function payParty(p) {
   // a simit a gull stole pays nothing; stale tea pays STALE_TIP of its tip share; a perfect coffee adds PERFECT.tip
   let base = 0, tipBase = 0, bonus = 0;
   p.order.forEach(o => { if (o.stolen) return; base += PRICE[o.item]; tipBase += PRICE[o.item] * (o.stale ? STALE_TIP : 1); if (o.perfect) bonus += PERFECT.tip; });
-  const tip = Math.round(tipBase * 0.4 * p.finalFrac * p.cc.tip) + bonus;
+  // a named regular tips REG.tipPerHeart more per heart they had on arrival; a served surprise order adds REG.surpriseTip
+  const love = p.reg ? 1 + REG.tipPerHeart * p.regAff / 2 : 1;
+  const tip = Math.round(tipBase * 0.4 * p.finalFrac * p.cc.tip * love) + bonus + (p.surprise ? REG.surpriseTip : 0);
   const tb = G.tables[p.tb];
   addCoins(base + tip, tb.x, tb.z, tip);
   G.happy++; G.served += p.persons.length;
@@ -2018,6 +2153,7 @@ function partiesUpdate(dt) {
       if (p.patience <= 0) {
         G.angry += 1; G.missed += p.persons.length; toast(t('toastAngry'), 'bad'); sfxGrumble();
         const tb = G.tables[p.tb]; burst('anger', tb.x, 1.6, tb.z, 10);
+        if (p.reg) regMissed(p);
         finishLeave(p, true);
       }
     } else if (p.state === 'eat') {
@@ -2141,6 +2277,7 @@ function doTable(i) {
     if (refill) { if (did) refillDone(p, stale); }
     else if (did && p.order.every(o => o.done)) {
       p.finalFrac = clamp(p.patience / p.maxP, 0, 1);
+      if (p.reg) regServed(p);
       if (p.cc.tavla) startTavla(p); else { p.state = 'eat'; p.timer = p.cc.eat * rr(0.8, 1.2); }
     }
     if (!did) return toast(t('toastWrong'), 'bad');
@@ -2247,6 +2384,11 @@ function spawnUpdate(dt) {
 
 // test hook: seat a regular at a free table right now (any day), to look at the tavla refills
 window.cay.spawnRegular = function () { return G.state === 'play' && spawnParty('regular'); };
+// test hook: seat a named regular (cay.spawnNamed('hasan'), or with surprise true/false to force the order kind)
+window.cay.spawnNamed = function (id, surprise) {
+  const c = regById(id); if (G.state !== 'play' || !c || !regFits(c.usual, dayCfg(G.day).menu)) return false;
+  return spawnParty('normal', { id, surprise });
+};
 
 /* ---------------- main sim step ---------------- */
 function simStep(dt) {
@@ -3329,7 +3471,7 @@ function syncVisuals(dt) {
     PPL.cap.setMatrixAt(i, hasCap ? mat(pe.x + sh, by + 1.2 * sy, pe.z, sc, sc, sc, pe.face, 0, lean * .5) : mat(0, -50, 0, 0, 0, 0));
     _c.setHex(pe.body); if (pe.flash > 0) _c.lerp(FLASH_C, Math.min(1, pe.flash * 1.5)); PPL.body.setColorAt(i, _c);
     _c.setHex(pe.skin); PPL.head.setColorAt(i, _c);
-    _c.setHex(pe.hair); PPL.hair.setColorAt(i, _c); _c.setHex(pe.type === 'regular' ? 0x3a4a6a : 0x2a1a10); PPL.cap.setColorAt(i, _c);
+    _c.setHex(pe.hair); PPL.hair.setColorAt(i, _c); _c.setHex(pe.capC != null ? pe.capC : pe.type === 'regular' ? 0x3a4a6a : 0x2a1a10); PPL.cap.setColorAt(i, _c);
   }
   // ambient passers-by on the far street
   ambientPeople(dt);
@@ -3398,6 +3540,42 @@ const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
 function langSet(l) { G.lang = l; SET.lang = l; saveSettings(); document.documentElement.lang = l; uiStatic(); uiScreen(true); }
 function fmtTime(s) { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
 function starsHTML(n, anim) { let h = ''; for (let i = 0; i < 3; i++) h += `<span style="display:inline-block">${(i < n ? ICON.star : ICON.starOff).replace('<svg', `<svg class="${anim && i < n ? 'pop' : ''}" style="animation-delay:${.25 + i * .28}s"`)}</span>`; return `<div class="stars">${h}</div>`; }
+
+/* named regulars: a small drawn portrait (their own colours), 5 hearts (2 affection points each), the tag over their bubble */
+const hex6 = n => '#' + n.toString(16).padStart(6, '0');
+function portraitSVG(c) {
+  const top = c.cap != null
+    ? `<path d="M7.3 8.4q4.7-5.8 9.4 0z" fill="${hex6(c.cap)}"/><rect x="6.6" y="7.7" width="10.8" height="1.5" rx=".75" fill="${hex6(c.cap)}"/>`
+    : `<path d="M7.5 9q4.5-6.4 9 0q-1.8-1.9-4.5-1.9T7.5 9z" fill="${hex6(c.hair)}"/>`;
+  return `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11.4" fill="#f6ead6" stroke="#c9b18c" stroke-width="1"/><path d="M4.6 21.6c0-5 3-7.4 7.4-7.4s7.4 2.4 7.4 7.4z" fill="${hex6(c.body)}"/><circle cx="12" cy="9.6" r="4.3" fill="${hex6(c.skin)}"/>${top}</svg>`;
+}
+function heartsHTML(aff) {
+  let h = ''; for (let i = 0; i < 5; i++) h += `<i class="${aff >= 2 * i + 2 ? 'f' : aff === 2 * i + 1 ? 'h' : ''}">♥</i>`;
+  return `<span class="hearts" role="img" aria-label="${t('regHearts', aff / 2)}">${h}</span>`;
+}
+const regName = c => c.name[G.lang] || c.name.tr;
+function regTag(p) {
+  if (!p || !p.reg) return '';
+  const c = regById(p.reg);
+  return `<div class="rtag">${p.surprise ? `<em>${t('regSurpriseTag')}</em>` : ''}<b>${regName(c)}</b>${heartsHTML(REGS[p.reg].aff)}</div>`;
+}
+// the regulars panel (title / pause menu) and the day summary's list of today's visits
+function regRow(c, extra) {
+  const r = REGS[c.id], met = r.visits > 0;
+  if (!met) return `<div class="regrow unk"><span class="pt">?</span><div class="tx"><b>?</b><small>${t('regUnknown')}</small></div></div>`;
+  return `<div class="regrow"><span class="pt">${portraitSVG(c)}</span><div class="tx"><b>${regName(c)} <small>· ${c.role[G.lang] || c.role.tr}</small></b>
+    <small>${t('regUsual')}: ${c.note[G.lang] || c.note.tr} <span class="mi">${c.usual.map(i => ICON[i]).join('')}</span></small></div>${heartsHTML(r.aff)}${extra || ''}</div>`;
+}
+function regularsHTML() {
+  return `<div class="card glass" style="width:min(520px,100%)"><h2>${t('regulars')}</h2><p style="font-size:13px">${t('regSub')}</p>
+    <div class="reglist">${REGULARS.map(c => regRow(c, REGS[c.id].visits ? `<small class="rv">${t('regVisits', REGS[c.id].visits)}</small>` : '')).join('')}</div>
+    <button class="btn" data-a="back">${t('back')}</button></div>`;
+}
+function regTodayHTML(log) {
+  if (!log || !log.length) return '';
+  return `<p style="margin:6px 0 2px;font-size:13px;font-weight:800">${t('regToday')}</p><div class="reglist sm">${log.map(e => regRow(regById(e.id),
+    `<small class="rd ${e.d > 0 ? 'up' : e.d < 0 ? 'down' : ''}">${e.s ? '★ ' : ''}${e.d > 0 ? '+' : ''}${e.d}</small>`)).join('')}</div>`;
+}
 
 // elements updated every frame, looked up once per uiStatic()
 const UI = { sts: [] };
@@ -3546,24 +3724,24 @@ function uiFrame(dt, force) {
       const tb = G.tables[i]; let mode = 'none', sig = '';
       if (tb && tb.unlocked && play) {
         const p = tb.party;
-        if (p && p.state === 'think') { mode = 'think'; sig = 'think'; }
-        else if (p && p.state === 'wait') { mode = 'wait'; sig = 'wait' + p.type + deliverMask(p) + p.order.map(o => o.item[0]).join(''); }
+        if (p && p.state === 'think') { mode = 'think'; sig = 'think' + (p.reg || ''); }
+        else if (p && p.state === 'wait') { mode = 'wait'; sig = 'wait' + p.type + (p.reg || '') + deliverMask(p) + p.order.map(o => o.item[0]).join(''); }
         else if (p && p.state === 'eat') { mode = 'eat'; sig = 'eat'; }
-        else if (p && p.state === 'tavla') { if (p.refill) { mode = 'refill'; sig = 'refill'; } else { mode = 'tavla'; sig = 'tavla'; } }
+        else if (p && p.state === 'tavla') { if (p.refill) { mode = 'refill'; sig = 'refill' + (p.reg || ''); } else { mode = 'tavla'; sig = 'tavla'; } }
         else if (!p && tb.dirty) { mode = 'dirty'; sig = 'dirty'; }
       }
       if (mode === 'none') { if (el.style.display !== 'none') el.style.display = 'none'; continue; }
       if (el._sig !== sig) {
         el._sig = sig; el.className = 'bub' + (mode === 'think' ? ' think' : mode === 'dirty' || mode === 'eat' || mode === 'tavla' ? ' mini' : '') + (mode === 'dirty' ? ' dirty' : '') + (mode === 'tavla' ? ' tavla' : '');
-        if (mode === 'think') el.textContent = '…';
+        if (mode === 'think') el.innerHTML = '…' + regTag(tb.party);
         else if (mode === 'dirty') el.innerHTML = ICON.dirty;
         else if (mode === 'eat') el.innerHTML = ICON.happy;
         else if (mode === 'tavla') el.innerHTML = ICON.dice;
         else if (mode === 'refill') {
-          el.innerHTML = `<div class="ring"><svg class="r" viewBox="0 0 38 38"><circle cx="19" cy="19" r="16" fill="none" stroke="rgba(80,40,10,.18)" stroke-width="4"/><circle class="pr" cx="19" cy="19" r="16" fill="none" stroke="#4fa65a" stroke-width="4" stroke-linecap="round" stroke-dasharray="100.5" stroke-dashoffset="0"/></svg><div class="av">${ICON.regular}</div></div><div class="it"><span>${ICON.tea}</span></div><div class="say">${t('refillSay')}</div>`;
+          el.innerHTML = `<div class="ring"><svg class="r" viewBox="0 0 38 38"><circle cx="19" cy="19" r="16" fill="none" stroke="rgba(80,40,10,.18)" stroke-width="4"/><circle class="pr" cx="19" cy="19" r="16" fill="none" stroke="#4fa65a" stroke-width="4" stroke-linecap="round" stroke-dasharray="100.5" stroke-dashoffset="0"/></svg><div class="av">${tb.party.reg ? portraitSVG(regById(tb.party.reg)) : ICON.regular}</div></div><div class="it"><span>${ICON.tea}</span></div><div class="say">${t('refillSay')}</div>${regTag(tb.party)}`;
         } else {
           const p = tb.party;
-          el.innerHTML = `<div class="ring"><svg class="r" viewBox="0 0 38 38"><circle cx="19" cy="19" r="16" fill="none" stroke="rgba(80,40,10,.18)" stroke-width="4"/><circle class="pr" cx="19" cy="19" r="16" fill="none" stroke="#4fa65a" stroke-width="4" stroke-linecap="round" stroke-dasharray="100.5" stroke-dashoffset="0"/></svg><div class="av">${ICON[p.type === 'normal' ? 'person' : p.type]}</div></div><div class="it">${p.order.map(o => `<span class="${o.done ? 'done' : ''}">${ICON[o.item]}</span>`).join('')}</div>`;
+          el.innerHTML = `<div class="ring"><svg class="r" viewBox="0 0 38 38"><circle cx="19" cy="19" r="16" fill="none" stroke="rgba(80,40,10,.18)" stroke-width="4"/><circle class="pr" cx="19" cy="19" r="16" fill="none" stroke="#4fa65a" stroke-width="4" stroke-linecap="round" stroke-dasharray="100.5" stroke-dashoffset="0"/></svg><div class="av">${p.reg ? portraitSVG(regById(p.reg)) : ICON[p.type === 'normal' ? 'person' : p.type]}</div></div><div class="it">${p.order.map(o => `<span class="${o.done ? 'done' : ''}">${ICON[o.item]}</span>`).join('')}</div>${regTag(p)}`;
         }
       }
       if (mode === 'wait' || mode === 'refill') {
@@ -3706,13 +3884,14 @@ function uiScreen(force) {
   const gearBtn = `<button class="ibtn gear" data-a="settings" title="${t('settings')}" aria-label="${t('settings')}">${ICON.gear}</button>`;
   const menuBtn = `<button class="btn alt sm" data-a="menu">${t('menu')}</button>`;
   if (G.panel === 'settings') h = settingsHTML();
+  else if (G.panel === 'regulars') h = regularsHTML();
   else if (G.panel === 'confirm') {
     h = `<div class="card glass" style="width:min(440px,100%)"><h2>${t('newGame')}</h2><p>${t('newGameWarn')}</p>
       <div class="col"><button class="btn" data-a="start">${t('yes')}</button><button class="btn alt" data-a="back">${t('back')}</button></div></div>`;
   } else if (pause) {
     h = `<div class="card glass" style="width:min(400px,100%)"><h2>${t('paused')}</h2><p style="font-size:13px">${t('pausedSub')}</p>
       <div class="col"><button class="btn" data-a="pause">${t('resume')}</button><button class="btn alt" data-a="restart">${t('restart')}</button>
-      <button class="btn alt" data-a="settings">${t('settings')}</button><button class="btn alt" data-a="menu">${t('menu')}</button></div></div>`;
+      <button class="btn alt" data-a="settings">${t('settings')}</button><button class="btn alt" data-a="regs">${t('regulars')}</button><button class="btn alt" data-a="menu">${t('menu')}</button></div></div>`;
   } else if (st === 'title') {
     const sv = loadSave(), dis = assetState.done ? '' : 'disabled';
     const label = k => assetState.done ? t(k) : t('loading', assetState.loaded, assetState.total);
@@ -3721,20 +3900,21 @@ function uiScreen(force) {
       : `<button class="btn" data-a="start" ${dis}>${label('play')}</button>`;
     h = `<div class="card glass">${gearBtn}${langBtn}${LOGO_BIG}<h1>Çay Ocağı</h1><p>${t('tagline')}</p>
       <ul class="how"><li><b>1</b><span>${t('how1')}</span></li><li><b>2</b><span>${t('how2')}</span></li><li><b>3</b><span>${t('how3')}</span></li><li><b>4</b><span>${t('how4')}</span></li></ul>
-      <p style="font-size:13px;color:#7a5a44">${bestLine()}</p><div class="col">${main}<button class="btn alt sm" data-a="settings">${t('settings')}</button></div>
+      <p style="font-size:13px;color:#7a5a44">${bestLine()}</p><div class="col">${main}<button class="btn alt sm" data-a="regs">${t('regulars')}</button><button class="btn alt sm" data-a="settings">${t('settings')}</button></div>
       <p class="foot"><a href="https://github.com/Furkiozknn" target="_blank" rel="noopener">${t('footer', 'Claude Sonnet 5.5')}</a></p></div>`;
   } else if (st === 'intro') {
     const tip = t('tip' + (1 + ((G.day - 1) % 5)));
     h = `<div class="card glass">${gearBtn}${langBtn}<h2>${G.endless ? t('dayEndless', G.day) : t('dayOf', G.day)}</h2>
       ${rowk(t('target'), coinHTML(cfg.target))}
       <div class="chipnew">${ICON[cfg.ni] || ICON.star}<span>${t('newThing')}: ${t(cfg.nk)}</span></div>
+      ${G.day === REG.fromDay ? `<div class="chipnew">${portraitSVG(REGULARS[0])}<span>${t('regIntro')}</span></div>` : ''}
       <p style="margin:2px 0;font-size:13px">${t('menuToday')}</p><div class="menurow">${cfg.menu.map(i => `<span>${ICON[i]}</span>`).join('')}</div>
       <p style="font-size:13px"><b>${t('hint')}:</b> ${tip}</p>${factHTML(G.day - 1)}<button class="btn" data-a="begin">${t('startDay')}</button><br>${menuBtn}</div>`;
   } else if (st === 'summary') {
     const r = G.lastResult;
     h = `<div class="card glass"><h2>${t('dayDone')}</h2><div class="sumrow">${kitHTML()}${starsHTML(r.stars, true)}</div><p style="font-weight:900;color:var(--amber)">${[, t('stars1'), t('stars2'), t('stars3')][r.stars]}</p>${recHTML()}
       ${rowk(t('earned'), coinHTML(r.coins) + ' / ' + r.target)}${rowk(t('tips'), coinHTML(r.tips))}${rowk(t('happyC'), r.happy)}${rowk(t('angryC'), r.angry)}
-      ${rankHTML()}${factHTML(G.day + 2)}<button class="btn" data-a="aftersum">${G.day === 7 && !G.won ? t('cont') : t('toShop')}</button>${menuBtn}</div>`;
+      ${regTodayHTML(r.regulars)}${rankHTML()}${factHTML(G.day + 2)}<button class="btn" data-a="aftersum">${G.day === 7 && !G.won ? t('cont') : t('toShop')}</button>${menuBtn}</div>`;
   } else if (st === 'shop') {
     let cards = '';
     UPG.forEach(u => {
@@ -3803,7 +3983,7 @@ const actions = {
   },
   lang() { langSet(G.lang === 'tr' ? 'en' : 'tr'); }, speed() { toggleSpeed(); }, pause() { togglePause(); },
   snd() { sfxInit(); sfxMute(!G.muted); const b = $('#b-snd'); if (b) b.innerHTML = G.muted ? ICON.mute : ICON.snd; },
-  clearq() { clearQueue(); }, gull() { clickGull(); }
+  clearq() { clearQueue(); }, gull() { clickGull(); }, regs() { G.panel = 'regulars'; uiScreen(); }
 };
 document.addEventListener('click', e => {
   sfxInit();
