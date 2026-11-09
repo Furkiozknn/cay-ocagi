@@ -2,6 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
+<meta name="arena-game" content="cay-ocagi">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Çay Ocağı</title>
 <meta name="description" content="A low-poly 3D tea house time-management game. Brew, serve, collect tips.">
@@ -1955,7 +1956,10 @@ const TXT = {
     regulars: 'Müdavimler', regArrive: '{0} geldi · her zamanki: {1}', regSurprise: '{0} geldi · bugün sürpriz sipariş!',
     regUsual: 'Her zamanki', regSurpriseTag: 'Sürpriz!', regUnknown: 'Henüz tanışmadınız', regToday: 'Bugünün müdavimleri',
     regSub: 'Her zamankini hızlı getir: kalpler dolar, bahşiş büyür, sürpriz siparişler gelir.', regVisits: '{0} ziyaret',
-    regIntro: 'Müdavimler gelmeye başlıyor: her zamankini hızlı getir.', regHearts: '{0}/5 kalp'
+    regIntro: 'Müdavimler gelmeye başlıyor: her zamankini hızlı getir.', regHearts: '{0}/5 kalp',
+    daily: 'Günün Meydan Okuması', dailyLine: 'Günlük seri: {0} gün · en iyi: {1}', dailyDone: 'Bugünkü gün tamam', dailyNote: 'Herkes için aynı müşteriler; kayıtlı oyununa dokunmaz.',
+    a11y: 'Erişilebilirlik', a11yOpen: 'Aç', share: 'Paylaş', another: 'Başka oyun', shareDay: 'Gün {0} · {1} yıldız · {2}/{3} altın',
+    awFirst: 'İlk gün tamam', awWeek: 'Yedi günün hepsi', awThree: 'Üç yıldızlı gün'
   },
   en: {
     tagline: 'A tiny tea house by the Bosphorus. Brew, serve, collect tips.',
@@ -2009,7 +2013,10 @@ const TXT = {
     regulars: 'Regulars', regArrive: '{0} is here · the usual: {1}', regSurprise: '{0} is here · a surprise order today!',
     regUsual: 'The usual', regSurpriseTag: 'Surprise!', regUnknown: 'Not met yet', regToday: "Today's regulars",
     regSub: 'Bring the usual quickly: hearts fill up, tips grow, surprise orders appear.', regVisits: 'visits: {0}',
-    regIntro: 'Regulars start dropping by: bring the usual quickly.', regHearts: '{0}/5 hearts'
+    regIntro: 'Regulars start dropping by: bring the usual quickly.', regHearts: '{0}/5 hearts',
+    daily: 'Daily challenge', dailyLine: 'Daily streak: {0} days · best: {1}', dailyDone: "Today's day is done", dailyNote: 'The same customers for everyone; your saved game is not touched.',
+    a11y: 'Accessibility', a11yOpen: 'Open', share: 'Share', another: 'Another game', shareDay: 'Day {0} · {1} stars · {2}/{3} coins',
+    awFirst: 'First day done', awWeek: 'All seven days', awThree: 'A three-star day'
   }
 };
 
@@ -2252,7 +2259,29 @@ function resetWorldForDay() {
   thief.state = 'none'; thief.tb = -1; thief.next = 1e9;
 }
 let _snap = null;
+// Daily challenge (arena-kit): one day from the campaign table (day 2-4, picked by the day seed), started with no
+// upgrades and fresh regulars, its customers drawn from the day seed (?d=YYYYMMDD replays a day). It does not write the
+// campaign save, the best record or the regulars; the player's regulars come back when the daily run is left.
+let DAILY = null;
+function startDaily() {
+  if (!window.Arena) return;
+  leaveDaily();
+  const d = Arena.daily();
+  DAILY = { d, day: 2 + d.seed % 3, rec: null, regsBack: JSON.parse(JSON.stringify(REGS)) };
+  for (const id in REGS) Object.assign(REGS[id], { aff: 0, visits: 0, served: 0, surprises: 0 });
+  sfxInit(); G.panel = null; G.retrying = false; G.coins = 0; G.totalEarned = 0; G.log = []; G.won = false; G.endless = false;
+  G.up = { kettle: 0, tray: 0, oven: 0, apprentice: 0, table: 0, stool: 0 }; G.day = DAILY.day;
+  A.intro();
+}
+function leaveDaily() {
+  if (!DAILY) return;
+  for (const id in REGS) Object.assign(REGS[id], DAILY.regsBack[id]);
+  DAILY = null;
+}
 function beginDay(direct) {
+  // every attempt at today's daily gets the same customers: reseed, and put the cat (it draws from the same stream when
+  // it wakes up) to sleep at home with a fixed timer
+  if (DAILY) { _seed = DAILY.d.seed; Object.assign(cat, { x: CATHOME.x, z: CATHOME.z, y: .3, face: Math.PI / 2, state: 'sleep', t: 20, path: [], moving: false }); }
   const cfg = dayCfg(G.day);
   _snap = { coins: G.coins, up: { ...G.up }, total: G.totalEarned, regs: JSON.parse(JSON.stringify(REGS)) };
   G.target = cfg.target;
@@ -2286,12 +2315,18 @@ function endDay() {
   const best = store.get(KEY.best, { day: 0, total: 0 });
   const reached = rec.passed ? G.day : G.day - 1;
   // no record for a run that earned nothing or started on a later day (?day)
-  G.newRecord = reached > 0 && G.totalEarned > 0 && FLAG.day <= 1 && (reached > best.day || (reached === best.day && G.totalEarned > best.total));
+  G.newRecord = !DAILY && reached > 0 && G.totalEarned > 0 && FLAG.day <= 1 && (reached > best.day || (reached === best.day && G.totalEarned > best.total));
   // lifetime coins for the cosmetic rank live in the same record (field `life`); test runs do not write it
   const lifeBefore = (best.life || 0) + (FLAG.nosave ? G.totalEarned - G.dayCoins : 0);
   G.life = lifeBefore + G.dayCoins; G.rank = rankOf(G.life); G.rankUp = G.rank > rankOf(lifeBefore);
   if (!FLAG.nosave) store.set(KEY.best, Object.assign({}, best, G.newRecord ? { day: reached, total: G.totalEarned } : {}, { life: (best.life || 0) + G.dayCoins }));
   if (rec.passed) { G.state = 'summary'; sfxFanfare(); } else { G.state = 'gameover'; sfxLose(); }
+  if (DAILY && rec.passed) DAILY.rec = DAILY.d.complete(rec.coins);
+  if (window.Arena && rec.passed) {
+    Arena.award('cay-ocagi:first-day', t('awFirst'));
+    if (stars >= 3) Arena.award('cay-ocagi:three-stars', t('awThree'));
+    if (G.day === 7 && !DAILY) Arena.award('cay-ocagi:week', t('awWeek'));
+  }
   // failed-day rule (same in the Godot port): the coins earned on a failed day are kept, and the retry goes through
   // the shop, so the player can buy an upgrade before trying the same day again
   if (rec.passed && G.day === 7 && !G.won) saveGame('shop', { won: true, endless: true });
@@ -2304,16 +2339,17 @@ function endDay() {
 }
 /* saved run (arena.cay.save): written at the start of each day and at each shop visit; Continue resumes there */
 function saveGame(resume, over = {}) {
-  if (FLAG.nosave) return;
+  if (FLAG.nosave || DAILY) return;   // the daily run never overwrites the saved campaign
   store.set(KEY.save, Object.assign({ v: 1, day: G.day, coins: G.coins, up: G.up, totalEarned: G.totalEarned, log: G.log, won: G.won, endless: G.endless, retrying: !!G.retrying, resume }, over));
 }
 function loadSave() { const s = store.get(KEY.save, null); return s && s.v === 1 && s.day >= 1 && s.up ? s : null; }
 const A = G.act = {
-  start() { sfxInit(); G.retrying = false; G.coins = 0; G.totalEarned = 0; G.log = []; G.won = false; G.endless = false; G.up = { kettle: 0, tray: 0, oven: 0, apprentice: 0, table: 0, stool: 0 }; G.day = FLAG.day || 1; if (G.day > 1) { G.coins = 150 * (G.day - 1); G.endless = G.day > 7; G.won = G.day > 7; }
+  start() { leaveDaily(); sfxInit(); G.retrying = false; G.coins = 0; G.totalEarned = 0; G.log = []; G.won = false; G.endless = false; G.up = { kettle: 0, tray: 0, oven: 0, apprentice: 0, table: 0, stool: 0 }; G.day = FLAG.day || 1; if (G.day > 1) { G.coins = 150 * (G.day - 1); G.endless = G.day > 7; G.won = G.day > 7; }
     // a fresh game goes straight into day 1 (one click from the title); later days keep their briefing
     if (G.day === 1) { saveGame('intro'); beginDay(true); } else A.intro();
   },
   cont() {
+    leaveDaily();
     const s = loadSave(); if (!s) return A.start();
     sfxInit();
     Object.assign(G, { day: s.day, coins: s.coins, totalEarned: s.totalEarned || 0, log: s.log || [], won: !!s.won, endless: !!s.endless, retrying: !!s.retrying });
@@ -2322,7 +2358,7 @@ const A = G.act = {
   },
   intro() { G.state = 'intro'; G.panel = null; resetWorldForDay(); G.target = dayCfg(G.day).target; saveGame('intro'); uiScreen(); checkStop(); },
   begin() { beginDay(false); },
-  afterSummary() { if (G.day === 7 && !G.won) { G.won = true; G.endless = true; G.state = 'victory'; uiScreen(); sfxFanfare(); confetti(); checkStop(); } else { A.shop(); } },
+  afterSummary() { if (DAILY) { A.menu(); return; } if (G.day === 7 && !G.won) { G.won = true; G.endless = true; G.state = 'victory'; uiScreen(); sfxFanfare(); confetti(); checkStop(); } else { A.shop(); } },
   shop() { G.state = 'shop'; saveGame('shop'); uiScreen(); checkStop(); },
   buy(id) {
     const u = UPG.find(x => x.id === id); if (!u) return false;
@@ -2335,7 +2371,7 @@ const A = G.act = {
   // pause menu: the day starts over with the coins and upgrades it began with
   restart() { if (_snap) { G.coins = _snap.coins; G.up = { ..._snap.up }; G.totalEarned = _snap.total; setRegs(_snap.regs); } beginDay(false); },
   endlessMode() { G.endless = true; A.shop(); },
-  menu() { G.state = 'title'; G.paused = false; G.panel = null; resetWorldForDay(); uiScreen(); audApply(); }
+  menu() { leaveDaily(); G.state = 'title'; G.paused = false; G.panel = null; resetWorldForDay(); uiScreen(); audApply(); }
 };
 function checkStop() {
   if (FLAG.stop && G.state === FLAG.stop && (!FLAG.stopDay || FLAG.stopDay === G.day)) { G.halt = true; G.botHold = true; }
@@ -2367,7 +2403,7 @@ const REGS = G.regs = (() => {
   }
   return out;
 })();
-function saveRegs() { if (!FLAG.nosave) store.set(REG.key, { v: 1, r: REGS }); }
+function saveRegs() { if (!FLAG.nosave && !DAILY) store.set(REG.key, { v: 1, r: REGS }); }
 function setRegs(src) { for (const id in REGS) Object.assign(REGS[id], src[id]); saveRegs(); }
 const regFits = (list, menu) => list.every(i => menu.includes(i));
 // one visit per regular per day, only once their usual order is on the menu; day 1 never rolls (it plays as before)
@@ -2853,7 +2889,8 @@ function botUpdate(dt) {
     return;
   }
   bot.scr += dt;
-  if (G.state === 'title' && bot.scr > 0.4) { A.start(); bot.scr = 0; }
+  if (G.state === 'title' && bot.scr > 0.4) { if (Q.get('mode') === 'daily' && window.Arena && !G.dailyBotDone) { G.dailyBotDone = true; startDaily(); } else A.start(); bot.scr = 0; }
+  else if (G.state === 'summary' && DAILY) { G.botHold = true; }
   else if (G.state === 'intro' && bot.scr > 0.8) { A.begin(); bot.scr = 0; }
   else if (G.state === 'summary' && bot.scr > 1.2) { A.afterSummary(); bot.scr = 0; }
   else if (G.state === 'shop') {
@@ -3600,6 +3637,9 @@ const ptMat = new THREE.ShaderMaterial({
   fragmentShader: 'precision mediump float; varying vec3 vC; varying float vA; void main(){ float d=length(gl_PointCoord-0.5); float a=smoothstep(.5,.12,d)*vA; if(a<.01) discard; gl_FragColor=vec4(vC,a); }'
 });
 const points = new THREE.Points(ptGeo, ptMat); points.frustumCulled = false; scene.add(points);
+// arena-kit dynamic resolution (Low/High quality reloads the page, so PR is the ceiling for this load); the two point
+// shaders size their sprites by the pixel ratio, so their pr uniform follows it
+if (window.Arena) Arena.perf.attach({ setPixelRatio: r => { renderer.setPixelRatio(r); ptMat.uniforms.pr.value = r; ptMatGlow.uniforms.pr.value = r; } }, { max: PR, start: PR, min: Math.min(0.6, PR) });
 // lamp halos live in the first slots
 [[6.0, 4.15, -8.7], [-3.6, 4.15, -8.7]].forEach((p, i) => { PT.pos.set(p, i * 3); PT.col.set([1, .78, .42], i * 3); PT.ap[i * 2] = .42; PT.ap[i * 2 + 1] = 84; PT.life[i] = 1e9; });
 const PK = {
@@ -3891,7 +3931,7 @@ function toScreen(x, y, z, out) {
    ============================================================ */
 const topEl = $('#top'), dockEl = $('#dock'), wlEl = $('#wl'), scrEl = $('#screen'), toastsEl = $('#toasts'), dbgEl = $('#dbg');
 const $$ = (s, el = document) => Array.from(el.querySelectorAll(s));
-function langSet(l) { G.lang = l; SET.lang = l; saveSettings(); document.documentElement.lang = l; uiStatic(); uiScreen(true); }
+function langSet(l) { G.lang = l; SET.lang = l; saveSettings(); document.documentElement.lang = l; if (window.Arena) Arena.lang(l); uiStatic(); uiScreen(true); }
 function fmtTime(s) { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0'); }
 function starsHTML(n, anim) { let h = ''; for (let i = 0; i < 3; i++) h += `<span style="display:inline-block">${(i < n ? ICON.star : ICON.starOff).replace('<svg', `<svg class="${anim && i < n ? 'pop' : ''}" style="animation-delay:${.25 + i * .28}s"`)}</span>`; return `<div class="stars">${h}</div>`; }
 
@@ -4200,6 +4240,14 @@ function coinFly(wx, wz, n) {
 }
 
 /* ---------- screens ---------- */
+function dailyLine() { if (!window.Arena) return ''; const d = Arena.daily(); return (d.done ? t('dailyDone') + ' · ' : '') + t('dailyLine', d.streak, d.best); }
+function otherGame() { const o = Arena.games.filter(g => g !== Arena.game); return o[(G.day * 7 + (G.lastResult ? G.lastResult.coins : 0)) % o.length]; }
+function shareResult() {
+  const r = G.lastResult; if (!r || !window.Arena) return;
+  const lines = [(DAILY ? t('daily') + ' ' + DAILY.d.day : G.state === 'victory' ? t('victory') : t('dayOf', r.day)), t('shareDay', r.day, r.stars, r.coins, r.target)];
+  if (G.state === 'victory') lines.push(t('ratingStars') + ': ' + G.log.reduce((a, x) => a + x.stars, 0) + ' / 21');
+  return Arena.share({ title: 'Çay Ocağı', lines, url: 'https://furkiozknn.github.io/cay-ocagi/' + (DAILY ? '?d=' + DAILY.d.day : '') });
+}
 function bestLine() { const b = store.get(KEY.best, { day: 0, total: 0 }); return b.day ? t('best', b.day, b.total) + ' · ' + t('rankT') + ': ' + t('rank' + rankOf(b.life || 0)) : t('noBest'); }
 const factHTML = n => `<div class="fact"><b>${t('didYouKnow')}</b>${factFor(n)[G.lang] || factFor(n).tr}</div>`;
 // the sleeping Turkish Van kitten (2D corner image, skipped with ?noassets or if the file is missing)
@@ -4221,6 +4269,7 @@ function settingsHTML() {
     ${slider('master')}${slider('music')}${slider('sfx')}
     <div class="row"><span>${t('language')}</span>${seg('lang', [['tr', 'Türkçe'], ['en', 'English']], G.lang)}</div>
     <div class="row"><span>${t('quality')}</span>${seg('quality', [['low', t('qLow')], ['high', t('qHigh')]], low ? 'low' : 'high')}</div><small>${t('qNote')}</small>
+    ${window.Arena ? `<div class="row"><span>${t('a11y')}</span><div class="seg"><button data-a="a11y">${t('a11yOpen')}</button></div></div>` : ''}
     ${document.fullscreenEnabled ? `<div class="row"><span>${t('fullscreen')}</span>${seg('fs', [['1', t('on')], ['0', t('off')]], fs ? '1' : '0')}</div>` : ''}
     </div><button class="btn" data-a="back">${t('back')}</button></div>`;
 }
@@ -4229,7 +4278,7 @@ function uiScreen(force) {
   scrEl.classList.toggle('day-summary', (st === 'summary' || st === 'gameover') && !G.panel); // stable hook for portal builds: set while the day result is shown
   if (st !== 'play') bannerHide();
   if (st === 'play' && !pause && !G.panel) { if (scrEl.style.display !== 'none') { scrEl.style.display = 'none'; scrEl.innerHTML = ''; } C_cache.delete('scr'); return; }
-  const sig = st + G.day + G.lang + G.panel + pause + (st === 'shop' ? G.coins + JSON.stringify(G.up) : '') + (st === 'title' ? assetState.done + '' + !!loadSave() : '');
+  const sig = st + G.day + G.lang + G.panel + pause + !!DAILY + (st === 'shop' ? G.coins + JSON.stringify(G.up) : '') + (st === 'title' ? assetState.done + '' + !!loadSave() + dailyLine() : '');
   if (!force && C_cache.get('scr') === sig) { scrEl.style.display = 'flex'; return; }
   C_cache.set('scr', sig);
   let h = '';
@@ -4237,6 +4286,8 @@ function uiScreen(force) {
   const langBtn = `<button class="ibtn lang" data-a="lang" title="${t('language')} (L)" aria-label="${t('language')}">${t('langBtn')}</button>`;
   const gearBtn = `<button class="ibtn gear" data-a="settings" title="${t('settings')}" aria-label="${t('settings')}">${ICON.gear}</button>`;
   const menuBtn = `<button class="btn alt sm" data-a="menu">${t('menu')}</button>`;
+  const shareBtn = window.Arena ? `<button class="btn alt sm" data-a="share">${t('share')}</button>` : '';
+  const otherBtn = window.Arena ? `<a class="btn alt sm" href="https://furkiozknn.github.io/${otherGame()}/" target="_blank" rel="noopener">${t('another')}</a>` : '';
   if (G.panel === 'settings') h = settingsHTML();
   else if (G.panel === 'regulars') h = regularsHTML();
   else if (G.panel === 'confirm') {
@@ -4254,11 +4305,11 @@ function uiScreen(force) {
       : `<button class="btn" data-a="start" ${dis}>${label('play')}</button>`;
     h = `<div class="card glass">${gearBtn}${langBtn}${LOGO_BIG}<h1>Çay Ocağı</h1><p>${t('tagline')}</p>
       <ul class="how"><li><b>1</b><span>${t('how1')}</span></li><li><b>2</b><span>${t('how2')}</span></li><li><b>3</b><span>${t('how3')}</span></li><li><b>4</b><span>${t('how4')}</span></li></ul>
-      <p style="font-size:13px;color:#7a5a44">${bestLine()}</p><div class="col">${main}<button class="btn alt sm" data-a="regs">${t('regulars')}</button><button class="btn alt sm" data-a="settings">${t('settings')}</button></div>
+      <p style="font-size:13px;color:#7a5a44">${bestLine()}</p><div class="col">${main}${window.Arena ? `<button class="btn alt sm" data-a="daily" ${dis}>${t('daily')}</button><small style="font-weight:700;color:var(--ink2)">${dailyLine()}</small>` : ''}<button class="btn alt sm" data-a="regs">${t('regulars')}</button><button class="btn alt sm" data-a="settings">${t('settings')}</button></div>
       <p class="foot"><a href="https://github.com/Furkiozknn" target="_blank" rel="noopener">${t('footer', 'Claude Sonnet 5.5')}</a></p></div>`;
   } else if (st === 'intro') {
     const tip = t('tip' + (1 + ((G.day - 1) % 5)));
-    h = `<div class="card glass">${gearBtn}${langBtn}<h2>${G.endless ? t('dayEndless', G.day) : t('dayOf', G.day)}</h2>
+    h = `<div class="card glass">${gearBtn}${langBtn}<h2>${DAILY ? t('daily') + ' · ' : ''}${G.endless ? t('dayEndless', G.day) : t('dayOf', G.day)}</h2>${DAILY ? `<p style="font-size:13px">${t('dailyNote')}</p>` : ''}
       ${rowk(t('target'), coinHTML(cfg.target))}
       <div class="chipnew">${ICON[cfg.ni] || ICON.star}<span>${t('newThing')}: ${t(cfg.nk)}</span></div>
       ${G.day === REG.fromDay ? `<div class="chipnew">${portraitSVG(REGULARS[0])}<span>${t('regIntro')}</span></div>` : ''}
@@ -4268,7 +4319,8 @@ function uiScreen(force) {
     const r = G.lastResult;
     h = `<div class="card glass"><h2>${t('dayDone')}</h2><div class="sumrow">${kitHTML()}${starsHTML(r.stars, true)}</div><p style="font-weight:900;color:var(--amber)">${[, t('stars1'), t('stars2'), t('stars3')][r.stars]}</p>${recHTML()}
       ${rowk(t('earned'), coinHTML(r.coins) + ' / ' + r.target)}${rowk(t('tips'), coinHTML(r.tips))}${rowk(t('happyC'), r.happy)}${rowk(t('angryC'), r.angry)}
-      ${regTodayHTML(r.regulars)}${rankHTML()}${factHTML(G.day + 2)}<button class="btn" data-a="aftersum">${G.day === 7 && !G.won ? t('cont') : t('toShop')}</button>${menuBtn}</div>`;
+      ${DAILY && DAILY.rec ? `<p style="font-weight:800">${t('daily')} · ${t('dailyLine', DAILY.rec.streak, DAILY.rec.best)}</p>` : ''}
+      ${regTodayHTML(r.regulars)}${rankHTML()}${factHTML(G.day + 2)}<button class="btn" data-a="aftersum">${DAILY ? t('menu') : G.day === 7 && !G.won ? t('cont') : t('toShop')}</button>${shareBtn}${DAILY ? '' : menuBtn}</div>`;
   } else if (st === 'shop') {
     let cards = '';
     UPG.forEach(u => {
@@ -4282,12 +4334,12 @@ function uiScreen(force) {
   } else if (st === 'victory') {
     h = `<div class="card glass"><div class="big">${ICON.star}</div><h1 style="font-size:38px">${t('victory')}</h1><p>${t('victoryTxt')}</p>${recHTML()}
       ${rowk(t('total'), coinHTML(G.totalEarned))}${rowk(t('ratingStars'), G.log.reduce((a, r) => a + r.stars, 0) + ' / 21')}<p style="font-size:13px">${bestLine()}</p>
-      <button class="btn" data-a="endless">${t('endless')}</button><button class="btn alt" data-a="menu">${t('menu')}</button></div>`;
+      <button class="btn" data-a="endless">${t('endless')}</button>${shareBtn}${otherBtn}<button class="btn alt" data-a="menu">${t('menu')}</button></div>`;
   } else if (st === 'gameover') {
     const r = G.lastResult;
     h = `<div class="card glass"><h2>${t('gameover')}</h2><p>${t('goTxt')}</p>${recHTML()}
       ${rowk(t('reached'), G.day)}${rowk(t('earned'), coinHTML(r.coins) + ' / ' + r.target)}${rowk(t('happyC') + ' / ' + t('angryC'), r.happy + ' / ' + r.angry)}${rowk(t('total'), coinHTML(G.totalEarned))}<p style="font-size:13px">${bestLine()}</p>
-      <button class="btn" data-a="retryshop">${t('retryShop')}</button><button class="btn alt" data-a="menu">${t('menu')}</button></div>`;
+      <button class="btn" data-a="retryshop">${DAILY ? t('retry') : t('retryShop')}</button>${shareBtn}${otherBtn}<button class="btn alt" data-a="menu">${t('menu')}</button></div>`;
   }
   scrEl.innerHTML = h; scrEl.style.display = 'flex';
   // keyboard players land on the first main button (Enter / Space press it); mouse and touch players see no ring
@@ -4322,7 +4374,8 @@ const actions = {
   begin() { A.begin(); }, aftersum() { A.afterSummary(); },
   buy(el) { A.buy(el.dataset.id); }, next() { A.next(); },
   endless() { A.endlessMode(); }, menu() { A.menu(); }, restart() { A.restart(); },
-  retryshop() { A.retryShop(); },
+  retryshop() { if (DAILY) A.restart(); else A.retryShop(); },
+  daily() { startDaily(); }, share() { shareResult(); }, a11y() { if (window.Arena) Arena.openSettings(); },
   settings() { if (G.state === 'play' && !G.paused) { G.paused = true; audApply(); } G.panel = 'settings'; uiScreen(); }, back() { closePanel(); },
   seg(el) {
     const k = el.dataset.k, v = el.dataset.v;
@@ -4353,6 +4406,7 @@ document.addEventListener('input', e => {
 document.addEventListener('change', e => { if (e.target.dataset && e.target.dataset.set) { saveSettings(); if (e.target.dataset.set !== 'master') sfxTick(); } });
 document.addEventListener('fullscreenchange', () => { if (G.panel === 'settings') uiScreen(true); });
 window.addEventListener('keydown', e => {
+  if (document.querySelector('.arena-modal')) return;   // the arena-kit panel handles its own keys (Esc closes it)
   if (e.key === 'Tab' || e.key === 'Enter' || e.code === 'Space' || e.key === 'Escape' || e.key === 'p' || e.key === 'P') kbdUser = true;
   // a11y: trap Tab focus inside #screen when a modal screen/dialog is open
   if (e.key === 'Tab' && scrEl.style.display !== 'none') {
@@ -4386,6 +4440,9 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden && G.state === 'play' && !G.paused) { G.paused = true; uiScreen(); }
   audApply();
 });
+// arena-kit: the same pause when the tab is hidden (the game's own listener stays); on 'resume' the pause card stays up.
+// The game has no reduced-motion flag of its own to map (the kit's CSS rule already stops the CSS animations).
+if (window.Arena) Arena.on('pause', () => { if (G.state === 'play' && !G.paused) { G.paused = true; uiScreen(); audApply(); } });
 
 /* pointer: click / pan / pinch */
 const ptrs = new Map(); let pinch0 = 0, zoom0 = 1, pinched = false;
@@ -4584,6 +4641,7 @@ function frame(now) {
 
 /* boot */
 document.documentElement.lang = G.lang;
+if (window.Arena) Arena.lang(G.lang);
 layoutCamera();
 scene.updateMatrixWorld(true);
 resetWorldForDay();
