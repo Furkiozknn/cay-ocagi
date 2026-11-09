@@ -663,19 +663,14 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 /* Ottoman Serving Tray (#tray) */
 #tray {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 10px;
   padding: 8px 14px;
   background: linear-gradient(180deg, #381d11 0%, #221008 100%);
   border: 2px solid var(--brass-500);
   border-radius: 18px;
   box-shadow: 0 10px 30px rgba(10, 5, 2, 0.6), inset 0 1px 0 rgba(255, 249, 224, 0.35);
 }
-.tray-dots { display: flex; gap: 5px; justify-content: center; align-items: center; width: 100%; }
-.tray-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(223, 183, 56, 0.3); transition: background 0.15s, transform 0.15s; }
-.tray-dot.filled { background: var(--brass-300); box-shadow: 0 0 6px var(--brass-400); animation: dotPulse 0.8s ease-in-out infinite alternate; }
-@keyframes dotPulse { from { transform: scale(1); } to { transform: scale(1.3); } }
 
 #tray .lbl {
   font-family: var(--font-serif);
@@ -1782,40 +1777,6 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
   .card .biglogo { width: 72px; height: 72px; }
   .card h1 { font-size: 28px; }
   .how { margin: 6px 0; gap: 4px; }
-}
-
-@media (max-width: 360px) {
-  #dock {
-    bottom: calc(4px + env(safe-area-inset-bottom, 0px));
-    left: 4px;
-    right: 4px;
-    gap: 4px;
-  }
-  #tray, #stations {
-    padding: 4px 6px;
-    border-radius: 12px;
-  }
-  #stations {
-    justify-content: space-between;
-    width: 100%;
-  }
-  .st {
-    width: calc(20% - 3px);
-    min-width: 0;
-    padding: 4px 1px;
-    min-height: 48px;
-  }
-  .st svg { width: 20px; height: 20px; }
-  .st b { font-size: 9px; }
-  .st .key { display: none; }
-  .slot {
-    width: 34px;
-    height: 34px;
-    min-width: 34px;
-    min-height: 34px;
-  }
-  .slot svg { width: 20px; height: 20px; }
-  #tray .lbl { display: none; }
 }
 </style>
 </head>
@@ -3766,12 +3727,6 @@ function gullUpdate(dt) {
 // the click action (pointer hit on the gull, its marker, or the bot): shoo it before the simit is gone
 function clickGull() {
   const g = thief; if (G.paused || G.state !== 'play' || (g.state !== 'perch' && g.state !== 'dive')) return false;
-  try { if (navigator.vibrate) navigator.vibrate(30); } catch (e) {}
-  if (window.Arena && Arena.toast) {
-    // trigger screen flash / shake effect via Arena kit or DOM classes
-    document.body.classList.add('arena-shake');
-    setTimeout(() => document.body.classList.remove('arena-shake'), 300);
-  }
   G.gull.shooed++; burst('feather', g.x, g.y, g.z, 12); sfxSquawk(); toast(t('gullShoo'), 'good'); gullLeave('shooed'); return true;
 }
 const gulls = [{ a: 0, r: 6.5, cx: 1, cz: -13, h: 8.5, sp: .32 }, { a: 2.1, r: 8, cx: -2, cz: -12, h: 10.5, sp: -.27 }, { a: 4.2, r: 5.5, cx: 5, cz: -11, h: 7.5, sp: .4 }, { a: 5.5, r: 9, cx: 0, cz: -14, h: 12, sp: -.22 }];
@@ -4056,21 +4011,14 @@ function uiStatic() {
   let sts = '';
   STATION_KEYS.forEach((k, i) => {
     let u = ''; for (let j = 0; j < units[k]; j++) u += `<div class="u" data-u="${j}"><i></i></div>`;
-    const extra = k === 'coffee' ? '<canvas class="coffee-arc" width="36" height="36" style="position:absolute;inset:0;margin:auto;pointer-events:none;"></canvas>' : '';
-    sts += `<button class="st" data-st="${k}"><span class="key">${i + 1}</span><span class="cnt"></span>${extra}${ICON[k]}<b>${names[k]}</b><div class="units">${u}</div></button>`;
+    sts += `<button class="st" data-st="${k}"><span class="key">${i + 1}</span><span class="cnt"></span>${ICON[k]}<b>${names[k]}</b><div class="units">${u}</div></button>`;
   });
-  let dots = ''; for (let i = 0; i < 5; i++) dots += `<div class="tray-dot" data-dot="${i}"></div>`;
   dockEl.innerHTML = `
-    <div id="tray" class="glass">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span class="lbl">${t('tray')}</span><div class="slots">${slots}</div><div id="queue"></div>
-      </div>
-      <div class="tray-dots">${dots}</div>
-    </div>
+    <div id="tray" class="glass"><span class="lbl">${t('tray')}</span><div class="slots">${slots}</div><div id="queue"></div></div>
     <div id="stations" class="glass">${sts}</div>`;
   Object.assign(UI, {
-    sp: $('#b-speed'), pb: $('#b-pause'), slots: $$('.slot'), dots: $$('.tray-dot'), queue: $('#queue'), clk: $('#t-clkbar'), time: $('#t-time'), coinChip: $('#t-coinchip'),
-    sts: $$('.st').map(el => ({ el, k: el.dataset.st, us: $$('.u', el), ce: $('.cnt', el), coffeeCanvas: $('.coffee-arc', el) }))
+    sp: $('#b-speed'), pb: $('#b-pause'), slots: $$('.slot'), queue: $('#queue'), clk: $('#t-clkbar'), time: $('#t-time'), coinChip: $('#t-coinchip'),
+    sts: $$('.st').map(el => ({ el, k: el.dataset.st, us: $$('.u', el), ce: $('.cnt', el) }))
   });
   C_cache.clear();
   // station world badges + table bubbles
@@ -4135,12 +4083,6 @@ function uiFrame(dt, force) {
           : ICON[it]) + del;
         el.title = it ? (nm + (it === 'tea' ? ` ${Math.round(f * 100)}%` : '')) : '';
       });
-      UI.dots.forEach((el, i) => {
-        const active = i < cap;
-        const filled = i < w.tray.length;
-        el.style.display = active ? 'block' : 'none';
-        el.className = 'tray-dot' + (filled ? ' filled' : '');
-      });
     }
     const qs = w.q.map(a => a.type === 'station' ? a.id : 'T' + (a.id + 1)).join(',') + (w.cur ? '*' : '');
     if (C_cache.get('q') !== qs) {
@@ -4150,24 +4092,10 @@ function uiFrame(dt, force) {
   }
   /* stations dock */
   if (S && play) {
-    for (const { el, k, us, ce, coffeeCanvas } of UI.sts) {
+    for (const { el, k, us, ce } of UI.sts) {
       let ready = false, cnt = 0;
       const locked = k !== 'tea' && k !== 'sink' && !cfg.menu.includes(k);
       if (C_cache.get('lk' + k) !== locked) { C_cache.set('lk' + k, locked); el.classList.toggle('lock', locked); }
-      if (k === 'coffee' && coffeeCanvas && S) {
-        const ctx = coffeeCanvas.getContext('2d');
-        ctx.clearRect(0, 0, 36, 36);
-        const readyPot = S.pots.find(p => p.st === 'ready');
-        if (readyPot) {
-          const remaining = COOK_WIN - readyPot.t;
-          const progress = clamp(remaining / COOK_WIN, 0, 1);
-          ctx.beginPath();
-          ctx.arc(18, 18, 14, -Math.PI / 2, -Math.PI / 2 + progress * Math.PI * 2);
-          ctx.lineWidth = 3;
-          ctx.strokeStyle = remaining <= 1.0 ? '#c2410c' : '#2e7d4e';
-          ctx.stroke();
-        }
-      }
       us.forEach((u, j) => {
         let cls = 'u', wd = 0;
         if (k === 'tea') { const hide = j > G.up.kettle; setVis(u, 'uh' + j, hide ? 'none' : ''); if (hide) return; const kk = S.kettles[j]; if (kk.st === 'brewing') wd = kk.t / BREW_T * 100; else if (kk.st === 'ready') { const f = teaFresh(kk.t); cls += f >= 1 ? ' ready' : f > 0 ? ' warn' : ' stale'; wd = f * 100; ready = true; cnt += kk.n; } }
@@ -4521,18 +4449,10 @@ const ptrs = new Map(); let pinch0 = 0, zoom0 = 1, pinched = false;
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
 function pickAt(cx, cy) {
   ndc.set((cx / VIEW.w) * 2 - 1, -(cy / VIEW.h) * 2 + 1); ray.setFromCamera(ndc, cam);
-  // Double the click/tap radius for gull shooing by temporarily scaling up the gull pick proxy or checking distance in screen space
-  const gullProxy = pickables.find(p => p.kind === 'gull');
-  if (gullProxy && (thief.state === 'perch' || thief.state === 'dive')) {
-    toScreen(thief.x, thief.y + .8, thief.z, _sp);
-    if (Math.hypot(cx - _sp.x, cy - _sp.y) <= 80) { // ~double standard touch target radius
-      return gullProxy;
-    }
-  }
   const hits = ray.intersectObjects(pickables.map(p => p.mesh), false);
   for (const h of hits) {
     const p = pickables.find(q => q.mesh === h.object); if (p.kind === 'table' && !(G.tables[p.id] && G.tables[p.id].unlocked)) continue;
-    if (p.kind === 'gull' && !(thief.state === 'perch' || thief.state === 'dive')) continue;
+    if (p.kind === 'gull' && !(thief.state === 'perch' || thief.state === 'dive')) continue; // the proxy only exists while a gull is catchable
     return p;
   }
   return null;
