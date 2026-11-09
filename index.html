@@ -663,14 +663,19 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 /* Ottoman Serving Tray (#tray) */
 #tray {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 6px;
   padding: 8px 14px;
   background: linear-gradient(180deg, #381d11 0%, #221008 100%);
   border: 2px solid var(--brass-500);
   border-radius: 18px;
   box-shadow: 0 10px 30px rgba(10, 5, 2, 0.6), inset 0 1px 0 rgba(255, 249, 224, 0.35);
 }
+.tray-dots { display: flex; gap: 5px; justify-content: center; align-items: center; width: 100%; }
+.tray-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(223, 183, 56, 0.3); transition: background 0.15s, transform 0.15s; }
+.tray-dot.filled { background: var(--brass-300); box-shadow: 0 0 6px var(--brass-400); animation: dotPulse 0.8s ease-in-out infinite alternate; }
+@keyframes dotPulse { from { transform: scale(1); } to { transform: scale(1.3); } }
 
 #tray .lbl {
   font-family: var(--font-serif);
@@ -4020,11 +4025,17 @@ function uiStatic() {
     const extra = k === 'coffee' ? '<canvas class="coffee-arc" width="36" height="36" style="position:absolute;inset:0;margin:auto;pointer-events:none;"></canvas>' : '';
     sts += `<button class="st" data-st="${k}"><span class="key">${i + 1}</span><span class="cnt"></span>${extra}${ICON[k]}<b>${names[k]}</b><div class="units">${u}</div></button>`;
   });
+  let dots = ''; for (let i = 0; i < 5; i++) dots += `<div class="tray-dot" data-dot="${i}"></div>`;
   dockEl.innerHTML = `
-    <div id="tray" class="glass"><span class="lbl">${t('tray')}</span><div class="slots">${slots}</div><div id="queue"></div></div>
+    <div id="tray" class="glass">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="lbl">${t('tray')}</span><div class="slots">${slots}</div><div id="queue"></div>
+      </div>
+      <div class="tray-dots">${dots}</div>
+    </div>
     <div id="stations" class="glass">${sts}</div>`;
   Object.assign(UI, {
-    sp: $('#b-speed'), pb: $('#b-pause'), slots: $$('.slot'), queue: $('#queue'), clk: $('#t-clkbar'), time: $('#t-time'), coinChip: $('#t-coinchip'),
+    sp: $('#b-speed'), pb: $('#b-pause'), slots: $$('.slot'), dots: $$('.tray-dot'), queue: $('#queue'), clk: $('#t-clkbar'), time: $('#t-time'), coinChip: $('#t-coinchip'),
     sts: $$('.st').map(el => ({ el, k: el.dataset.st, us: $$('.u', el), ce: $('.cnt', el), coffeeCanvas: $('.coffee-arc', el) }))
   });
   C_cache.clear();
@@ -4089,6 +4100,12 @@ function uiFrame(dt, force) {
           ? ICON.tea.replace('<svg', `<svg style="filter:grayscale(${(1 - f).toFixed(2)})"`) + `<div class="fb ${f <= 0 ? 'old' : f < 1 ? 'mid' : ''}"><i style="width:${Math.round(f * 100)}%"></i></div>`
           : ICON[it]) + del;
         el.title = it ? (nm + (it === 'tea' ? ` ${Math.round(f * 100)}%` : '')) : '';
+      });
+      UI.dots.forEach((el, i) => {
+        const active = i < cap;
+        const filled = i < w.tray.length;
+        el.style.display = active ? 'block' : 'none';
+        el.className = 'tray-dot' + (filled ? ' filled' : '');
       });
     }
     const qs = w.q.map(a => a.type === 'station' ? a.id : 'T' + (a.id + 1)).join(',') + (w.cur ? '*' : '');
