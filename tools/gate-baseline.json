@@ -1,0 +1,17 @@
+{
+  "game": "cay-ocagi",
+  "recorded": "2026-11-10T00:40:01.330Z",
+  "commit": "ca336f0",
+  "entrySha": "bfcef60aad72",
+  "run": "() => {\n      const s = window.cayBench(12, 3), days = [...s.matchAll(/^d(\\d+): ratio ([\\d.]+) happy ([\\d.]+) angry ([\\d.]+) stars ([\\d.]+) fail (\\d+)\\/(\\d+) spawned ([\\d.]+) walkby ([\\d.]+)/gm)];\n      const sum = (i) => Math.round(days.reduce((a, d) => a + +d[i], 0) * 100) / 100;\n      window.__gateM = { wins: +(/wins=(\\d+)/.exec(s) || [])[1], daysPlayed: days.reduce((a, d) => a + +d[7], 0), dayFails: days.reduce((a, d) => a + +d[6], 0),\n        starsSum: sum(5), ratioSum: sum(2), angrySum: sum(4), walkbySum: sum(9) };\n    }",
+  "metrics": {
+    "wins": 12,
+    "daysPlayed": 84,
+    "dayFails": 0,
+    "starsSum": 18,
+    "ratioSum": 11.59,
+    "angrySum": 2,
+    "walkbySum": 55.6,
+    "gameErrors": 0
+  }
+}
