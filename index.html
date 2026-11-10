@@ -17,11 +17,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;0,900;1,600;1,700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
-<script>/*ARENA-KIT:BEGIN v1.0.1 sha256:bc575c398c95*/
+<script>/*ARENA-KIT:BEGIN v1.1.0 sha256:3bea83137e26*/
 /* ARENA-KIT v1 — shared layer for the 21 Claude Game Arena games.
  *
  * Injected inline into each game's index.html (between begin/end marker comments) by
- * arena-kit/inject.py, so every game stays a single file. Plain script, no imports, no network.
+ * arena-kit/inject.py, so every game stays a single file. Plain script, no imports; the kit itself opens no
+ * connection (v1.1 play events are handed to the page's existing GoatCounter counter, if it is there).
  * Everything is optional: a game that never calls Arena.* behaves exactly as before.
  *
  *   Arena.perf.attach(renderer)        dynamic pixel ratio for weak GPUs (Intel UHD)
@@ -32,6 +33,10 @@
  *   Arena.share({...})                 Web Share / clipboard text + optional PNG card
  *   Arena.profile(), Arena.award(id)   cross-game passport (shared origin localStorage)
  *   Arena.settings / openSettings()    accessibility panel (text size, contrast, motion, vibration, auto-pause)
+ *   Arena.complete({mount, feedback})  v1.1: "completed" event + one-tap 👍/👎 (once a day per game), inline in `mount`
+ *   Arena.track(name)                  v1.1: one GoatCounter event "<game>/<name>" per page load; automatic:
+ *                                      "start" (first real input) and "return" (played this game on an earlier day)
+ *                                      Nothing is sent or shown on quiet runs; no cookies, no ids, no new service.
  *
  * Storage: every key starts with "arena." and is versioned; every access is wrapped in try/catch
  * (private mode, quota, portals). Pure logic lives in Arena._core so it can be tested in Node.
@@ -39,7 +44,7 @@
 (function (root) {
   'use strict';
   if (root.Arena && root.Arena.version) return; // injected twice (e.g. iframe) -> keep the first
-  var VERSION = '1.0.1';
+  var VERSION = '1.1.0';
   var hasDOM = typeof document !== 'undefined';
 
   /* ---------- core (pure, Node-testable) ---------- */
@@ -59,6 +64,12 @@
     var y = Math.floor(key / 10000), m = Math.floor(key / 100) % 100, d = key % 100;
     return core.dayKey(new Date(Date.UTC(y, m - 1, d) - 86400000));
   };
+  // v1.1: a player is "returning" if this game was last played on an earlier day (old profiles: any earlier play)
+  core.isReturn = function (lastDay, plays, lastAnyAt, today) {
+    if (lastDay) return lastDay < today;
+    return !!(plays > 0 && lastAnyAt && core.dayKey(new Date(lastAnyAt)) < today);
+  };
+  core.eventName = function (name) { return String(name || '').replace(/[^a-z0-9-]/gi, '').slice(0, 24).toLowerCase(); };
   core.hash = function (str) { // FNV-1a 32-bit
     var h = 0x811c9dc5;
     for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
@@ -127,10 +138,12 @@
   var STR = {
     tr: { again: 'Bir daha', another: 'Başka bir oyun dene', close: 'Kapat', settings: 'Erişilebilirlik',
       textSize: 'Yazı boyutu', contrast: 'Yüksek karşıtlık', motion: 'Hareketi azalt', vibration: 'Titreşim',
-      autoPause: 'Sekme değişince duraklat', copied: 'Panoya kopyalandı', streak: 'Seri', days: 'gün', share: 'Paylaş' },
+      autoPause: 'Sekme değişince duraklat', copied: 'Panoya kopyalandı', streak: 'Seri', days: 'gün', share: 'Paylaş',
+      fbAsk: 'Beğendin mi?', like: 'Beğendim', dislike: 'Beğenmedim', thanks: 'Teşekkürler!' },
     en: { again: 'Play again', another: 'Try another game', close: 'Close', settings: 'Accessibility',
       textSize: 'Text size', contrast: 'High contrast', motion: 'Reduce motion', vibration: 'Vibration',
-      autoPause: 'Pause when the tab is hidden', copied: 'Copied to clipboard', streak: 'Streak', days: 'days', share: 'Share' },
+      autoPause: 'Pause when the tab is hidden', copied: 'Copied to clipboard', streak: 'Streak', days: 'days', share: 'Share',
+      fbAsk: 'Did you enjoy it?', like: 'I liked it', dislike: 'I did not like it', thanks: 'Thanks!' },
   };
   var lang = 'en';
   try { lang = /^tr/i.test((hasDOM && document.documentElement.lang) || (root.navigator && navigator.language) || '') ? 'tr' : 'en'; } catch (e) {}
@@ -147,9 +160,13 @@
     gameId = (meta && meta.content) || (GAMES.indexOf(seg) >= 0 ? seg : 'unknown');
   } catch (e) {}
   function profile() { return get('profile.v1', { plays: {}, badges: {}, last: null, first: null }); }
+  var returning = false;
   function touchProfile() {
-    var p = profile(), now = Date.now();
+    var p = profile(), now = Date.now(), today = core.dayKey();
+    p.lastDay = p.lastDay || {};
+    returning = core.isReturn(p.lastDay[gameId], p.plays[gameId] || 0, p.last && p.last.at, today);
     p.plays[gameId] = (p.plays[gameId] || 0) + 1; p.last = { game: gameId, at: now }; p.first = p.first || now;
+    p.lastDay[gameId] = today;
     set('profile.v1', p); return p;
   }
   function award(id, label) {
@@ -202,6 +219,13 @@
     'width:40px;height:40px;border-radius:50%;border:0;background:rgba(14,13,11,.7);color:#f6f1e6;font:20px/40px system-ui;cursor:pointer;opacity:.7}' +
     '.arena-gear:hover,.arena-gear:focus-visible{opacity:1}' +
     'html[data-arena-contrast] body{filter:contrast(1.25) saturate(1.1)}' +
+    '.arena-fb{position:fixed;left:50%;top:calc(10px + env(safe-area-inset-top));transform:translateX(-50%);z-index:2147483000;white-space:nowrap;' +
+    'display:flex;align-items:center;gap:8px;padding:6px 6px 6px 14px;border-radius:999px;background:rgba(14,13,11,.9);color:#f6f1e6;' +
+    'font:600 calc(15px*var(--arena-text-scale,1))/1.2 system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.35)}' +
+    '.arena-fb button{min-width:44px;min-height:44px;border:0;border-radius:50%;background:#2b2722;color:#f6f1e6;font:22px/1 system-ui;cursor:pointer}' +
+    '.arena-fb button.arena-fb-x{font-size:16px;background:transparent}' +
+    '.arena-fb.arena-fb-inline{position:static;transform:none;margin:12px auto 0;width:max-content;max-width:100%;box-shadow:none}' +
+    '.arena-fb button:focus-visible{outline:3px solid #3fd4dc;outline-offset:2px}' +
     'html[data-arena-reduced-motion] *{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}';
   var styled = false;
   function style() {
@@ -270,6 +294,55 @@
     var close = modal(el('div', { class: 'arena-card' }, kids));
     again.addEventListener('click', function () { close(); if (o.onAgain) o.onAgain(); });
     return close;
+  }
+
+  /* ---------- play events (v1.1) ---------- */
+  // Handed to the page's own GoatCounter (`window.goatcounter.count`, already on 20 of 21 pages). The kit opens no
+  // connection itself; without the counter (or on ?auto / ?nosave / ?demo) the events are simply dropped.
+  var sent = {}, pending = [];
+  function gcSend(path, title) {
+    var gc = root.goatcounter;
+    if (!gc || typeof gc.count !== 'function') return false;
+    try { gc.count({ path: path, title: title || path, event: true }); } catch (e) {}
+    return true;
+  }
+  function flush(tries) {
+    pending = pending.filter(function (e) { return !gcSend(e[0], e[1]); });
+    if (pending.length && tries < 20) setTimeout(function () { flush(tries + 1); }, 500); // count.js loads async
+  }
+  function track(name, title) {
+    name = core.eventName(name);
+    if (quiet || !hasDOM || !name || sent[name]) return false;
+    sent[name] = 1;
+    var path = gameId + '/' + name;
+    if (!gcSend(path, title)) { pending.push([path, title]); if (pending.length === 1) flush(0); }
+    return true;
+  }
+  var fbEl = null;
+  function complete(o) {
+    o = o || {};
+    track('complete');
+    if (quiet || !hasDOM || !document.body || o.feedback === false || fbEl) return;
+    var asked = get('feedback.v1', {}), today = core.dayKey();
+    if (asked[gameId] === today) return;
+    style();
+    var up = el('button', { type: 'button', 'aria-label': t('like'), title: t('like'), text: '👍' });
+    var down = el('button', { type: 'button', 'aria-label': t('dislike'), title: t('dislike'), text: '👎' });
+    var x = el('button', { type: 'button', class: 'arena-fb-x', 'aria-label': t('close'), title: t('close'), text: '✕' });
+    var label = el('span', { text: t('fbAsk') });
+    var mount = o.mount && o.mount.appendChild ? o.mount : null;   // inline in the game's own end screen if given
+    fbEl = el('div', { class: mount ? 'arena-fb arena-fb-inline' : 'arena-fb', role: 'group', 'aria-label': t('fbAsk') }, [label, up, down, x]);
+    function done() { if (fbEl && fbEl.parentNode) fbEl.parentNode.removeChild(fbEl); fbEl = null; }
+    function vote(v) {
+      track(v); var a = get('feedback.v1', {}); a[gameId] = today; set('feedback.v1', a);
+      [up, down, x].forEach(function (b) { b.remove(); }); label.textContent = t('thanks'); announce(t('thanks'));
+      setTimeout(done, 1500);
+    }
+    up.addEventListener('click', function () { vote('like'); });
+    down.addEventListener('click', function () { vote('dislike'); });
+    x.addEventListener('click', done);
+    (mount || document.body).appendChild(fbEl);
+    if (!mount) setTimeout(done, o.ms || 20000);   // floating panel fades out; an inline one stays with the end screen
   }
 
   function daily(game, opts) {
@@ -368,7 +441,16 @@
       if (!settings.autoPause) return;
       emit(document.hidden ? 'pause' : 'resume');
     });
-    var boot = function () { applySettings(); touchProfile(); };
+    var boot = function () {
+      applySettings(); touchProfile();
+      if (quiet) return;
+      var first = function (e) {
+        if (e && e.isTrusted === false) return;
+        ['pointerdown', 'keydown', 'touchstart'].forEach(function (n) { document.removeEventListener(n, first, true); });
+        track('start'); if (returning) track('return');
+      };
+      ['pointerdown', 'keydown', 'touchstart'].forEach(function (n) { document.addEventListener(n, first, true); });
+    };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
   }
 
@@ -376,6 +458,7 @@
     version: VERSION, quiet: quiet, game: gameId, games: GAMES.slice(), lang: function (l) { if (l) lang = l === 'tr' ? 'tr' : 'en'; return lang; },
     perf: perf, hint: hint, toast: toast, endCard: endCard, daily: daily, share: share, shareCard: shareCard,
     profile: profile, award: award, settings: settings, openSettings: openSettings, mountSettingsButton: mountSettingsButton,
+    track: track, complete: complete,
     on: function (name, fn) { (listeners[name] = listeners[name] || []).push(fn); },
     _core: core, _store: { get: get, set: set },
   };
@@ -1041,7 +1124,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .bub .rtag .hearts i.f, .bub .rtag .hearts i.h { color: #ff6b81; }
 .reglist { display: flex; flex-direction: column; gap: 6px; margin: 8px 0 12px; text-align: left; }
 .regrow { display: flex; align-items: center; gap: 10px; padding: 4px 10px; border-radius: 12px; background: rgba(255, 248, 235, 0.7); border: 1px solid rgba(120, 80, 40, 0.15); }
-.regrow .pt { width: 38px; height: 38px; flex: none; display: grid; place-items: center; border-radius: 50%; background: #efe2cc; font-weight: 900; color: #a08060; }
+.regrow .pt { width: 38px; height: 38px; flex: none; display: grid; place-items: center; border-radius: 50%; background: #efe2cc; font-weight: 900; color: #6e5236; }   /* was #a08060, 2.86 */
 .regrow .pt svg { width: 38px; height: 38px; }
 .regrow .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .regrow .tx b { font-size: 14px; }
@@ -1272,7 +1355,7 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
   gap: 8px;
   padding: 13px 28px;
   border-radius: 14px;
-  background: linear-gradient(180deg, #e8863d 0%, #c2410c 100%);
+  background: linear-gradient(180deg, #bd4f17 0%, #9a3412 100%);   /* white text >= 4.5:1 at the top stop (was #e8863d, 2.66) */
   border: 1px solid #ffd469;
   color: #fff;
   font-family: var(--font-sans);
@@ -1405,7 +1488,7 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
   min-width: 74px;
   padding: 8px 10px;
   border-radius: 11px;
-  background: linear-gradient(180deg, #e8863d 0%, #c2410c 100%);
+  background: linear-gradient(180deg, #bd4f17 0%, #9a3412 100%);   /* white text >= 4.5:1 (was 2.66) */
   border: 1px solid #ffd469;
   color: #fff;
   font-weight: 800;
@@ -1420,6 +1503,7 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
 .buy svg { width: 16px; height: 16px; }
 .buy[disabled] {
   background: #c7b9ab;
+  color: #3d2b1f;   /* was white on #c7b9ab, 1.92 */
   border-color: #baa898;
   box-shadow: 0 3px 0 #9e8e80;
   pointer-events: none;
@@ -1678,7 +1762,7 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
   color: #2a160d;
 }
 .seg button.on {
-  background: linear-gradient(180deg, #d97e27 0%, #94460f 100%);
+  background: linear-gradient(180deg, #b85a1e 0%, #94460f 100%);   /* white text >= 4.5:1 (was #d97e27, 3.02) */
   border-color: #ffd469;
   color: #fff;
 }
@@ -1796,7 +1880,7 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
 <canvas id="c" tabindex="0"></canvas>
 <div id="wl"></div>
 <header id="top" class="glass"></header>
-<div id="toasts"><div id="banner" style="display:none"></div></div>
+<div id="toasts" role="status" aria-live="polite"><div id="banner" style="display:none"></div></div>
 <div id="dock"></div>
 <div id="screen" role="dialog" aria-modal="true"></div>
 <div id="dbg"></div>
@@ -1923,6 +2007,9 @@ const TXT = {
     how2: 'Bir masaya tıkla: istenenleri servis et. Kirli bardakları topla, lavaboya (5) götür.',
     how3: 'Müşterilerin sabrı tükenmeden servis yap. Hızlı servis daha çok bahşiş getirir.',
     how4: 'P / Esc: duraklat · Geri tuşu ya da sağ tık: sırayı temizle · M müzik · X efekt · L dil · Sürükle: kaydır · Tekerlek: yakınlaştır.',
+    how2Touch: 'Bir masaya dokun: istenenleri servis et. Kirli bardakları topla, lavaboya (5) götür.',
+    how1Touch: 'Bir istasyona dokun: çay demle, simit ısıt, kahve pişir. Hazır olunca tekrar dokun, tepsine girsin.',
+    how4Touch: 'Üstteki düğmeler: duraklat, ses, dil · Sıradaki “temizle”: sırayı temizle · Sürükle: kaydır · İki parmak: yakınlaştır.',
     day: 'Gün', dayOf: 'Gün {0}/7', dayEndless: 'Gün {0} ∞', target: 'Hedef', newThing: 'Yeni', menuToday: 'Bugünün menüsü',
     startDay: 'Günü başlat', today: 'Bugün', tray: 'Tepsi', clearQ: 'temizle', dropSlot: '{0} bırak',
     tea: 'Çay', simit: 'Simit', coffee: 'Kahve', ayran: 'Ayran', sink: 'Lavabo', dirty: 'Kirli bardak',
@@ -1980,6 +2067,9 @@ const TXT = {
     how2: 'Click a table to serve what they ordered. Collect dirty glasses and bring them to the sink (5).',
     how3: 'Serve before patience runs out. Fast service earns bigger tips.',
     how4: 'P / Esc: pause · Backspace or right-click: clear queue · M music · X effects · L language · Drag: pan · Wheel: zoom.',
+    how2Touch: 'Tap a table to serve what they ordered. Collect dirty glasses and bring them to the sink (5).',
+    how1Touch: 'Tap a station: brew tea, warm simit, cook coffee. Tap again when ready to grab it onto your tray.',
+    how4Touch: 'Buttons at the top: pause, sound, language · “clear” next to the queue: clear it · Drag: pan · Two fingers: zoom.',
     day: 'Day', dayOf: 'Day {0}/7', dayEndless: 'Day {0} ∞', target: 'Target', newThing: 'New', menuToday: "Today's menu",
     startDay: 'Start the day', today: 'Today', tray: 'Tray', clearQ: 'clear', dropSlot: 'Discard {0}',
     tea: 'Tea', simit: 'Simit', coffee: 'Coffee', ayran: 'Ayran', sink: 'Sink', dirty: 'Dirty glass',
@@ -2050,6 +2140,7 @@ const G = window.cay = {
   regDay: { seen: [], log: [] }, // named regulars today: ids that came, and { id, d (affection change), s (surprise) } per visit
   flags: FLAG, version: 1
 };
+const TOUCH_UI = matchMedia('(pointer: coarse)').matches;   // touch screen: the how-to names taps and buttons, not keys
 function t(k, ...a) {
   let s = (TXT[G.lang] && TXT[G.lang][k]); if (s == null) s = TXT.tr[k]; if (s == null) s = k;
   a.forEach((v, i) => { s = s.split('{' + i + '}').join(v); });
@@ -2348,6 +2439,7 @@ function endDay() {
   // reset waiter to idle so mid-walk animation does not run in place behind summary overlay
   Object.assign(G.waiter, { cur: null, state: 'idle', path: [], moving: false });
   uiScreen(); checkStop();
+  if (window.Arena && Arena.complete) Arena.complete({ mount: $('.card', scrEl) });   // arena-kit v1.1: cay-ocagi/complete + one-tap 👍/👎 (nothing on ?auto)
 }
 /* saved run (arena.cay.save): written at the start of each day and at each shop visit; Continue resumes there */
 function saveGame(resume, over = {}) {
@@ -3574,6 +3666,7 @@ const PPL = {
   hair: new THREE.InstancedMesh(PG.hr, matIV(), MAXP), cap: new THREE.InstancedMesh(PG.cp, matIV(), MAXP)
 };
 const PPL_LIST = Object.values(PPL), FLASH_C = new THREE.Color(0xd23a2a);
+const calm = () => !!(window.Arena && Arena.settings && Arena.settings.reducedMotion);   // kit "reduce motion": read live, visuals only (the sim never sees it)
 PPL_LIST.forEach(m => { m.frustumCulled = false; m.castShadow = !FLAG.low; world.add(m); for (let i = 0; i < MAXP; i++) { m.setMatrixAt(i, mat(0, -50, 0, 0, 0, 0)); m.setColorAt(i, new THREE.Color(0xffffff)); } });
 
 function buildWaiter(shirt, vest, apron, hair, scale) {
@@ -3798,7 +3891,8 @@ function syncVisuals(dt) {
   // reuse static TB_LIST to avoid allocating a 4-element array every frame
   for (let j = 0; j < TB_LIST.length; j++) { const m = TB_LIST[j]; if (m.visible) { m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; } }
 
-  ITM.tea.im.material.emissiveIntensity = .45 + Math.sin(vt * 3.2) * .22;
+  const still = calm();   // reduce motion: glows burn steady, no pulse or flicker
+  ITM.tea.im.material.emissiveIntensity = still ? .45 : .45 + Math.sin(vt * 3.2) * .22;
   glintAcc += dt;
   if (!G.paused && !G.simming && glintAcc > .6) {
     glintAcc = 0;
@@ -3812,7 +3906,7 @@ function syncVisuals(dt) {
   const S = G.stations;
   DYN.kettleB.visible = G.up.kettle > 0;
   const ovenOn = S && S.oven.st === 'baking';
-  DYN.ovenGlow.material.emissiveIntensity = S ? (ovenOn ? .9 + Math.sin(vt * 9) * .15 : S.oven.st === 'ready' ? .7 : .12) : .12;
+  DYN.ovenGlow.material.emissiveIntensity = S ? (ovenOn ? (still ? .9 : .9 + Math.sin(vt * 9) * .15) : S.oven.st === 'ready' ? .7 : .12) : .12;
   for (let k = 0; k < 3; k++) { const on = S && S.oven.st === 'ready' && k < S.oven.n; DYN.simitRings.setMatrixAt(k, on ? mat(FIT.ringX, FIT.ringY, STATION_Z.simit + (k - 1) * .45, 1, 1, 1, .3 * k) : mat(0, -50, 0, 0, 0, 0)); }
   DYN.simitRings.instanceMatrix.needsUpdate = true;
   for (let k = 0; k < 2; k++) {
@@ -3820,7 +3914,7 @@ function syncVisuals(dt) {
     let sc = 0, col = 0x6b4226;
     if (p) {
       if (p.st === 'cook') { sc = .02 + (p.t / COOK_T) * .12; col = 0x7a4a2a; }
-      else if (p.st === 'ready') { sc = .14 + Math.sin(vt * 12) * .01; col = 0xb98a56; }
+      else if (p.st === 'ready') { sc = still ? .14 : .14 + Math.sin(vt * 12) * .01; col = 0xb98a56; }
       else if (p.st === 'spilled') { sc = .02; col = 0x2e1d10; }
     }
     const spill = p && p.st === 'spilled'; // boiled over: a wide, flat, dark froth spread over the pot mouth
@@ -3866,10 +3960,10 @@ function syncVisuals(dt) {
     if (!pe || pe.delay > 0 && !pe.leaving) { hidePerson(i); continue; }
     const seated = pe.sitting, mv = pe.moving;
     const by = seated ? .32 : (mv ? Math.abs(Math.sin(vt * 9 + i)) * .06 : 0);
-    const lean = (mv ? Math.sin(vt * 9 + i) * .07 : Math.sin(vt * 1.3 + i * 2.1) * .02), sh = pe.flash > 0 ? Math.sin(vt * 40) * .05 * pe.flash : 0;
+    const lean = (mv ? Math.sin(vt * 9 + i) * .07 : Math.sin(vt * 1.3 + i * 2.1) * .02), sh = pe.flash > 0 && !calm() ? Math.sin(vt * 40) * .05 * pe.flash : 0;   // an angry customer trembles (not under reduce motion; the red tint stays)
     const sc = pe.big;
     // squash and stretch: a stride bounce while walking, a slow breath while waiting or sitting, a quick shiver when angry
-    const sq = mv ? Math.sin(vt * 18 + i) * .05 : (seated ? Math.sin(vt * 2.1 + i * 1.7) * .024 : Math.sin(vt * 1.7 + i) * .018) + (pe.flash > 0 ? Math.sin(vt * 30) * .03 * pe.flash : 0);
+    const sq = mv ? Math.sin(vt * 18 + i) * .05 : (seated ? Math.sin(vt * 2.1 + i * 1.7) * .024 : Math.sin(vt * 1.7 + i) * .018) + (pe.flash > 0 && !calm() ? Math.sin(vt * 30) * .03 * pe.flash : 0);
     const sy = 1 + sq, sxz = 1 - sq * .55;
     PPL.body.setMatrixAt(i, mat(pe.x + sh, by, pe.z, sc * sxz, sy, sc * sxz, pe.face, 0, lean));
     PPL.head.setMatrixAt(i, mat(pe.x + sh, by + 1.02 * sy, pe.z, sc, sc, sc, pe.face + (seated && pe.arrived ? Math.sin(vt * .7 + i) * .15 : 0), 0, lean * .5));
@@ -4317,7 +4411,7 @@ function uiScreen(force) {
       ? `<button class="btn" data-a="cont" ${dis}>${label('cont2')}</button><small style="font-weight:700;color:var(--ink2)">${t('savedAt', sv.day, sv.coins)}</small><button class="btn alt" data-a="newgame" ${dis}>${t('newGame')}</button>`
       : `<button class="btn" data-a="start" ${dis}>${label('play')}</button>`;
     h = `<div class="card glass">${gearBtn}${langBtn}${LOGO_BIG}<h1>Çay Ocağı</h1><p>${t('tagline')}</p>
-      <ul class="how"><li><b>1</b><span>${t('how1')}</span></li><li><b>2</b><span>${t('how2')}</span></li><li><b>3</b><span>${t('how3')}</span></li><li><b>4</b><span>${t('how4')}</span></li></ul>
+      <ul class="how"><li><b>1</b><span>${t(TOUCH_UI ? 'how1Touch' : 'how1')}</span></li><li><b>2</b><span>${t(TOUCH_UI ? 'how2Touch' : 'how2')}</span></li><li><b>3</b><span>${t('how3')}</span></li><li><b>4</b><span>${t(TOUCH_UI ? 'how4Touch' : 'how4')}</span></li></ul>
       <p style="font-size:13px;color:#7a5a44">${bestLine()}</p><div class="col">${main}${window.Arena ? `<button class="btn alt sm" data-a="daily" ${dis}>${t('daily')}</button><small style="font-weight:700;color:var(--ink2)">${dailyLine()}</small>` : ''}<button class="btn alt sm" data-a="regs">${t('regulars')}</button><button class="btn alt sm" data-a="settings">${t('settings')}</button></div>
       <p class="foot"><a href="https://github.com/Furkiozknn" target="_blank" rel="noopener">${t('footer', 'Claude Sonnet 5.5')}</a></p></div>`;
   } else if (st === 'intro') {
@@ -4644,10 +4738,12 @@ function frame(now) {
   if (G.waiter) syncVisuals(dtReal);
   if (!G.paused) particlesUpdate(dtReal * Math.min(G.speed, 2));
   uiFrame(dtReal);
-  hoverRing.material.opacity = .6 + Math.sin(now / 160) * .25;
-  for (let i = 0; i < BULBS.n; i++) BULBS.ap[i * 2] = .34 + .12 * Math.sin(now / 420 + i * 1.9);
+  const still = calm();   // reduce motion: hover ring, string lights and lamps hold steady (no pulse, twinkle or flicker)
+  hoverRing.material.opacity = still ? .6 : .6 + Math.sin(now / 160) * .25;
+  for (let i = 0; i < BULBS.n; i++) BULBS.ap[i * 2] = still ? .34 : .34 + .12 * Math.sin(now / 420 + i * 1.9);
   BULBS.geo.attributes.ap.needsUpdate = true;
-  lampA.intensity = 17 + Math.sin(now / 230) * 1.4 + Math.sin(now / 71) * .8; lampB.intensity = 14 + Math.sin(now / 310 + 2) * 1.2 + Math.sin(now / 97) * .6;
+  if (still) { lampA.intensity = 17; lampB.intensity = 14; }
+  else { lampA.intensity = 17 + Math.sin(now / 230) * 1.4 + Math.sin(now / 71) * .8; lampB.intensity = 14 + Math.sin(now / 310 + 2) * 1.2 + Math.sin(now / 97) * .6; }
   renderer.render(scene, cam);
   G.drawCalls = renderer.info.render.calls; if (G.drawCalls > G.maxDrawCalls) G.maxDrawCalls = G.drawCalls;
 }
