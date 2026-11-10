@@ -3692,7 +3692,8 @@ function particlesUpdate(dt) {
    ambient life (sim side): cat, gulls, ferry
    ============================================================ */
 const CATHOME = { x: -7.55, z: -7.6 };
-const cat = { x: CATHOME.x, z: CATHOME.z, y: .3, face: Math.PI / 2, state: 'sleep', t: 14 + Math.random() * 10, path: [], moving: false, pet: 0 };
+// the first nap draws from the sim RNG (its wake-up draws from it too): random per load, reproducible with ?seed
+const cat = { x: CATHOME.x, z: CATHOME.z, y: .3, face: Math.PI / 2, state: 'sleep', t: 14 + rnd() * 10, path: [], moving: false, pet: 0 };
 const ferry = { x: -44, bob: 0, horn: false, rushed: false };
 /* gull thief (from day 3): lands on the quay rail, then dives at a served simit; click it (or the marker) to shoo it away */
 const thief = G.thief = { state: 'none', t: 0, next: 1e9, x: 0, y: 1.55, z: -9.35, x0: 0, y0: 0, z0: 0, tb: -1, wait: 0, face: 0 };
@@ -4662,7 +4663,10 @@ uiScreen(true);
 window.cayBench = function (n, base) {
   const res = []; G.botHold = false; const keep = FLAG.stop; FLAG.stop = '';
   for (let i = 0; i < n; i++) {
-    _seed = (base || 1) * 1000 + i; G.log = []; G.state = 'title'; A.start(); G.simming = true; let steps = 0;
+    // every bench game starts from its own seed with the cat asleep at home (as a daily attempt does), so the bench
+    // does not depend on the page load (the regulars' affection still carries from game to game, as in real play)
+    _seed = (base || 1) * 1000 + i; Object.assign(cat, { x: CATHOME.x, z: CATHOME.z, y: .3, face: Math.PI / 2, state: 'sleep', t: 14 + rnd() * 10, path: [], moving: false, pet: 0 });
+    G.log = []; G.state = 'title'; A.start(); G.simming = true; let steps = 0;
     while (G.state !== 'victory' && G.state !== 'gameover' && steps < 60 * 60 * 80) { simStep(STEP); steps++; }
     res.push({ reached: G.day, state: G.state, log: G.log.slice() });
   }

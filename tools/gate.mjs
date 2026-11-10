@@ -32,11 +32,6 @@ const GAME = {
   sim: {
     query: '?auto&noassets', // ?auto turns the bot on (and nosave), ?noassets keeps the procedural look (no model loading)
     holdFrames: true,        // queue requestAnimationFrame until the sim is done, so wall-clock frames do not advance it
-    // Runs before the page's scripts (optional, cay-ocagi addition to the generic core). The sim's own RNG is seeded
-    // (rnd(), reseeded per bench game) but the cat's first nap is `14 + Math.random() * 10` s (index.html `const cat`);
-    // when it wakes it draws from rnd() and shifts every later customer, so two loads gave 11 vs 12 wins. A fixed
-    // Math.random makes the page reproducible; visual randomness (particles, textures) is all that also changes.
-    init: () => { let a = 0x9e3779b9; Math.random = () => { a = (a + 0x6d2b79f5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; },
     ready: () => typeof window.cayBench === 'function' && !!window.cay,
     // 12 full bot campaigns (7 days each, 60 Hz fixed step, sim RNG reseeded to 3000+i per game); the research report's
     // own balance measure (cayBench(12,3): 12/12 wins). cayBench only returns text, so run parses its summary lines.
