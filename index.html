@@ -511,6 +511,8 @@ body.low .glass {
   -webkit-backdrop-filter: none;
   background: #2a160d;
 }
+/* screen cards keep their cream paper in Low (their text is dark); only the blur is dropped */
+body.low .glass.card { background: linear-gradient(180deg, #fffdf9 0%, #faf4e8 100%); }
 
 svg { display: block; }
 button { font: inherit; color: inherit; cursor: pointer; border: 0; background: none; padding: 0; }
@@ -4728,12 +4730,13 @@ function selfTest() {
   }
   const r0 = G.rushes[G.rushes.length - 1];
   ok('rush warns, then fills tables', !!r0 && r0.n >= 2 && wasWarn.length > 0 && partiesAt >= 2, `rushes ${G.rushes.length} n=${r0 && r0.n} warnFrom ${wasWarn[0] && wasWarn[0].toFixed(1)} at ${rushAt.toFixed(1)} parties ${partiesAt}`);
-  // 7. regular: tavla refills (bot serves them), at least 2 asked
+  // 7. regular: tavla refills (bot serves them), at least 2 asked; the bot is switched on for this check only, so plain ?selftest needs no ?auto
+  const keepAuto = FLAG.auto; FLAG.auto = true;
   G.day = 7; beginDay(false); G.simming = true; G.botHold = false; G.stations.kettles[0] = { st: 'ready', t: 0, n: TEA_N };
   G.up.tray = 2; G.waiter.q.length = 0; window.cay.spawnRegular();
   for (let i = 0; i < 60 * 150 && G.state === 'play'; i++) { simStep(STEP); if (G.refill.asked >= 2) break; }
   ok('regular asks for >= 2 refills', G.refill.asked >= 2, `asked ${G.refill.asked} done ${G.refill.done} missed ${G.refill.missed}`);
-  G.botHold = true;
+  G.botHold = true; FLAG.auto = keepAuto;
   // 8. rank thresholds and the facts table
   ok('ranks', rankOf(0) === 0 && rankOf(RANKS[1].from) === 1 && rankOf(RANKS[2].from) === 2 && FACTS.length === 6);
   G.simming = false; G.speed = keepSpeed; G.state = 'title'; uiScreen(true);
