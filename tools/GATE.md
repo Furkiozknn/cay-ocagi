@@ -42,17 +42,20 @@ branch; manual run: `--baseline`).
 ## This game (cay-ocagi)
 
 Copied from kale-savunmasi's `tools/gate.mjs`. The `GAME` block differs, plus one small generic addition: an
-optional `GAME.sim.init` function that runs before the page's own scripts (`page.addInitScript`). The sections above
+optional `GAME.sim.init` function that runs before the page's own scripts (`page.addInitScript`; not used by this
+game any more, see determinism below). The sections above
 describe the kale-savunmasi original (`hisarSim`, its timings); for cay-ocagi:
 
 - **sim**: `?auto&noassets` (bot on, nothing saved, procedural look). `run` calls the game's own
   `cayBench(12, 3)`: 12 full bot campaigns of 7 days in 60 Hz fixed steps, the sim RNG reseeded to `3000 + i` per
-  game (the research report's balance measure, 12/12 wins). `cayBench` returns text only, so `run` parses its summary.
-- **determinism needs `init`**: without it two loads gave 11 vs 12 wins. The sim RNG is seeded, but the cat's first
-  nap is `14 + Math.random() * 10` s (`const cat` in index.html); when the cat wakes it draws from the sim RNG and
-  shifts every later customer. `init` replaces `Math.random` with a fixed-seed generator in the sim page only, so the
-  whole page is reproducible (it also fixes particles and texture jitter, which do not touch the sim). The real fix
-  belongs in the game (cat timer from `rr()`, or `cayBench` resetting the cat as the daily mode already does); then
+  game (the research report's balance measure, 12/12 wins). `cay- **determinism**: the sim is reproducible without help from the gate. Until the seeding fix the cat's first nap
+  was `14 + Math.random() * 10` s; when the cat woke it drew from the sim RNG and shifted every later customer, so
+  two loads gave 11 vs 12 wins (12 / 10 / 12 in a later check) and the gate needed an `init` that fixed
+  `Math.random`. Now the first nap draws from the sim RNG and `cayBench` puts the cat to sleep at home with a seeded
+  nap at the start of every game (as a daily attempt already did), so `init` is gone. The regulars' affection still
+  carries from one bench game to the next, as in real play, so `cayBench(12, 3)` after another bench in the same page
+  gives other numbers; the gate always runs it on a fresh load.
+as the daily mode already does); then
   `init` can go.
 - **metrics**: `wins` (abs 1 of 12), `starsSum` and `ratioSum` (sum over days 1-7 of the per-day average stars and
   coins/target; rel 10 %) are gated; `daysPlayed`, `dayFails`, `angrySum`, `walkbySum` are info; `gameErrors`
