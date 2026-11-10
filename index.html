@@ -1041,7 +1041,7 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 .bub .rtag .hearts i.f, .bub .rtag .hearts i.h { color: #ff6b81; }
 .reglist { display: flex; flex-direction: column; gap: 6px; margin: 8px 0 12px; text-align: left; }
 .regrow { display: flex; align-items: center; gap: 10px; padding: 4px 10px; border-radius: 12px; background: rgba(255, 248, 235, 0.7); border: 1px solid rgba(120, 80, 40, 0.15); }
-.regrow .pt { width: 38px; height: 38px; flex: none; display: grid; place-items: center; border-radius: 50%; background: #efe2cc; font-weight: 900; color: #a08060; }
+.regrow .pt { width: 38px; height: 38px; flex: none; display: grid; place-items: center; border-radius: 50%; background: #efe2cc; font-weight: 900; color: #6e5236; }   /* was #a08060, 2.86 */
 .regrow .pt svg { width: 38px; height: 38px; }
 .regrow .tx { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
 .regrow .tx b { font-size: 14px; }
@@ -1272,7 +1272,7 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
   gap: 8px;
   padding: 13px 28px;
   border-radius: 14px;
-  background: linear-gradient(180deg, #e8863d 0%, #c2410c 100%);
+  background: linear-gradient(180deg, #bd4f17 0%, #9a3412 100%);   /* white text >= 4.5:1 at the top stop (was #e8863d, 2.66) */
   border: 1px solid #ffd469;
   color: #fff;
   font-family: var(--font-sans);
@@ -1405,7 +1405,7 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
   min-width: 74px;
   padding: 8px 10px;
   border-radius: 11px;
-  background: linear-gradient(180deg, #e8863d 0%, #c2410c 100%);
+  background: linear-gradient(180deg, #bd4f17 0%, #9a3412 100%);   /* white text >= 4.5:1 (was 2.66) */
   border: 1px solid #ffd469;
   color: #fff;
   font-weight: 800;
@@ -1420,6 +1420,7 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
 .buy svg { width: 16px; height: 16px; }
 .buy[disabled] {
   background: #c7b9ab;
+  color: #3d2b1f;   /* was white on #c7b9ab, 1.92 */
   border-color: #baa898;
   box-shadow: 0 3px 0 #9e8e80;
   pointer-events: none;
@@ -1678,7 +1679,7 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
   color: #2a160d;
 }
 .seg button.on {
-  background: linear-gradient(180deg, #d97e27 0%, #94460f 100%);
+  background: linear-gradient(180deg, #b85a1e 0%, #94460f 100%);   /* white text >= 4.5:1 (was #d97e27, 3.02) */
   border-color: #ffd469;
   color: #fff;
 }
@@ -1796,7 +1797,7 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
 <canvas id="c" tabindex="0"></canvas>
 <div id="wl"></div>
 <header id="top" class="glass"></header>
-<div id="toasts"><div id="banner" style="display:none"></div></div>
+<div id="toasts" role="status" aria-live="polite"><div id="banner" style="display:none"></div></div>
 <div id="dock"></div>
 <div id="screen" role="dialog" aria-modal="true"></div>
 <div id="dbg"></div>
@@ -1923,6 +1924,9 @@ const TXT = {
     how2: 'Bir masaya tıkla: istenenleri servis et. Kirli bardakları topla, lavaboya (5) götür.',
     how3: 'Müşterilerin sabrı tükenmeden servis yap. Hızlı servis daha çok bahşiş getirir.',
     how4: 'P / Esc: duraklat · Geri tuşu ya da sağ tık: sırayı temizle · M müzik · X efekt · L dil · Sürükle: kaydır · Tekerlek: yakınlaştır.',
+    how2Touch: 'Bir masaya dokun: istenenleri servis et. Kirli bardakları topla, lavaboya (5) götür.',
+    how1Touch: 'Bir istasyona dokun: çay demle, simit ısıt, kahve pişir. Hazır olunca tekrar dokun, tepsine girsin.',
+    how4Touch: 'Üstteki düğmeler: duraklat, ses, dil · Sıradaki “temizle”: sırayı temizle · Sürükle: kaydır · İki parmak: yakınlaştır.',
     day: 'Gün', dayOf: 'Gün {0}/7', dayEndless: 'Gün {0} ∞', target: 'Hedef', newThing: 'Yeni', menuToday: 'Bugünün menüsü',
     startDay: 'Günü başlat', today: 'Bugün', tray: 'Tepsi', clearQ: 'temizle', dropSlot: '{0} bırak',
     tea: 'Çay', simit: 'Simit', coffee: 'Kahve', ayran: 'Ayran', sink: 'Lavabo', dirty: 'Kirli bardak',
@@ -1980,6 +1984,9 @@ const TXT = {
     how2: 'Click a table to serve what they ordered. Collect dirty glasses and bring them to the sink (5).',
     how3: 'Serve before patience runs out. Fast service earns bigger tips.',
     how4: 'P / Esc: pause · Backspace or right-click: clear queue · M music · X effects · L language · Drag: pan · Wheel: zoom.',
+    how2Touch: 'Tap a table to serve what they ordered. Collect dirty glasses and bring them to the sink (5).',
+    how1Touch: 'Tap a station: brew tea, warm simit, cook coffee. Tap again when ready to grab it onto your tray.',
+    how4Touch: 'Buttons at the top: pause, sound, language · “clear” next to the queue: clear it · Drag: pan · Two fingers: zoom.',
     day: 'Day', dayOf: 'Day {0}/7', dayEndless: 'Day {0} ∞', target: 'Target', newThing: 'New', menuToday: "Today's menu",
     startDay: 'Start the day', today: 'Today', tray: 'Tray', clearQ: 'clear', dropSlot: 'Discard {0}',
     tea: 'Tea', simit: 'Simit', coffee: 'Coffee', ayran: 'Ayran', sink: 'Sink', dirty: 'Dirty glass',
@@ -2050,6 +2057,7 @@ const G = window.cay = {
   regDay: { seen: [], log: [] }, // named regulars today: ids that came, and { id, d (affection change), s (surprise) } per visit
   flags: FLAG, version: 1
 };
+const TOUCH_UI = matchMedia('(pointer: coarse)').matches;   // touch screen: the how-to names taps and buttons, not keys
 function t(k, ...a) {
   let s = (TXT[G.lang] && TXT[G.lang][k]); if (s == null) s = TXT.tr[k]; if (s == null) s = k;
   a.forEach((v, i) => { s = s.split('{' + i + '}').join(v); });
@@ -3574,6 +3582,7 @@ const PPL = {
   hair: new THREE.InstancedMesh(PG.hr, matIV(), MAXP), cap: new THREE.InstancedMesh(PG.cp, matIV(), MAXP)
 };
 const PPL_LIST = Object.values(PPL), FLASH_C = new THREE.Color(0xd23a2a);
+const calm = () => !!(window.Arena && Arena.settings && Arena.settings.reducedMotion);   // kit "reduce motion": read live, visuals only (the sim never sees it)
 PPL_LIST.forEach(m => { m.frustumCulled = false; m.castShadow = !FLAG.low; world.add(m); for (let i = 0; i < MAXP; i++) { m.setMatrixAt(i, mat(0, -50, 0, 0, 0, 0)); m.setColorAt(i, new THREE.Color(0xffffff)); } });
 
 function buildWaiter(shirt, vest, apron, hair, scale) {
@@ -3798,7 +3807,8 @@ function syncVisuals(dt) {
   // reuse static TB_LIST to avoid allocating a 4-element array every frame
   for (let j = 0; j < TB_LIST.length; j++) { const m = TB_LIST[j]; if (m.visible) { m.instanceMatrix.needsUpdate = true; if (m.instanceColor) m.instanceColor.needsUpdate = true; } }
 
-  ITM.tea.im.material.emissiveIntensity = .45 + Math.sin(vt * 3.2) * .22;
+  const still = calm();   // reduce motion: glows burn steady, no pulse or flicker
+  ITM.tea.im.material.emissiveIntensity = still ? .45 : .45 + Math.sin(vt * 3.2) * .22;
   glintAcc += dt;
   if (!G.paused && !G.simming && glintAcc > .6) {
     glintAcc = 0;
@@ -3812,7 +3822,7 @@ function syncVisuals(dt) {
   const S = G.stations;
   DYN.kettleB.visible = G.up.kettle > 0;
   const ovenOn = S && S.oven.st === 'baking';
-  DYN.ovenGlow.material.emissiveIntensity = S ? (ovenOn ? .9 + Math.sin(vt * 9) * .15 : S.oven.st === 'ready' ? .7 : .12) : .12;
+  DYN.ovenGlow.material.emissiveIntensity = S ? (ovenOn ? (still ? .9 : .9 + Math.sin(vt * 9) * .15) : S.oven.st === 'ready' ? .7 : .12) : .12;
   for (let k = 0; k < 3; k++) { const on = S && S.oven.st === 'ready' && k < S.oven.n; DYN.simitRings.setMatrixAt(k, on ? mat(FIT.ringX, FIT.ringY, STATION_Z.simit + (k - 1) * .45, 1, 1, 1, .3 * k) : mat(0, -50, 0, 0, 0, 0)); }
   DYN.simitRings.instanceMatrix.needsUpdate = true;
   for (let k = 0; k < 2; k++) {
@@ -3820,7 +3830,7 @@ function syncVisuals(dt) {
     let sc = 0, col = 0x6b4226;
     if (p) {
       if (p.st === 'cook') { sc = .02 + (p.t / COOK_T) * .12; col = 0x7a4a2a; }
-      else if (p.st === 'ready') { sc = .14 + Math.sin(vt * 12) * .01; col = 0xb98a56; }
+      else if (p.st === 'ready') { sc = still ? .14 : .14 + Math.sin(vt * 12) * .01; col = 0xb98a56; }
       else if (p.st === 'spilled') { sc = .02; col = 0x2e1d10; }
     }
     const spill = p && p.st === 'spilled'; // boiled over: a wide, flat, dark froth spread over the pot mouth
@@ -3866,10 +3876,10 @@ function syncVisuals(dt) {
     if (!pe || pe.delay > 0 && !pe.leaving) { hidePerson(i); continue; }
     const seated = pe.sitting, mv = pe.moving;
     const by = seated ? .32 : (mv ? Math.abs(Math.sin(vt * 9 + i)) * .06 : 0);
-    const lean = (mv ? Math.sin(vt * 9 + i) * .07 : Math.sin(vt * 1.3 + i * 2.1) * .02), sh = pe.flash > 0 ? Math.sin(vt * 40) * .05 * pe.flash : 0;
+    const lean = (mv ? Math.sin(vt * 9 + i) * .07 : Math.sin(vt * 1.3 + i * 2.1) * .02), sh = pe.flash > 0 && !calm() ? Math.sin(vt * 40) * .05 * pe.flash : 0;   // an angry customer trembles (not under reduce motion; the red tint stays)
     const sc = pe.big;
     // squash and stretch: a stride bounce while walking, a slow breath while waiting or sitting, a quick shiver when angry
-    const sq = mv ? Math.sin(vt * 18 + i) * .05 : (seated ? Math.sin(vt * 2.1 + i * 1.7) * .024 : Math.sin(vt * 1.7 + i) * .018) + (pe.flash > 0 ? Math.sin(vt * 30) * .03 * pe.flash : 0);
+    const sq = mv ? Math.sin(vt * 18 + i) * .05 : (seated ? Math.sin(vt * 2.1 + i * 1.7) * .024 : Math.sin(vt * 1.7 + i) * .018) + (pe.flash > 0 && !calm() ? Math.sin(vt * 30) * .03 * pe.flash : 0);
     const sy = 1 + sq, sxz = 1 - sq * .55;
     PPL.body.setMatrixAt(i, mat(pe.x + sh, by, pe.z, sc * sxz, sy, sc * sxz, pe.face, 0, lean));
     PPL.head.setMatrixAt(i, mat(pe.x + sh, by + 1.02 * sy, pe.z, sc, sc, sc, pe.face + (seated && pe.arrived ? Math.sin(vt * .7 + i) * .15 : 0), 0, lean * .5));
@@ -4317,7 +4327,7 @@ function uiScreen(force) {
       ? `<button class="btn" data-a="cont" ${dis}>${label('cont2')}</button><small style="font-weight:700;color:var(--ink2)">${t('savedAt', sv.day, sv.coins)}</small><button class="btn alt" data-a="newgame" ${dis}>${t('newGame')}</button>`
       : `<button class="btn" data-a="start" ${dis}>${label('play')}</button>`;
     h = `<div class="card glass">${gearBtn}${langBtn}${LOGO_BIG}<h1>Çay Ocağı</h1><p>${t('tagline')}</p>
-      <ul class="how"><li><b>1</b><span>${t('how1')}</span></li><li><b>2</b><span>${t('how2')}</span></li><li><b>3</b><span>${t('how3')}</span></li><li><b>4</b><span>${t('how4')}</span></li></ul>
+      <ul class="how"><li><b>1</b><span>${t(TOUCH_UI ? 'how1Touch' : 'how1')}</span></li><li><b>2</b><span>${t(TOUCH_UI ? 'how2Touch' : 'how2')}</span></li><li><b>3</b><span>${t('how3')}</span></li><li><b>4</b><span>${t(TOUCH_UI ? 'how4Touch' : 'how4')}</span></li></ul>
       <p style="font-size:13px;color:#7a5a44">${bestLine()}</p><div class="col">${main}${window.Arena ? `<button class="btn alt sm" data-a="daily" ${dis}>${t('daily')}</button><small style="font-weight:700;color:var(--ink2)">${dailyLine()}</small>` : ''}<button class="btn alt sm" data-a="regs">${t('regulars')}</button><button class="btn alt sm" data-a="settings">${t('settings')}</button></div>
       <p class="foot"><a href="https://github.com/Furkiozknn" target="_blank" rel="noopener">${t('footer', 'Claude Sonnet 5.5')}</a></p></div>`;
   } else if (st === 'intro') {
@@ -4644,10 +4654,12 @@ function frame(now) {
   if (G.waiter) syncVisuals(dtReal);
   if (!G.paused) particlesUpdate(dtReal * Math.min(G.speed, 2));
   uiFrame(dtReal);
-  hoverRing.material.opacity = .6 + Math.sin(now / 160) * .25;
-  for (let i = 0; i < BULBS.n; i++) BULBS.ap[i * 2] = .34 + .12 * Math.sin(now / 420 + i * 1.9);
+  const still = calm();   // reduce motion: hover ring, string lights and lamps hold steady (no pulse, twinkle or flicker)
+  hoverRing.material.opacity = still ? .6 : .6 + Math.sin(now / 160) * .25;
+  for (let i = 0; i < BULBS.n; i++) BULBS.ap[i * 2] = still ? .34 : .34 + .12 * Math.sin(now / 420 + i * 1.9);
   BULBS.geo.attributes.ap.needsUpdate = true;
-  lampA.intensity = 17 + Math.sin(now / 230) * 1.4 + Math.sin(now / 71) * .8; lampB.intensity = 14 + Math.sin(now / 310 + 2) * 1.2 + Math.sin(now / 97) * .6;
+  if (still) { lampA.intensity = 17; lampB.intensity = 14; }
+  else { lampA.intensity = 17 + Math.sin(now / 230) * 1.4 + Math.sin(now / 71) * .8; lampB.intensity = 14 + Math.sin(now / 310 + 2) * 1.2 + Math.sin(now / 97) * .6; }
   renderer.render(scene, cam);
   G.drawCalls = renderer.info.render.calls; if (G.drawCalls > G.maxDrawCalls) G.maxDrawCalls = G.drawCalls;
 }
