@@ -1583,12 +1583,29 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
 .cring {
   position: absolute;
   left: 0; top: 0;
-  width: 46px; height: 46px;
+  width: 48px; height: 48px;
   display: none;
   pointer-events: none;
   will-change: transform;
+  z-index: 4;
 }
-.cring svg { width: 46px; height: 46px; transform: rotate(-90deg); }
+.cring canvas {
+  width: 48px;
+  height: 48px;
+  display: block;
+}
+.cring svg { display: none; }
+.st .st-coffee-canvas {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 38px;
+  height: 38px;
+  pointer-events: none;
+  display: none;
+  z-index: 2;
+}
 
 .gmark {
   position: absolute;
@@ -4081,6 +4098,78 @@ function regTodayHTML(log) {
 // elements updated every frame, looked up once per uiStatic()
 const UI = { sts: [] };
 const WL = {}; // v2 world overlays (coffee window rings, gull marker, coach mark), built once in uiStatic()
+
+/**
+ * Animated Canvas progress arc over the coffee stove UI during the 3.6s brew window (COOK_WIN).
+ * Smoothly updates in the render loop and shifts color from green (#22c55e) to red (#ef4444) at <= 1s remaining.
+ */
+function drawCoffeeTimingArc(canvas, ctx, p, isOverlay = true) {
+  if (!canvas || !ctx || !p || p.st !== 'ready') return;
+  const rem = Math.max(0, COOK_WIN - p.t);
+  const f = clamp(rem / COOK_WIN, 0, 1);
+  const isWarn = rem <= 1.0;
+  // Shifting color at 1s remaining: red if <= 1s, green if > 1s
+  const strokeColor = isWarn ? '#ef4444' : '#22c55e';
+
+  // Expose color and progress metadata for inspection/assertions
+  canvas.dataset.color = isWarn ? 'red' : 'green';
+  canvas.dataset.hex = strokeColor;
+  canvas.dataset.progress = f.toFixed(3);
+  canvas.dataset.remaining = rem.toFixed(2);
+  canvas.classList.toggle('warn', isWarn);
+  canvas.classList.toggle('red', isWarn);
+  canvas.classList.toggle('green', !isWarn);
+
+  const w = 48, h = 48;
+  const cx = 24, cy = 24;
+  const radius = isOverlay ? 18 : 17;
+
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  const scale = canvas.width / w;
+  ctx.scale(scale, scale);
+  ctx.clearRect(0, 0, w, h);
+
+  // Background halo / dish (only on 3D overlay for readability over counter)
+  if (isOverlay) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255, 253, 249, 0.88)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(42, 22, 13, 0.2)';
+    ctx.lineWidth = 3.5;
+    ctx.stroke();
+  } else {
+    // Faint track ring on dock button
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(42, 22, 13, 0.15)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
+
+  // Animated progress arc
+  if (f > 0.005) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, -Math.PI / 2, -Math.PI / 2 + f * Math.PI * 2, false);
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = isOverlay ? 4 : 3.5;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+  }
+
+  // Center indicator pip (gold during perfect window <= 1.0s, green during safe window, red during warning)
+  if (isOverlay) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, 3.5, 0, Math.PI * 2);
+    ctx.fillStyle = isWarn ? '#ef4444' : (p.t <= PERFECT.win ? '#dfb738' : '#22c55e');
+    ctx.fill();
+  }
+
+  ctx.restore();
+}
+G.drawCoffeeTimingArc = drawCoffeeTimingArc;
+
 /* day-1 coach marks, derived from the live game state (so they follow what the player really does) and shown once:
    tea station (brew, then grab) -> the first customer's bubble -> the table. null once the first table has been served. */
 function coachState() {
@@ -4118,14 +4207,17 @@ function uiStatic() {
   let sts = '';
   STATION_KEYS.forEach((k, i) => {
     let u = ''; for (let j = 0; j < units[k]; j++) u += `<div class="u" data-u="${j}"><i></i></div>`;
-    sts += `<button class="st" data-st="${k}"><span class="key">${i + 1}</span><span class="cnt"></span>${ICON[k]}<b>${names[k]}</b><div class="units">${u}</div></button>`;
+    const cCv = k === 'coffee' ? '<canvas class="st-coffee-canvas" width="96" height="96"></canvas>' : '';
+    sts += `<button class="st" data-st="${k}"><span class="key">${i + 1}</span><span class="cnt"></span>${ICON[k]}<b>${names[k]}</b><div class="units">${u}</div>${cCv}</button>`;
   });
   dockEl.innerHTML = `
     <div id="tray" class="glass"><span class="lbl">${t('tray')}</span><div class="slots">${slots}</div><div id="queue"></div></div>
     <div id="stations" class="glass">${sts}</div>`;
+  const stCoffeeCv = $('.st-coffee-canvas', dockEl);
   Object.assign(UI, {
     sp: $('#b-speed'), pb: $('#b-pause'), slots: $$('.slot'), queue: $('#queue'), clk: $('#t-clkbar'), time: $('#t-time'), coinChip: $('#t-coinchip'),
-    sts: $$('.st').map(el => ({ el, k: el.dataset.st, us: $$('.u', el), ce: $('.cnt', el) }))
+    sts: $$('.st').map(el => ({ el, k: el.dataset.st, us: $$('.u', el), ce: $('.cnt', el) })),
+    stCoffeeCv, stCoffeeCtx: stCoffeeCv ? stCoffeeCv.getContext('2d') : null
   });
   C_cache.clear();
   // station world badges + table bubbles
@@ -4133,13 +4225,15 @@ function uiStatic() {
     wlEl.dataset.built = 1;
     for (let i = 0; i < 6; i++) { const b = document.createElement('div'); b.className = 'bub'; b.dataset.t = i; wlEl.appendChild(b); }
     ['tea', 'simit', 'coffee'].forEach(k => { const b = document.createElement('div'); b.className = 'bub mini sbadge'; b.dataset.s = k; b.style.pointerEvents = 'none'; wlEl.appendChild(b); });
-    // v2 overlays: a shrinking ring over each coffee pot's grab window, the gull marker, the day-1 coach mark
+    // Animated Canvas timing ring over each coffee pot's 3.6s brew window
     WL.cr = [0, 1].map(() => {
-      const c = document.createElement('div'); c.className = 'cring';
-      c.innerHTML = '<svg viewBox="0 0 46 46"><circle cx="23" cy="23" r="19" fill="rgba(255,248,235,.6)" stroke="rgba(80,40,10,.25)" stroke-width="5"/><circle class="cr" cx="23" cy="23" r="19" fill="none" stroke="#f2b632" stroke-width="5" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="0"/></svg>';
+      const c = document.createElement('div'); c.className = 'cring coffee-ring';
+      c.innerHTML = '<canvas class="coffee-canvas" width="96" height="96"></canvas><svg class="cr-svg" viewBox="0 0 46 46" style="display:none"><circle cx="23" cy="23" r="19" fill="rgba(255,248,235,.6)" stroke="rgba(80,40,10,.25)" stroke-width="5"/><circle class="cr" cx="23" cy="23" r="19" fill="none" stroke="#f2b632" stroke-width="5" stroke-linecap="round" stroke-dasharray="119.4" stroke-dashoffset="0"/></svg>';
       wlEl.appendChild(c); return c;
     });
-    WL.crc = WL.cr.map(c => c.querySelector('.cr'));
+    WL.cv = WL.cr.map(c => c.querySelector('canvas'));
+    WL.ctx = WL.cv.map(cv => cv.getContext('2d'));
+    WL.crc = WL.cr.map(c => c.querySelector('.cr') || { style: {} });
     WL.gm = document.createElement('button'); WL.gm.className = 'gmark'; WL.gm.dataset.a = 'gull'; WL.gm.setAttribute('aria-label', 'Gull'); wlEl.appendChild(WL.gm);
     WL.co = document.createElement('div'); WL.co.className = 'coach'; WL.co.innerHTML = '<div class="cm"><div class="tx"></div><div class="ar"></div><div class="pl"></div></div>'; wlEl.appendChild(WL.co);
     WL.cot = WL.co.querySelector('.tx');
@@ -4267,15 +4361,31 @@ function uiFrame(dt, force) {
       el.style.display = 'flex'; el.style.transform = `translate(${Math.round(_sp.x)}px,${Math.round(_sp.y)}px) translate(-50%,-100%)`;
       el.style.outline = urgent ? '3px solid #c0392b' : '';
     });
-    /* coffee window: a ring over each ready pot shrinks over COOK_WIN; gold while a grab still counts as perfect */
+    /* coffee window: animated Canvas timing arc over each ready pot during COOK_WIN (3.6s); shifts color to red at 1s remaining */
     for (let k = 0; k < 2; k++) {
-      const el = WL.cr[k], p = S && play ? S.pots[k] : null;
-      if (!p || p.st !== 'ready') { if (el.style.display !== 'none') el.style.display = 'none'; continue; }
-      const q = FIT.pots[k], f = clamp(p.t / COOK_WIN, 0, 1);
-      WL.crc[k].style.strokeDashoffset = (119.4 * f).toFixed(1);
-      WL.crc[k].style.stroke = p.t <= PERFECT.win ? '#f2b632' : `hsl(${Math.round((1 - f) * 100)},72%,46%)`;
+      const el = WL.cr[k], cv = WL.cv && WL.cv[k], ctx = WL.ctx && WL.ctx[k], p = S && play ? S.pots[k] : null;
+      if (!p || p.st !== 'ready') { if (el && el.style.display !== 'none') el.style.display = 'none'; continue; }
+      const q = FIT.pots[k];
+      drawCoffeeTimingArc(cv, ctx, p, true);
       toScreen(q[0], q[1] + 1.15, q[2], _sp);
-      el.style.display = 'block'; el.style.transform = `translate(${Math.round(_sp.x)}px,${Math.round(_sp.y)}px) translate(-50%,-50%)`;
+      el.style.display = 'block';
+      el.style.transform = `translate(${Math.round(_sp.x)}px,${Math.round(_sp.y)}px) translate(-50%,-50%)`;
+      if (WL.crc && WL.crc[k] && WL.crc[k].style) {
+        const rem = Math.max(0, COOK_WIN - p.t);
+        const f = clamp(p.t / COOK_WIN, 0, 1);
+        WL.crc[k].style.strokeDashoffset = (119.4 * f).toFixed(1);
+        WL.crc[k].style.stroke = rem <= 1.0 ? '#ef4444' : '#22c55e';
+      }
+    }
+    // Also render timing arc on dock coffee station button if a pot is ready
+    if (UI.stCoffeeCv && UI.stCoffeeCtx) {
+      const rdPot = S && play ? S.pots.find(p => p.st === 'ready') : null;
+      if (rdPot) {
+        UI.stCoffeeCv.style.display = 'block';
+        drawCoffeeTimingArc(UI.stCoffeeCv, UI.stCoffeeCtx, rdPot, false);
+      } else if (UI.stCoffeeCv.style.display !== 'none') {
+        UI.stCoffeeCv.style.display = 'none';
+      }
     }
     /* gull marker (also the tap target on touch screens) */
     { const th = thief, el = WL.gm;
@@ -4289,7 +4399,10 @@ function uiFrame(dt, force) {
       WL.co.style.display = 'block'; WL.co.style.transform = `translate(${Math.round(clamp(_sp.x, 110, VIEW.w - 110))}px,${Math.round(Math.max(_sp.y, 150))}px) translate(-50%,-100%)`;
     }
   }
-  if (!(play || G.state === 'intro')) [...WL.cr, WL.gm, WL.co].forEach(e => { if (e.style.display !== 'none') e.style.display = 'none'; });
+  if (!(play || G.state === 'intro')) {
+    [...WL.cr, WL.gm, WL.co].forEach(e => { if (e && e.style.display !== 'none') e.style.display = 'none'; });
+    if (UI.stCoffeeCv && UI.stCoffeeCv.style.display !== 'none') UI.stCoffeeCv.style.display = 'none';
+  }
   if (FLAG.debug) {
     const v = [`fps ${G.fps}  calls ${G.drawCalls} (max ${G.maxDrawCalls})  tris ${renderer.info.render.triangles}  geo ${renderer.info.memory.geometries}`,`state ${G.state} day ${G.day} t ${G.clock.toFixed(0)}s  coins ${G.dayCoins}/${G.target} wallet ${G.coins}`,`happy ${G.happy} angry ${G.angry}  parties ${G.parties.length}  speed ${G.speed}`,
       `fresh tray [${G.trayFresh().join(',')}] pots [${G.stations ? G.stations.kettles.map(k => k.st === 'ready' ? teaFresh(k.t).toFixed(2) : '-').join(',') : ''}]  rushes ${G.rushes.length} soon ${G.rushSoon}  refills ${G.refill.asked}/${G.refill.done}/${G.refill.missed}  gull ${thief.state} ${G.gull.landed}/${G.gull.shooed}/${G.gull.stolen}  perfect ${G.perfects}`,G.log.map(r => `d${r.day} ${r.coins}/${r.target} h${r.happy} a${r.angry} *${r.stars}`).join(' | '),G.benchOut || '', G.testOut || '',...G.errors.map(e => '<span class="err">' + e + '</span>')].join('\n');
@@ -4839,6 +4952,16 @@ function selfTest() {
   G.botHold = true; FLAG.auto = keepAuto;
   // 8. rank thresholds and the facts table
   ok('ranks', rankOf(0) === 0 && rankOf(RANKS[1].from) === 1 && rankOf(RANKS[2].from) === 2 && FACTS.length === 6);
+  // 9. coffee timing ring: animated canvas arc over 3.6s window, green > 1s, red <= 1s
+  const testPotSafe = { st: 'ready', t: 1.0 }; // 2.6s remaining (> 1s) -> green
+  const testPotWarn = { st: 'ready', t: 3.0 }; // 0.6s remaining (<= 1s) -> red
+  const testCv = document.createElement('canvas'); testCv.width = 96; testCv.height = 96;
+  const testCtx = testCv.getContext('2d');
+  drawCoffeeTimingArc(testCv, testCtx, testPotSafe);
+  const colorSafe = testCv.dataset.color;
+  drawCoffeeTimingArc(testCv, testCtx, testPotWarn);
+  const colorWarn = testCv.dataset.color;
+  ok('coffee timing ring red/green shift', colorSafe === 'green' && colorWarn === 'red', `${colorSafe} -> ${colorWarn}`);
   G.simming = false; G.speed = keepSpeed; G.state = 'title'; uiScreen(true);
   G.selfTest = out; G.testOut = out.join('\n');
 }
