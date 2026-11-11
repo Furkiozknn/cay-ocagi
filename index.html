@@ -1970,6 +1970,376 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
   .slot svg { width: 24px; height: 24px; }
 }
 
+/* --- Viewports <= 360px: Mobile Bottom-Dock UI Layout --- */
+@media (max-width: 360px) {
+  /* Pinned bottom-dock container anchored into lower thumb-friendly zone */
+  #dock {
+    left: calc(6px + env(safe-area-inset-left, 0px));
+    right: calc(6px + env(safe-area-inset-right, 0px));
+    bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+    gap: 4px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  /* Primary station console: 5 touch-friendly stations spanning bottom edge */
+  #stations {
+    width: 100%;
+    max-width: 348px;
+    gap: 3px;
+    padding: 3px 2px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+  }
+  .st {
+    flex: 1 1 0;
+    min-width: 0;
+    width: auto;
+    min-height: 56px;
+    padding: 4px 1px 3px;
+    border-radius: 10px;
+    gap: 2px;
+  }
+  .st svg {
+    width: 20px;
+    height: 20px;
+  }
+  .st b {
+    font-size: 9px;
+    line-height: 1.1;
+    letter-spacing: -0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+  .st .key {
+    display: none;
+  }
+  .st .units {
+    margin-top: 2px;
+    gap: 2px;
+    width: 100%;
+    padding: 0 2px;
+  }
+  .st .u {
+    height: 5px;
+    border-radius: 3px;
+  }
+  .st .cnt {
+    min-width: 16px;
+    height: 16px;
+    font-size: 10px;
+    border-radius: 8px;
+    padding: 0 3px;
+    top: 2px;
+    right: 2px;
+  }
+  .st .st-coffee-canvas {
+    width: 24px;
+    height: 24px;
+    top: 2px;
+  }
+
+  /* Ottoman serving tray: compact row right above stations */
+  #tray {
+    width: 100%;
+    max-width: 348px;
+    padding: 4px 6px 3px;
+    gap: 3px;
+    border-radius: 12px;
+    margin: 0 auto;
+  }
+  .tray-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    width: 100%;
+  }
+  #tray .lbl {
+    font-size: 10px;
+    letter-spacing: 0.8px;
+    flex: none;
+  }
+  .slots {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    flex: 1;
+  }
+  .slot {
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+    min-height: 34px;
+    border-radius: 9px;
+  }
+  .slot svg {
+    width: 22px;
+    height: 22px;
+  }
+  .slot.full .sx {
+    width: 18px;
+    height: 18px;
+    font-size: 12px;
+    line-height: 16px;
+    right: -4px;
+    top: -4px;
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .tray-dots {
+    gap: 5px;
+    min-height: 8px;
+    padding: 0;
+  }
+  .tray-dot {
+    width: 6px;
+    height: 6px;
+  }
+  #queue {
+    gap: 3px;
+  }
+  #queue .q {
+    width: 18px;
+    height: 18px;
+    font-size: 10px;
+    border-radius: 5px;
+  }
+  #queue .qx {
+    font-size: 9.5px;
+    padding: 2px 3px;
+  }
+
+  /* Action buttons: anchored into lower thumb-friendly zone directly above dock */
+  #top .btns {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(134px + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 6px;
+    background: var(--surface-hud);
+    backdrop-filter: blur(12px) saturate(1.4);
+    -webkit-backdrop-filter: blur(12px) saturate(1.4);
+    border: 1px solid var(--surface-hud-border);
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(15, 8, 4, 0.45), inset 0 1px 0 rgba(255, 249, 224, 0.25);
+    z-index: 6;
+    pointer-events: auto;
+  }
+  body.low #top .btns {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: #2a160d;
+  }
+  #top .btns .ibtn {
+    min-width: 40px;
+    height: 40px;
+    font-size: 12px;
+    padding: 0 4px;
+    border-radius: 9px;
+  }
+  #top .btns .ibtn svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Top HUD: clean status strip without button crowding */
+  #top {
+    left: calc(6px + env(safe-area-inset-left, 0px));
+    right: calc(6px + env(safe-area-inset-right, 0px));
+    top: calc(6px + env(safe-area-inset-top, 0px));
+    gap: 4px;
+    padding: 4px 6px;
+    border-radius: 10px;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
+  #top .logo {
+    font-size: 14px;
+    gap: 4px;
+  }
+  #top .logo svg {
+    width: 20px;
+    height: 20px;
+  }
+  #t-day {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 6px;
+  }
+  .chip {
+    font-size: 11.5px;
+    gap: 3px;
+  }
+  .chip svg {
+    width: 16px;
+    height: 16px;
+  }
+  .chip.cc {
+    padding: 2px 5px;
+    border-radius: 12px;
+  }
+  .chip.cc small {
+    display: none;
+  }
+  .bar {
+    width: 36px;
+    height: 6px;
+  }
+  .bar.clock {
+    width: 42px;
+  }
+  #top .sp {
+    display: none;
+  }
+
+  /* Modal cards: fit compact viewports without vertical scroll */
+  #screen {
+    padding: 6px;
+  }
+  .card {
+    padding: 14px 10px;
+    border-radius: 16px;
+    max-height: 96vh;
+  }
+  .card h1 {
+    font-size: 24px;
+    margin: 4px 0 2px;
+  }
+  .card h2 {
+    font-size: 18px;
+    margin: 0 0 4px;
+  }
+  .card p {
+    font-size: 13px;
+    margin: 4px 0;
+  }
+  .card .biglogo {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto;
+  }
+  .card .lang {
+    right: 8px;
+    top: 8px;
+  }
+  .card .gear {
+    left: 8px;
+    top: 8px;
+  }
+  .btn {
+    padding: 10px 18px;
+    font-size: 15px;
+    border-radius: 12px;
+    min-height: 44px;
+    margin: 4px 2px;
+  }
+  .btn.sm {
+    padding: 7px 12px;
+    font-size: 13px;
+    min-height: 38px;
+  }
+  .how {
+    margin: 8px 0;
+    gap: 6px;
+  }
+  .how li {
+    padding: 6px 8px;
+    font-size: 12px;
+    gap: 8px;
+    border-radius: 9px;
+  }
+  .how li b {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+  .shop {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin: 8px 0;
+  }
+  .up {
+    padding: 8px 10px;
+    border-radius: 11px;
+    gap: 8px;
+  }
+  .up .ic {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+  }
+  .up .ic svg {
+    width: 26px;
+    height: 26px;
+  }
+  .up .tx b {
+    font-size: 13px;
+  }
+  .up .tx small {
+    font-size: 11px;
+  }
+  .buy {
+    min-width: 64px;
+    min-height: 38px;
+    padding: 6px 8px;
+    font-size: 13px;
+    border-radius: 9px;
+  }
+  .wallet {
+    font-size: 17px;
+    padding: 4px 12px;
+  }
+  .wallet svg {
+    width: 20px;
+    height: 20px;
+  }
+  .set {
+    gap: 6px;
+    margin: 8px 0;
+  }
+  .set label, .set .row {
+    padding: 6px 10px;
+    min-height: 42px;
+    gap: 8px;
+    font-size: 13px;
+    border-radius: 9px;
+  }
+  .set label span:first-child, .set .row span:first-child {
+    width: 90px;
+  }
+  .rowk {
+    padding: 6px 10px;
+    font-size: 13px;
+    margin: 4px 0;
+  }
+  .stars svg {
+    width: 40px;
+    height: 40px;
+  }
+  .rank .rk {
+    padding: 2px 10px;
+    font-size: 13px;
+  }
+  .arena-gear {
+    bottom: calc(186px + env(safe-area-inset-bottom, 0px));
+    right: calc(8px + env(safe-area-inset-right, 0px));
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+    line-height: 34px;
+  }
+}
+
 @media (max-height: 500px) and (orientation: landscape) {
   /* Phone landscape: compact dock to preserve 3D game visibility */
   #top { padding: 4px 10px; gap: 8px; }
@@ -5194,6 +5564,13 @@ function selfTest() {
   const pulsedRemove = !!(dots0[0] && dots0[0].classList.contains('pulse'));
   ok('tray capacity dots update and pulse', count0 >= 3 && count0 <= 5 && filled0 === 0 && filled1 === 1 && filled2 === 2 && filledAfterRemove === 1, `dots=${count0} f0=${filled0} f1=${filled1} f2=${filled2} rem=${filledAfterRemove} p1=${pulsed1} p2=${pulsed2} pR=${pulsedRemove}`);
   G.waiter.tray.length = 0; G.waiter.meta.length = 0; updateTrayDots();
+  // 11. mobile bottom-dock UI layout: primary station and action buttons anchored and interactive
+  const dockElTest = document.getElementById('dock');
+  const stationsTest = document.getElementById('stations');
+  const stBtnsTest = stationsTest ? stationsTest.querySelectorAll('.st') : [];
+  const actionBtnsTest = document.querySelectorAll('#top .btns button');
+  const traySlotsTest = document.querySelectorAll('#tray .slot');
+  ok('mobile bottom-dock layout elements ready', !!dockElTest && !!stationsTest && stBtnsTest.length === 5 && actionBtnsTest.length >= 5 && traySlotsTest.length >= 3, `dock=${!!dockElTest} stations=${stBtnsTest.length} actions=${actionBtnsTest.length} slots=${traySlotsTest.length}`);
   G.simming = false; G.speed = keepSpeed; G.state = 'title'; uiScreen(true);
   G.selfTest = out; G.testOut = out.join('\n');
 }
