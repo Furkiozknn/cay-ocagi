@@ -758,13 +758,20 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 /* Ottoman Serving Tray (#tray) */
 #tray {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
+  gap: 5px;
+  padding: 8px 14px 6px;
   background: linear-gradient(180deg, #381d11 0%, #221008 100%);
   border: 2px solid var(--brass-500);
   border-radius: 18px;
   box-shadow: 0 10px 30px rgba(10, 5, 2, 0.6), inset 0 1px 0 rgba(255, 249, 224, 0.35);
+}
+
+.tray-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 #tray .lbl {
@@ -778,6 +785,58 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
 }
 
 .slots { display: flex; gap: 6px; }
+
+/* Tray Capacity Dot Indicators */
+.tray-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 1px 4px 0;
+  min-height: 10px;
+}
+.tray-dots.pulse {
+  animation: trayDotsPulse 0.3s ease-out;
+}
+.tray-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(27, 14, 7, 0.75);
+  border: 1.5px solid rgba(223, 183, 56, 0.4);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+  box-sizing: border-box;
+  display: inline-block;
+  cursor: default;
+}
+.tray-dot.filled {
+  background: radial-gradient(circle at 35% 35%, #fff9e0 0%, #f5d469 45%, #d97e27 100%);
+  border-color: #ffd469;
+  box-shadow: 0 0 7px rgba(245, 212, 105, 0.8), 0 1px 3px rgba(0, 0, 0, 0.5);
+  transform: scale(1.15);
+}
+.tray-dot.pulse {
+  animation: dotPulse 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.tray-dot:not(.filled).pulse {
+  animation: dotPulseEmpty 0.35s ease-out;
+}
+@keyframes dotPulse {
+  0% { transform: scale(0.9); }
+  50% { transform: scale(1.6); filter: brightness(1.35); }
+  100% { transform: scale(1.15); }
+}
+@keyframes dotPulseEmpty {
+  0% { transform: scale(1.35); border-color: rgba(223, 183, 56, 0.8); }
+  50% { transform: scale(0.65); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes trayDotsPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
 
 .slot {
   width: 44px;
@@ -1872,6 +1931,8 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
   .bar { width: 70px; }
   #dock { gap: 8px; }
   #tray, #stations { padding: 6px 8px; border-radius: 14px; }
+  .tray-dots { gap: 6px; }
+  .tray-dot { width: 7px; height: 7px; }
   .slot { width: 40px; height: 40px; }
   .st { width: 68px; padding: 6px 3px; }
   .st svg { width: 26px; height: 26px; }
@@ -1897,6 +1958,9 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
   .chip { font-size: 13px; gap: 4px; }
   .chip.cc { padding: 3px 6px; }
   .bar { width: 50px; }
+  #tray { padding: 5px 6px 4px; gap: 4px; }
+  .tray-dots { gap: 5px; }
+  .tray-dot { width: 6px; height: 6px; }
   #stations { gap: 4px; padding: 4px; width: 100%; justify-content: space-between; }
   .st { width: calc(20% - 4px); padding: 5px 1px; min-width: 0; }
   .st svg { width: 22px; height: 22px; }
@@ -1911,6 +1975,8 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
   #top { padding: 4px 10px; gap: 8px; }
   #dock { gap: 6px; bottom: 4px; }
   #tray, #stations { padding: 4px 6px; }
+  .tray-dots { gap: 5px; }
+  .tray-dot { width: 6px; height: 6px; }
   .slot { width: 34px; height: 34px; }
   .st { width: 60px; padding: 3px 2px; }
   .st svg { width: 22px; height: 22px; }
@@ -2057,7 +2123,7 @@ const TXT = {
     how1Touch: 'Bir istasyona dokun: çay demle, simit ısıt, kahve pişir. Hazır olunca tekrar dokun, tepsine girsin.',
     how4Touch: 'Üstteki düğmeler: duraklat, ses, dil · Sıradaki “temizle”: sırayı temizle · Sürükle: kaydır · İki parmak: yakınlaştır.',
     day: 'Gün', dayOf: 'Gün {0}/7', dayEndless: 'Gün {0} ∞', target: 'Hedef', newThing: 'Yeni', menuToday: 'Bugünün menüsü',
-    startDay: 'Günü başlat', today: 'Bugün', tray: 'Tepsi', clearQ: 'temizle', dropSlot: '{0} bırak',
+    startDay: 'Günü başlat', today: 'Bugün', tray: 'Tepsi', trayCapacity: 'Tepsi doluluğu: {0}/{1}', clearQ: 'temizle', dropSlot: '{0} bırak',
     tea: 'Çay', simit: 'Simit', coffee: 'Kahve', ayran: 'Ayran', sink: 'Lavabo', dirty: 'Kirli bardak',
     new1: 'Demli çay', new2: 'Sıcak simit', new3: 'Türk kahvesi', new4: 'Soğuk ayran',
     new5: 'Aceleci ofis çalışanı: sabrı kısa', new6: '3 kişilik grup: büyük sipariş', new7: 'Müdavim: bahşişi iki katı',
@@ -2117,7 +2183,7 @@ const TXT = {
     how1Touch: 'Tap a station: brew tea, warm simit, cook coffee. Tap again when ready to grab it onto your tray.',
     how4Touch: 'Buttons at the top: pause, sound, language · “clear” next to the queue: clear it · Drag: pan · Two fingers: zoom.',
     day: 'Day', dayOf: 'Day {0}/7', dayEndless: 'Day {0} ∞', target: 'Target', newThing: 'New', menuToday: "Today's menu",
-    startDay: 'Start the day', today: 'Today', tray: 'Tray', clearQ: 'clear', dropSlot: 'Discard {0}',
+    startDay: 'Start the day', today: 'Today', tray: 'Tray', trayCapacity: 'Tray capacity: {0}/{1}', clearQ: 'clear', dropSlot: 'Discard {0}',
     tea: 'Tea', simit: 'Simit', coffee: 'Coffee', ayran: 'Ayran', sink: 'Sink', dirty: 'Dirty glass',
     new1: 'Fresh brewed tea', new2: 'Warm simit', new3: 'Turkish coffee', new4: 'Cold ayran',
     new5: 'Hurried office worker: short patience', new6: 'Group of 3: big orders', new7: 'Regular: tips double',
@@ -2184,6 +2250,7 @@ const G = window.cay = {
   rushes: [], rushQ: [], rushSoon: false, rushDay: 0, refill: { asked: 0, done: 0, missed: 0 }, combo: 0, perfects: 0,
   gull: { landed: 0, shooed: 0, stolen: 0 }, gullEvents: [], life: 0, rank: 0,
   regDay: { seen: [], log: [] }, // named regulars today: ids that came, and { id, d (affection change), s (surprise) } per visit
+  get tray() { return G.waiter ? G.waiter.tray : []; },
   flags: FLAG, version: 1
 };
 const TOUCH_UI = matchMedia('(pointer: coarse)').matches;   // touch screen: the how-to names taps and buttons, not keys
@@ -2400,6 +2467,7 @@ function resetWorldForDay() {
   newTables(); resetStations(); rebuildGrid();
   // tray[k] is the item name, meta[k] its extras: { age } for tea (seconds since it was poured), { perfect } for coffee
   G.waiter = { x: LANE_X, z: 0.5, face: -Math.PI / 2, path: [], q: [], cur: null, state: 'idle', workT: 0, tray: [], meta: [], moving: false, sx: 0, sz: 0 };
+  _lastTrayLen = 0; if (typeof updateTrayDots === 'function') updateTrayDots();
   G.apprentice = G.up.apprentice ? { x: -4.3, z: 5.9, face: 0, path: [], state: 'idle', t: 0, tb: null, moving: false } : null;
   G.clock = 0; G.dayCoins = 0; G.dayTips = 0; G.happy = 0; G.angry = 0; G.served = 0; G.missed = 0;
   G.spawnT = 2.2; G.spawnCount = 0; G.walkby = 0; G.lastCall = false;
@@ -2641,8 +2709,8 @@ function slotFor(tb, item, stale) {
 /* tea freshness: 1 for TEA.fresh seconds after pouring, then fading to 0 (stale) over TEA.fade seconds */
 const teaFresh = age => age <= TEA.fresh ? 1 : clamp(1 - (age - TEA.fresh) / TEA.fade, 0, 1);
 const trayFresh = k => { const w = G.waiter; return w.tray[k] === 'tea' ? teaFresh(w.meta[k].age) : 0; };
-function trayPush(it, meta) { const w = G.waiter; w.tray.push(it); w.meta.push(meta || { age: 0 }); }
-function trayTake(k) { const w = G.waiter; w.tray.splice(k, 1); w.meta.splice(k, 1); }
+function trayPush(it, meta) { const w = G.waiter; w.tray.push(it); w.meta.push(meta || { age: 0 }); if (typeof updateTrayDots === 'function') updateTrayDots(); }
+function trayTake(k) { const w = G.waiter; w.tray.splice(k, 1); w.meta.splice(k, 1); if (typeof updateTrayDots === 'function') updateTrayDots(); }
 G.trayFresh = () => G.waiter ? G.waiter.tray.map((it, k) => it === 'tea' ? +trayFresh(k).toFixed(2) : null) : []; // debug / test hook
 function finishLeave(p, angry) {
   const tb = G.tables[p.tb];
@@ -4235,6 +4303,66 @@ function drawCoffeeTimingArc(canvas, ctx, p, isOverlay = true) {
 }
 G.drawCoffeeTimingArc = drawCoffeeTimingArc;
 
+/**
+ * Tray capacity indicator dots (3-5 dots based on trayCap).
+ * Dynamically fills based on current tray.length, pulsing on addition or removal.
+ */
+let _lastTrayLen = -1;
+let _lastTrayCap = -1;
+function updateTrayDots() {
+  const w = G.waiter;
+  const dotsEl = (UI && UI.trayDots) || document.getElementById('tray-dots');
+  if (!dotsEl || !w) return;
+  const cap = trayCap();
+  const len = clamp(w.tray.length, 0, cap);
+  const changed = _lastTrayLen !== -1 && _lastTrayLen !== len;
+  const capChanged = _lastTrayCap !== cap;
+
+  if (capChanged || dotsEl.children.length !== cap) {
+    _lastTrayCap = cap;
+    let h = '';
+    for (let i = 0; i < cap; i++) {
+      h += `<span class="tray-dot dot" data-dot="${i}" data-index="${i}" data-filled="${i < len}"></span>`;
+    }
+    dotsEl.innerHTML = h;
+  }
+
+  const lbl = t('trayCapacity', len, cap);
+  if (dotsEl.getAttribute('aria-label') !== lbl) dotsEl.setAttribute('aria-label', lbl);
+  if (dotsEl.title !== lbl) dotsEl.title = lbl;
+
+  const dots = dotsEl.children;
+  for (let i = 0; i < dots.length; i++) {
+    const dot = dots[i];
+    const isFilled = i < len;
+    dot.classList.toggle('filled', isFilled);
+    dot.classList.toggle('on', isFilled);
+    dot.classList.toggle('active', isFilled);
+    dot.dataset.filled = isFilled ? 'true' : 'false';
+
+    // Pulse dot when items are added or removed
+    if (changed) {
+      if ((len > _lastTrayLen && i >= _lastTrayLen && i < len) ||
+          (len < _lastTrayLen && i >= len && i < _lastTrayLen)) {
+        dot.classList.remove('pulse');
+        void dot.offsetWidth;
+        dot.classList.add('pulse');
+        setTimeout(() => dot.classList.remove('pulse'), 400);
+      }
+    }
+  }
+
+  if (changed) {
+    dotsEl.classList.remove('pulse');
+    void dotsEl.offsetWidth;
+    dotsEl.classList.add('pulse');
+    setTimeout(() => dotsEl.classList.remove('pulse'), 400);
+  }
+
+  _lastTrayLen = len;
+}
+G.updateTrayDots = updateTrayDots;
+
 /* day-1 coach marks, derived from the live game state (so they follow what the player really does) and shown once:
    tea station (brew, then grab) -> the first customer's bubble -> the table. null once the first table has been served. */
 function coachState() {
@@ -4276,11 +4404,15 @@ function uiStatic() {
     sts += `<button class="st" data-st="${k}"><span class="key">${i + 1}</span><span class="cnt"></span>${ICON[k]}<b>${names[k]}</b><div class="units">${u}</div>${cCv}</button>`;
   });
   dockEl.innerHTML = `
-    <div id="tray" class="glass"><span class="lbl">${t('tray')}</span><div class="slots">${slots}</div><div id="queue"></div></div>
+    <div id="tray" class="glass">
+      <div class="tray-row"><span class="lbl">${t('tray')}</span><div class="slots">${slots}</div><div id="queue"></div></div>
+      <div class="tray-dots" id="tray-dots" role="status" aria-label="${t('tray')}"></div>
+    </div>
     <div id="stations" class="glass">${sts}</div>`;
   const stCoffeeCv = $('.st-coffee-canvas', dockEl);
   Object.assign(UI, {
     sp: $('#b-speed'), pb: $('#b-pause'), slots: $$('.slot'), queue: $('#queue'), clk: $('#t-clkbar'), time: $('#t-time'), coinChip: $('#t-coinchip'),
+    trayDots: $('#tray-dots', dockEl),
     sts: $$('.st').map(el => ({ el, k: el.dataset.st, us: $$('.u', el), ce: $('.cnt', el) })),
     stCoffeeCv, stCoffeeCtx: stCoffeeCv ? stCoffeeCv.getContext('2d') : null
   });
@@ -4305,6 +4437,7 @@ function uiStatic() {
   }
   WL.gm.innerHTML = ICON.gull;
   for (const b of wlEl.children) b._sig = null; // icons may have changed (PNG set loaded)
+  updateTrayDots();
   uiFrame(0, true);
 }
 const C_cache = new Map();
@@ -4335,6 +4468,7 @@ function uiFrame(dt, force) {
   const CS = play ? coachState() : null;
   /* tray: tea glasses carry a freshness bar and turn grey as the tea goes cold */
   if (w) {
+    updateTrayDots();
     const cap = trayCap();
     const sig = w.tray.join(',') + '|' + cap + '|' + w.tray.map((it, k) => it === 'tea' ? Math.round(trayFresh(k) * 10) : '-').join('');
     if (C_cache.get('tray') !== sig) {
@@ -5042,6 +5176,24 @@ function selfTest() {
   drawCoffeeTimingArc(testCv, testCtx, testPotWarn);
   const colorWarn = testCv.dataset.color;
   ok('coffee timing ring red/green shift', colorSafe === 'green' && colorWarn === 'red', `${colorSafe} -> ${colorWarn}`);
+  // 10. tray capacity dot indicators: 3-5 dots, dynamically fill on tray.length, pulse on add/remove
+  G.waiter.tray.length = 0; G.waiter.meta.length = 0;
+  updateTrayDots();
+  const dotsEl = document.getElementById('tray-dots');
+  const dots0 = dotsEl ? dotsEl.querySelectorAll('.tray-dot') : [];
+  const count0 = dots0.length;
+  const filled0 = dotsEl ? dotsEl.querySelectorAll('.tray-dot.filled').length : -1;
+  trayPush('tea');
+  const filled1 = dotsEl ? dotsEl.querySelectorAll('.tray-dot.filled').length : -1;
+  const pulsed1 = !!(dots0[0] && dots0[0].classList.contains('pulse'));
+  trayPush('simit');
+  const filled2 = dotsEl ? dotsEl.querySelectorAll('.tray-dot.filled').length : -1;
+  const pulsed2 = !!(dots0[1] && dots0[1].classList.contains('pulse'));
+  trayTake(0);
+  const filledAfterRemove = dotsEl ? dotsEl.querySelectorAll('.tray-dot.filled').length : -1;
+  const pulsedRemove = !!(dots0[0] && dots0[0].classList.contains('pulse'));
+  ok('tray capacity dots update and pulse', count0 >= 3 && count0 <= 5 && filled0 === 0 && filled1 === 1 && filled2 === 2 && filledAfterRemove === 1, `dots=${count0} f0=${filled0} f1=${filled1} f2=${filled2} rem=${filledAfterRemove} p1=${pulsed1} p2=${pulsed2} pR=${pulsedRemove}`);
+  G.waiter.tray.length = 0; G.waiter.meta.length = 0; updateTrayDots();
   G.simming = false; G.speed = keepSpeed; G.state = 'title'; uiScreen(true);
   G.selfTest = out; G.testOut = out.join('\n');
 }
