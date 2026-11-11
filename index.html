@@ -1621,10 +1621,39 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
   will-change: transform;
   animation: gping .7s ease-out infinite;
 }
+.gmark::before {
+  content: "";
+  position: absolute;
+  inset: -25px; /* Double click/tap radius: 2x touch hit area (25px r -> 50px r) */
+  border-radius: 50%;
+}
 .gmark svg { width: 34px; height: 34px; }
 @keyframes gping {
   from { box-shadow: 0 0 0 0 rgba(194, 65, 12, .7), 0 4px 12px rgba(80, 40, 10, .35); }
   to { box-shadow: 0 0 0 12px rgba(194, 65, 12, 0), 0 4px 12px rgba(80, 40, 10, .35); }
+}
+
+/* Screen juice: flash and shake on gull interception */
+.screen-flash {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 250, 235, 0.38);
+  pointer-events: none;
+  z-index: 99;
+  animation: flashFade 0.26s ease-out forwards;
+}
+@keyframes flashFade {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.screen-shake #c, .screen-shake #wl {
+  animation: screenShakeAnim 0.26s ease-out;
+}
+@keyframes screenShakeAnim {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-4px, 3px); }
+  50% { transform: translate(4px, -3px); }
+  75% { transform: translate(-2px, -2px); }
 }
 
 .slot .fb {
@@ -2185,7 +2214,7 @@ const STALE_TIP = 0.5; // stale tea (or a cold refill) pays this share of its ti
 const PERFECT = { win: 1.0, tip: 2 }; // coffee grabbed in the first 1 s of its COOK_WIN earns +2 tip when served
 const RUSH = { fromDay: 3, hornX: -14, warn: 8, window: 10, first: 22, parties: [2, 3], endCut: 32 }; // ferry rush: warn 8 s ahead, 2-3 parties in 10 s, none after endCut s before closing
 const TAVLA = { stay: [40, 48], gap: [14, 18], wait: 28, tip: 2, combo: 4 }; // regulars: ~2.5x a normal table stay, a tea refill every 14-18 s
-const GULL = { fromDay: 3, quiet: 20, first: [4, 20], gap: [30, 55], perch: [2.6, 4.2], dive: 1.5, wait: 6, flee: 2.2 }; // gull thief timings (s)
+const GULL = { fromDay: 3, quiet: 20, first: [4, 20], gap: [30, 55], perch: [2.6, 4.2], dive: 1.5, wait: 6, flee: 2.2, baseRadius: 0.95, hitRadius: 1.9 }; // gull thief timings (s) and doubled 2x click/tap radius
 /* Müdavimler (named regulars): a fixed cast that comes back day after day (from day 2) with the same usual order.
    A visit takes the place of an ordinary arrival (same table, same patience), so the day's crowd does not grow.
    Serving the usual quickly (>= REG.quick of the patience left) raises affection (0..REG.max, two points a heart);
@@ -3197,13 +3226,20 @@ function applyZoom() {
   cam.updateProjectionMatrix();
   placeCamera();
 }
+let _shakeT = 0;
 const _fwd = new THREE.Vector3(-0.7071, 0, -0.7071), _rgt = new THREE.Vector3(0.7071, 0, -0.7071);
 function placeCamera() {
   const asp = VIEW.w / VIEW.h;
   // keep the play area above the bottom dock: shift view centre a little on tall screens
   const shift = asp < 1 ? -0.6 : 0.0;
   const px = VIEW.panX, py = VIEW.panY;
-  const tx = CAM_T.x + _rgt.x * px + _fwd.x * (py + shift), tz = CAM_T.z + _rgt.z * px + _fwd.z * (py + shift);
+  let sx = 0, sz = 0;
+  if (_shakeT > 0 && !calm()) {
+    const mag = _shakeT * 1.5;
+    sx = Math.sin(_shakeT * 75) * 0.22 * mag;
+    sz = Math.cos(_shakeT * 60) * 0.22 * mag;
+  }
+  const tx = CAM_T.x + _rgt.x * px + _fwd.x * (py + shift) + sx, tz = CAM_T.z + _rgt.z * px + _fwd.z * (py + shift) + sz;
   cam.position.set(tx + 70, 70, tz + 70);
   cam.lookAt(tx, 0, tz);
   cam.updateMatrixWorld();
@@ -3666,7 +3702,7 @@ hoverRing.visible = false; hoverRing.position.y = .05; world.add(hoverRing);
     const m = new THREE.Mesh(new THREE.CylinderGeometry(1.45, 1.45, 1.8, 12), inv); m.position.set(TABLE_POS[i][0], .9, TABLE_POS[i][1]); m.visible = false; world.add(m); pickables.push({ mesh: m, kind: 'table', id: i });
   }
   const cm = new THREE.Mesh(new THREE.SphereGeometry(.7, 8, 6), inv); cm.visible = false; world.add(cm); pickables.push({ mesh: cm, kind: 'cat', id: 0 }); DYN.catPick = cm;
-  const gp = new THREE.Mesh(new THREE.SphereGeometry(.95, 8, 6), inv); gp.visible = false; gp.position.y = -50; world.add(gp); pickables.push({ mesh: gp, kind: 'gull', id: 0 }); DYN.gullPick = gp;
+  const gp = new THREE.Mesh(new THREE.SphereGeometry(.95, 8, 6), inv); gp.visible = false; gp.position.y = -50; gp.scale.set(2, 2, 2); gp.userData.radius = 1.9; world.add(gp); pickables.push({ mesh: gp, kind: 'gull', id: 0 }); DYN.gullPick = gp;
 })();
 
 /* ---------- characters ---------- */
@@ -3806,7 +3842,7 @@ const CATHOME = { x: -7.55, z: -7.6 };
 const cat = { x: CATHOME.x, z: CATHOME.z, y: .3, face: Math.PI / 2, state: 'sleep', t: 14 + rnd() * 10, path: [], moving: false, pet: 0 };
 const ferry = { x: -44, bob: 0, horn: false, rushed: false };
 /* gull thief (from day 3): lands on the quay rail, then dives at a served simit; click it (or the marker) to shoo it away */
-const thief = G.thief = { state: 'none', t: 0, next: 1e9, x: 0, y: 1.55, z: -9.35, x0: 0, y0: 0, z0: 0, tb: -1, wait: 0, face: 0 };
+const thief = G.thief = { state: 'none', t: 0, next: 1e9, x: 0, y: 1.55, z: -9.35, x0: 0, y0: 0, z0: 0, tb: -1, wait: 0, face: 0, radius: 1.9, hitRadius: 1.9 };
 function gullTarget() {
   const c = G.tables.filter(tb => tb.party && tb.party.state === 'eat' && tb.party.order.some(o => o.item === 'simit' && o.done && !o.stolen));
   return c.length ? c[(rnd() * c.length) | 0].i : -1;
@@ -3847,11 +3883,38 @@ function gullUpdate(dt) {
     if (g.t <= 0) g.state = 'none';
   }
 }
+function playScreenFlashShake() {
+  if (G.simming) return;
+  // Screen flash: warm amber-white burst
+  const flash = document.createElement('div');
+  flash.className = 'screen-flash';
+  document.body.appendChild(flash);
+  setTimeout(() => flash.remove(), 260);
+
+  // Screen shake: CSS viewport shake and camera jitter
+  if (!calm()) {
+    document.body.classList.remove('screen-shake');
+    void document.body.offsetWidth;
+    document.body.classList.add('screen-shake');
+    setTimeout(() => document.body.classList.remove('screen-shake'), 260);
+    _shakeT = 0.22;
+  }
+}
+G.playScreenFlashShake = playScreenFlashShake;
+
 // the click action (pointer hit on the gull, its marker, or the bot): shoo it before the simit is gone
 function clickGull() {
   const g = thief; if (G.paused || G.state !== 'play' || (g.state !== 'perch' && g.state !== 'dive')) return false;
-  G.gull.shooed++; burst('feather', g.x, g.y, g.z, 12); sfxSquawk(); toast(t('gullShoo'), 'good'); gullLeave('shooed'); return true;
+  G.gull.shooed++; burst('feather', g.x, g.y, g.z, 12); sfxSquawk(); toast(t('gullShoo'), 'good'); gullLeave('shooed');
+  // Haptic feedback on interception: 30ms vibration
+  if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+    try { navigator.vibrate(30); } catch (_) {}
+  }
+  // Screen juice: flash and shake on successful interception
+  playScreenFlashShake();
+  return true;
 }
+G.clickGull = clickGull;
 const gulls = [{ a: 0, r: 6.5, cx: 1, cz: -13, h: 8.5, sp: .32 }, { a: 2.1, r: 8, cx: -2, cz: -12, h: 10.5, sp: -.27 }, { a: 4.2, r: 5.5, cx: 5, cz: -11, h: 7.5, sp: .4 }, { a: 5.5, r: 9, cx: 0, cz: -14, h: 12, sp: -.22 }];
 function ambientUpdate(dt) {
   ferry.x += dt * FERRY_V; ferry.bob += dt;
@@ -4017,6 +4080,8 @@ function syncVisuals(dt) {
       gullIM.setMatrixAt(4, mat(th.x, th.y + bob, th.z, 1.5, flap, 1.5, th.state === 'perch' ? th.face + Math.sin(vt * .8) * .35 : th.state === 'flee' ? -.6 : th.face, 0, th.state === 'dive' ? .35 : 0));
     } else gullIM.setMatrixAt(4, mat(0, -50, 0, 0, 0, 0));
     DYN.gullPick.position.set(th.x, on && (th.state === 'perch' || th.state === 'dive') ? th.y : -50, th.z);
+    // Double the click/tap radius for gull shooing in the update loop (2x hitbox)
+    DYN.gullPick.scale.set(2, 2, 2);
   }
   gullIM.instanceMatrix.needsUpdate = true;
   /* ferry + waves */
@@ -4700,7 +4765,14 @@ function endPtr(e) {
   const p = ptrs.get(e.pointerId); ptrs.delete(e.pointerId);
   const wasPinch = pinched; if (ptrs.size === 0) pinched = false; // a pinch never ends in a click
   if (p && !p.moved && !wasPinch && ptrs.size === 0 && e.type === 'pointerup') {
-    const hit = pickAt(e.clientX, e.clientY);
+    let hit = pickAt(e.clientX, e.clientY);
+    // Double click/tap radius fallback for reliable mobile touch interception
+    if ((!hit || hit.kind !== 'gull') && (thief.state === 'perch' || thief.state === 'dive')) {
+      toScreen(thief.x, thief.y + 0.8, thief.z, _sp);
+      if (Math.hypot(e.clientX - _sp.x, e.clientY - _sp.y) <= 60) {
+        hit = { kind: 'gull', id: 0 };
+      }
+    }
     if (hit) {
       if (hit.kind === 'station') clickStation(hit.id); else if (hit.kind === 'table') clickTable(hit.id); else if (hit.kind === 'cat') petCat(); else if (hit.kind === 'gull') clickGull();
     }
@@ -4848,6 +4920,10 @@ function frame(now) {
     while (acc >= STEP && n < 14) { simStep(STEP); acc -= STEP; n++; }
     if (n >= 14) acc = 0;
   }
+  if (_shakeT > 0) {
+    _shakeT = Math.max(0, _shakeT - dtReal);
+    placeCamera();
+  }
   if (G.waiter) syncVisuals(dtReal);
   if (!G.paused) particlesUpdate(dtReal * Math.min(G.speed, 2));
   uiFrame(dtReal);
@@ -4930,8 +5006,12 @@ function selfTest() {
   tb.party = party; tb.slots = [{ kind: 'plate', item: 'simit', dirty: false }];
   Object.assign(thief, { state: 'dive', tb: 0, t: .01, x0: 0, y0: 1.5, z0: -9, x: 0, y: 1.5, z: -9 }); G.clock = 60; gullUpdate(.05); gullUpdate(.05);
   ok('gull steals the simit', party.order[0].stolen === true && tb.slots.length === 0 && G.gull.stolen === 1);
+  let vibParam = null;
+  const origVib = typeof navigator !== 'undefined' ? navigator.vibrate : null;
+  if (typeof navigator !== 'undefined') navigator.vibrate = p => { vibParam = p; return true; };
   Object.assign(thief, { state: 'perch', t: 3 }); const shooed = clickGull();
-  ok('click shoos the gull', shooed && thief.state === 'flee' && G.gull.shooed === 1);
+  if (typeof navigator !== 'undefined' && origVib) navigator.vibrate = origVib;
+  ok('click shoos the gull', shooed && thief.state === 'flee' && G.gull.shooed === 1 && vibParam === 30, `shooed=${shooed} vib=${vibParam}`);
   tb.party = null;
   // 6. ferry rush on day 3: horn warning, then 2-3 parties inside 10 s, same customer count
   G.up.table = 3; G.day = 3; beginDay(false); G.simming = true; const wasWarn = []; let rushAt = -1, partiesAt = 0;
