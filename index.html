@@ -467,7 +467,7 @@
 <script type="importmap">
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"},"integrity":{"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js":"sha384-GY5FqjttLCFRt/McQbyaVdCk2O1IQtOeX8Py6NfD89BIAsIyJFRl4UgSXrk2vXAk","https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/GLTFLoader.js":"sha384-Lq1Wl94so5JCKGDvezrdVMJhdeKQkwb8iwRo59QrPPd61CnrCJZLxYmFlQ8ZuOKR","https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/utils/BufferGeometryUtils.js":"sha384-wOjwauvHlJO7K6APr7FmMGH2nupQa3Ndzas9bJZhsAMOK055efJud8ns4aYmASKv"}}
 </script>
-<script type="module">/*ARENA-CORE:BEGIN v2.0.0 sha256:9cf16ff65115*/
+<script type="module">/*ARENA-CORE:BEGIN v2.0.0 sha256:06ce9d584cae*/
 /* ARENA-CORE v2 — shared visual / feel / test layer for the Claude Game Arena games (Furki Ozkan).
  *
  * Injected inline as <script type="module"> right after each game's importmap by tools/inject.mjs,
@@ -478,6 +478,7 @@
  *   ArenaCore.kalite                      'dusuk' | 'orta' | 'yuksek' (auto: integrated GPU -> orta; ?q=… overrides; saved)
  *   ArenaCore.render.setup(renderer, scene, camera, opts) -> fx { render(), setSize(w,h), dispose(), info }
  *       opts: { tonlama: 'neutral'|'aces'|'agx'|'none', pozlama, ortam (0..1 env light), bloom: {guc, esik, yaricap}|false,
+ *               renk: {doygunluk, kontrast}, tonlama 'koru' keeps the game's own tone mapping,
  *               vinyet (0..1), grain (0..1), saydam (true when the canvas is transparent over a CSS background) }
  *   ArenaCore.kabuk.yukleme({ baslik, alt, renk }) -> { ilerle(0..1), bitir() }   loading overlay
  *   ArenaCore.kabuk.onceDerle(renderer, scene, camera) -> Promise   shader warm-up (compileAsync)
@@ -579,8 +580,10 @@ const render = {
     const o = Object.assign({ tonlama: 'neutral', pozlama: 1.0, ortam: 0.0, bloom: { guc: 0.35, esik: 0.85, yaricap: 0.4 }, vinyet: 0.3, grain: 0.04, saydam: false }, opts);
     if (Q.has('nocore')) return { render: () => renderer.render(scene, camera), setSize() { }, dispose() { }, info: { mod: 'kapali' } };
     renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.toneMapping = TONLAMA[o.tonlama] ?? THREE.NeutralToneMapping;
-    renderer.toneMappingExposure = o.pozlama;
+    if (o.tonlama !== 'koru') { // 'koru' keeps the game's own tone mapping / exposure
+      renderer.toneMapping = TONLAMA[o.tonlama] ?? THREE.NeutralToneMapping;
+      renderer.toneMappingExposure = o.pozlama;
+    }
     let pmrem = null, envRT = null;
     if (o.ortam > 0) {
       import('three/addons/environments/RoomEnvironment.js').then(({ RoomEnvironment }) => {
