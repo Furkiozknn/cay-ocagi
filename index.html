@@ -5634,8 +5634,9 @@ function closePanel() { G.panel = null; uiScreen(true); }
 // on screens where the game already waits. On the game's own site midgame() resolves false at once. One tap = one action.
 let breakBusy = false;
 function afterBreak(f) {
+  if (!(window.Arena && Arena.portal && Arena.portal.name !== 'none')) return f(); // own site: synchronous, as before
   if (breakBusy) return; breakBusy = true;
-  const ad = window.Arena && Arena.portal ? Arena.portal.midgame() : Promise.resolve(false);
+  const ad = Arena.portal.midgame();
   ad.catch(() => false).then(() => { breakBusy = false; f(); });
 }
 const actions = {
