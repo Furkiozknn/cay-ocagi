@@ -5630,12 +5630,20 @@ function toggleVol(k) {
   if (G.panel === 'settings') uiScreen(true);
 }
 function closePanel() { G.panel = null; uiScreen(true); }
+// Portals (arena-kit v1.3 Arena.portal): an interstitial may play between days (shop -> next day) and before a retry,
+// on screens where the game already waits. On the game's own site midgame() resolves false at once. One tap = one action.
+let breakBusy = false;
+function afterBreak(f) {
+  if (breakBusy) return; breakBusy = true;
+  const ad = window.Arena && Arena.portal ? Arena.portal.midgame() : Promise.resolve(false);
+  ad.catch(() => false).then(() => { breakBusy = false; f(); });
+}
 const actions = {
   start() { G.panel = null; A.start(); }, cont() { A.cont(); }, newgame() { G.panel = 'confirm'; uiScreen(); },
   begin() { A.begin(); }, aftersum() { A.afterSummary(); },
-  buy(el) { A.buy(el.dataset.id); }, next() { A.next(); },
-  endless() { A.endlessMode(); }, menu() { A.menu(); }, restart() { A.restart(); },
-  retryshop() { if (DAILY) A.restart(); else A.retryShop(); },
+  buy(el) { A.buy(el.dataset.id); }, next() { afterBreak(() => A.next()); },
+  endless() { A.endlessMode(); }, menu() { A.menu(); }, restart() { afterBreak(() => A.restart()); },
+  retryshop() { afterBreak(() => { if (DAILY) A.restart(); else A.retryShop(); }); },
   daily() { startDaily(); }, share() { shareResult(); }, a11y() { if (window.Arena) Arena.openSettings(); },
   settings() { if (G.state === 'play' && !G.paused) { G.paused = true; audApply(); } G.panel = 'settings'; uiScreen(); }, back() { closePanel(); },
   seg(el) {
