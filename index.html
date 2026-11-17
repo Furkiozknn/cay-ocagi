@@ -3078,7 +3078,7 @@ const G = window.cay = {
   clock: 0, dayLen: 180, coins: 0, dayCoins: 0, dayTips: 0, totalEarned: 0, target: 40,
   happy: 0, angry: 0, served: 0, missed: 0,
   speed: FLAG.auto ? 3 : 1, paused: false, panel: null, // panel: 'settings' | 'confirm', shown over the current screen
-  lang: Q.get('lang') || SET.lang || ((navigator.language || 'tr').toLowerCase().startsWith('tr') ? 'tr' : 'en'),
+  lang: ['tr', 'en'].includes(Q.get('lang')) ? Q.get('lang') : ['tr', 'en'].includes(SET.lang) ? SET.lang : (/^tr/i.test(navigator.language || '') ? 'tr' : 'en'), // only tr/en; else the browser's
   muted: !!SET.muted,
   up: { kettle: 0, tray: 0, oven: 0, apprentice: 0, table: 0, stool: 0 },
   tables: [], parties: [], waiter: null, apprentice: null, stations: null,
