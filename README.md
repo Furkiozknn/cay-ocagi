@@ -35,6 +35,13 @@
 - **Ferry rush & living Istanbul quay:** Weather sudden ferry rushes (2 to 3 arriving parties within 10 s, warned 8 s ahead by horn), shoo gull thieves before they snatch simit, serve tavla regulars every 14 to 18 s, and enjoy a living quay with ferry, gulls, cat, and Web Audio Turkish music.
 - **Ultra-lean web performance:** 60 fps on an Intel UHD GPU at 1280x720 with 31 draw calls (34 max) and ~50k triangles on day 6, verified by an automated bot winning 84 of 90 seeded games (and 86 of 90 in v2 benchmark) with 0 JS errors.
 
+## What's new in v2.1 (November 2026)
+
+- **Logbook:** a new button on the title screen with eight achievements and your five best shifts, kept only on your device (`arena.cay.book`, no account).  
+- **What's new window and version label** on the title screen (and under Settings), plus an "All games" link to the [hub page](https://furkiozknn.github.io/).  
+- **Page fixes:** description, `theme-color`, canonical, Open Graph and Twitter card completed, and a `404.html` added.  
+- Game address, file paths, save keys and gameplay are unchanged; old saves keep working. Full list in [CHANGELOG.md](CHANGELOG.md) (Turkish).
+
 ## How to play
 
 > [!TIP]
