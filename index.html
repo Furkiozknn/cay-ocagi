@@ -5,7 +5,12 @@
 <meta name="arena-game" content="cay-ocagi">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Çay Ocağı</title>
-<meta name="description" content="A low-poly 3D tea house time-management game. Brew, serve, collect tips.">
+<meta name="description" content="Çay Ocağı: İstanbul rıhtımında 3D çay ocağı yönetim oyunu. Çay demle, simit ısıt, müşterilerin sabrı bitmeden servis yap. Tarayıcıda, telefonda ücretsiz. · A low-poly 3D tea house time-management game for desktop and phone.">
+<meta name="theme-color" content="#2a1a10">
+<link rel="canonical" href="https://furkiozknn.github.io/cay-ocagi/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Claude Game Arena">
+<meta property="og:locale" content="tr_TR">
 <meta property="og:title" content="Çay Ocağı · Tea House Rush">
 <meta property="og:description" content="Run a tiny Istanbul tea house for 7 busy days: brew tea, warm simit, cook Turkish coffee and serve before patience runs out.">
 <meta property="og:image" content="https://furkiozknn.github.io/cay-ocagi/docs/card.jpg">
@@ -13,6 +18,9 @@
 <meta property="og:image:height" content="540">
 <meta property="og:url" content="https://furkiozknn.github.io/cay-ocagi/">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Çay Ocağı · Tea House Rush">
+<meta name="twitter:description" content="İstanbul rıhtımında küçük bir çay ocağı işlet: çay demle, simit ısıt, her masaya yetiş. · Run a tiny Istanbul tea house.">
+<meta name="twitter:image" content="https://furkiozknn.github.io/cay-ocagi/docs/card.jpg">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6.5 3.5h11c0 5.200-1.600 8.400-3.300 9.800v2.200h-4.400v-2.200C8.100 11.900 6.500 8.700 6.500 3.500z' fill='%23c2410c'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2041,6 +2049,10 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
 .foot { margin: 14px 0 0; font-size: 12px; font-weight: 600; color: var(--ink2); }
 .foot a { color: #8b4a11; text-decoration: none; font-weight: 800; }
 .foot a:hover { text-decoration: underline; }
+.linkbtn { background: none; border: 0; padding: 0; font: inherit; font-weight: 800; color: #8b4a11; cursor: pointer; }
+.linkbtn:hover { text-decoration: underline; }
+.regrow.lock { opacity: .85; }
+@media (pointer: coarse) { .foot a, .linkbtn { display: inline-block; padding: 9px 6px; } }
 
 /* In-game overlays */
 .coach {
@@ -2850,7 +2862,8 @@ const store = {
   del(k) { try { localStorage.removeItem(k); } catch (e) { } }
 };
 /* settings (arena.cay.settings), migrated once from the old cay_prefs / cay_best keys */
-const KEY = { settings: 'arena.cay.settings', save: 'arena.cay.save', best: 'arena.cay.best' };
+const KEY = { settings: 'arena.cay.settings', save: 'arena.cay.save', best: 'arena.cay.best', book: 'arena.cay.book' };
+const VERSION = { n: '2.1', tr: 'Kasım 2026', en: 'November 2026' };   // shown on the title screen; the news panel lists what changed
 const SET = (() => {
   let s = store.get(KEY.settings, null);
   if (!s) {
@@ -3008,7 +3021,15 @@ const TXT = {
     regIntro: 'Müdavimler gelmeye başlıyor: her zamankini hızlı getir.', regHearts: '{0}/5 kalp',
     daily: 'Günün Meydan Okuması', dailyLine: 'Günlük seri: {0} gün · en iyi: {1}', dailyDone: 'Bugünkü gün tamam', dailyNote: 'Herkes için aynı müşteriler; kayıtlı oyununa dokunmaz.',
     a11y: 'Erişilebilirlik', a11yOpen: 'Aç', share: 'Paylaş', another: 'Başka oyun', shareDay: 'Gün {0} · {1} yıldız · {2}/{3} altın',
-    awFirst: 'İlk gün tamam', awWeek: 'Yedi günün hepsi', awThree: 'Üç yıldızlı gün'
+    awFirst: 'İlk gün tamam', awWeek: 'Yedi günün hepsi', awThree: 'Üç yıldızlı gün',
+    news: 'Yenilikler', newsH: 'Neler yeni? · v{0}', book: 'Defter', bookSub: 'Başarımların ve en iyi vardiyaların. Bu cihazda saklanır.', bookTop: 'En iyi vardiyalar', bookNone: 'Henüz vardiya yok. İlk günü bitir!', bookRun: 'Gün {0} · {1} ★', bookAch: 'Başarımlar ({0}/{1})', achNew: 'Yeni başarım', allGames: 'Tüm oyunlar', locked: 'Kilitli',
+    n1h: 'Başarımlar', n1: 'Sekiz yeni başarım: vapur kalabalığını atlat, martıyı kov, kıvamında kahve pişir. Yeni Defter ekranından takip et.',
+    n2h: 'En iyi vardiyalar', n2: 'En iyi beş vardiyan bu cihazda tutulur. Hesap ya da kayıt gerekmez.',
+    n3h: 'Tüm oyunlar', n3: 'Ana ekrandan tek dokunuşla diğer oyunlara geç.',
+    n4h: 'Sürüm ve sayfa', n4: 'Sürüm etiketi ve bu pencere artık oyunun içinde. Paylaşım kartı, sayfa bilgileri ve 404 sayfası düzeltildi.',
+    a_first: 'İlk demlik', a_first_d: 'İlk günü hedefe ulaşarak bitir', a_star3: 'Üç yıldız', a_star3_d: 'Bir günü üç yıldızla bitir', a_rush: 'Vapur saati', a_rush_d: 'Vapur kalabalığı gelen bir günü hedefle bitir',
+    a_gull: 'Martıya geçit yok', a_gull_d: 'Bir günde 2 martıyı kov', a_perf: 'Kıvamında', a_perf_d: 'Bir günde 3 kusursuz kahve pişir', a_calm: 'Sakin vardiya', a_calm_d: 'Hiç müşteri kızdırmadan bir günü bitir',
+    a_reg: 'Müdavim sofrası', a_reg_d: 'Bir günde 2 müdavime servis yap', a_week: 'Yedi gün, yedi gece', a_week_d: 'Yedi günün hepsini tamamla'
   },
   en: {
     tagline: 'A tiny tea house by the Bosphorus. Brew, serve, collect tips.',
@@ -3068,7 +3089,15 @@ const TXT = {
     regIntro: 'Regulars start dropping by: bring the usual quickly.', regHearts: '{0}/5 hearts',
     daily: 'Daily challenge', dailyLine: 'Daily streak: {0} · best: {1}', dailyDone: "Today's day is done", dailyNote: 'The same customers for everyone; your saved game is not touched.',
     a11y: 'Accessibility', a11yOpen: 'Open', share: 'Share', another: 'Another game', shareDay: 'Day {0} · {1} stars · {2}/{3} coins',
-    awFirst: 'First day done', awWeek: 'All seven days', awThree: 'A three-star day'
+    awFirst: 'First day done', awWeek: 'All seven days', awThree: 'A three-star day',
+    news: "What's new", newsH: "What's new · v{0}", book: 'Logbook', bookSub: 'Your achievements and best shifts. Stored on this device.', bookTop: 'Best shifts', bookNone: 'No shifts yet. Finish your first day!', bookRun: 'Day {0} · {1} ★', bookAch: 'Achievements ({0}/{1})', achNew: 'New achievement', allGames: 'All games', locked: 'Locked',
+    n1h: 'Achievements', n1: 'Eight new achievements: beat a ferry rush, shoo a gull, brew a perfect coffee. Track them in the new Logbook.',
+    n2h: 'Best shifts', n2: 'Your five best shifts are kept on this device. No account or sign-up.',
+    n3h: 'All games', n3: 'Jump to the other games from the title screen.',
+    n4h: 'Version and page', n4: 'A version label and this window are now in the game. Share card, page info and the 404 page were fixed.',
+    a_first: 'First pot', a_first_d: 'Finish day 1 with the coin target met', a_star3: 'Three stars', a_star3_d: 'Finish a day with three stars', a_rush: 'Ferry hour', a_rush_d: 'Meet the target on a day with a ferry rush',
+    a_gull: 'No gulls allowed', a_gull_d: 'Shoo 2 gulls in one day', a_perf: 'Just right', a_perf_d: 'Brew 3 perfect coffees in one day', a_calm: 'Calm shift', a_calm_d: 'Finish a day without angering a customer',
+    a_reg: "Regulars' table", a_reg_d: 'Serve 2 regulars in one day', a_week: 'Seven days, seven nights', a_week_d: 'Complete all seven days'
   }
 };
 
@@ -3377,6 +3406,7 @@ function endDay() {
   if (!FLAG.nosave) store.set(KEY.best, Object.assign({}, best, G.newRecord ? { day: reached, total: G.totalEarned } : {}, { life: (best.life || 0) + G.dayCoins }));
   if (rec.passed) { G.state = 'summary'; sfxFanfare(); } else { G.state = 'gameover'; sfxLose(); }
   if (DAILY && rec.passed) DAILY.rec = DAILY.d.complete(rec.coins);
+  bookDay(rec);
   if (window.Arena && rec.passed) {
     Arena.award('cay-ocagi:first-day', t('awFirst'));
     if (stars >= 3) Arena.award('cay-ocagi:three-stars', t('awThree'));
@@ -5058,6 +5088,39 @@ function regRow(c, extra) {
   return `<div class="regrow"><span class="pt">${portraitSVG(c)}</span><div class="tx"><b>${regName(c)} <small>· ${c.role[G.lang] || c.role.tr}</small></b>
     <small>${t('regUsual')}: ${c.note[G.lang] || c.note.tr} <span class="mi">${c.usual.map(i => ICON[i]).join('')}</span></small></div>${heartsHTML(r.aff)}${extra || ''}</div>`;
 }
+/* logbook (arena.cay.book): local achievements + the best shifts of the last runs. Nothing leaves this device. */
+const ACH = [
+  { id: 'first', f: (r, c) => r.passed && c.day === 1 }, { id: 'star3', f: r => r.stars >= 3 }, { id: 'rush', f: r => r.passed && r.rushes >= 1 },
+  { id: 'gull', f: r => r.gulls.shooed >= 2 }, { id: 'perf', f: r => r.perfects >= 3 }, { id: 'calm', f: r => r.passed && r.angry === 0 && r.happy >= 6 },
+  { id: 'reg', f: r => r.regulars.length >= 2 }, { id: 'week', f: (r, c) => r.passed && c.day === 7 && !c.daily && !c.endless }
+];
+const BOOK = (() => { const b = store.get(KEY.book, null); return b && b.v === 1 && b.ach && Array.isArray(b.runs) ? b : { v: 1, ach: {}, runs: [] }; })();
+function bookDay(rec) {   // called once per finished day: unlocks achievements and keeps the run's line in the top list
+  G.newAch = [];
+  for (const a of ACH) if (!BOOK.ach[a.id] && a.f(rec, { day: G.day, daily: !!DAILY, endless: G.endless })) { BOOK.ach[a.id] = Date.now(); G.newAch.push(a.id); }
+  if (!DAILY) {
+    const run = { day: rec.passed ? G.day : G.day - 1, total: G.totalEarned, stars: G.log.reduce((a, r) => a + r.stars, 0), t: Date.now() };
+    if (G.log.length === 1 || !BOOK.runs.length) BOOK.runs.unshift(run); else BOOK.runs[0] = run;
+    BOOK.runs = BOOK.runs.slice(0, 12);
+  }
+  if (!FLAG.nosave) store.set(KEY.book, BOOK);
+}
+function bookHTML() {
+  const top = BOOK.runs.filter(r => r.day > 0).slice().sort((a, b) => b.day - a.day || b.total - a.total).slice(0, 5), got = ACH.filter(a => BOOK.ach[a.id]).length;
+  const loc = G.lang === 'en' ? 'en-GB' : 'tr-TR';
+  const runs = top.length ? top.map((r, i) => `<div class="regrow"><span class="pt">${i + 1}</span><div class="tx"><b>${t('bookRun', r.day, r.stars)} · ${coinHTML(r.total)}</b><small>${new Date(r.t).toLocaleDateString(loc)}</small></div></div>`).join('') : `<p style="font-size:13px">${t('bookNone')}</p>`;
+  const ach = ACH.map(a => { const on = !!BOOK.ach[a.id]; return `<div class="regrow ${on ? '' : 'lock'}"><span class="pt">${on ? ICON.star : '?'}</span><div class="tx"><b>${on ? t('a_' + a.id) : t('locked')}</b><small>${t('a_' + a.id + '_d')}</small></div></div>`; }).join('');
+  return `<div class="card glass" style="width:min(520px,100%)"><h2>${t('book')}</h2><p style="font-size:13px">${t('bookSub')}</p>
+    <p style="margin:6px 0 2px;font-size:13px;font-weight:800">${t('bookTop')}</p><div class="reglist">${runs}</div>
+    <p style="margin:6px 0 2px;font-size:13px;font-weight:800">${t('bookAch', got, ACH.length)}</p><div class="reglist">${ach}</div>
+    <button class="btn" data-a="back">${t('back')}</button></div>`;
+}
+function newsHTML() {
+  return `<div class="card glass" style="width:min(480px,100%)"><h2>${t('newsH', VERSION.n)}</h2><p style="font-size:13px">${VERSION[G.lang === 'en' ? 'en' : 'tr']}</p>
+    <div class="reglist">${[1, 2, 3, 4].map(i => `<div class="regrow"><div class="tx"><b>${t('n' + i + 'h')}</b><small>${t('n' + i)}</small></div></div>`).join('')}</div>
+    <button class="btn" data-a="back">${t('back')}</button></div>`;
+}
+function achChips() { return (G.newAch || []).map(id => `<p style="margin:4px 0;font-weight:900;color:var(--amber)">${t('achNew')}: ${t('a_' + id)}</p>`).join(''); }
 function regularsHTML() {
   return `<div class="card glass" style="width:min(520px,100%)"><h2>${t('regulars')}</h2><p style="font-size:13px">${t('regSub')}</p>
     <div class="reglist">${REGULARS.map(c => regRow(c, REGS[c.id].visits ? `<small class="rv">${t('regVisits', REGS[c.id].visits)}</small>` : '')).join('')}</div>
@@ -5530,6 +5593,7 @@ function settingsHTML() {
     ${slider('master')}${slider('music')}${slider('sfx')}
     <div class="row"><span>${t('language')}</span>${seg('lang', [['tr', 'Türkçe'], ['en', 'English']], G.lang)}</div>
     <div class="row"><span>${t('quality')}</span>${seg('quality', [['low', t('qLow')], ['high', t('qHigh')]], low ? 'low' : 'high')}</div><small>${t('qNote')}</small>
+    <div class="row"><span>${t('news')} · v${VERSION.n}</span><div class="seg"><button data-a="news">${t('news')}</button></div></div>
     ${window.Arena ? `<div class="row"><span>${t('a11y')}</span><div class="seg"><button data-a="a11y">${t('a11yOpen')}</button></div></div>` : ''}
     ${document.fullscreenEnabled ? `<div class="row"><span>${t('fullscreen')}</span>${seg('fs', [['1', t('on')], ['0', t('off')]], fs ? '1' : '0')}</div>` : ''}
     </div><button class="btn" data-a="back">${t('back')}</button></div>`;
@@ -5551,6 +5615,8 @@ function uiScreen(force) {
   const otherBtn = window.Arena ? `<a class="btn alt sm" href="https://furkiozknn.github.io/${otherGame()}/" target="_blank" rel="noopener">${t('another')}</a>` : '';
   if (G.panel === 'settings') h = settingsHTML();
   else if (G.panel === 'regulars') h = regularsHTML();
+  else if (G.panel === 'news') h = newsHTML();
+  else if (G.panel === 'book') h = bookHTML();
   else if (G.panel === 'confirm') {
     h = `<div class="card glass" style="width:min(440px,100%)"><h2>${t('newGame')}</h2><p>${t('newGameWarn')}</p>
       <div class="col"><button class="btn" data-a="start">${t('yes')}</button><button class="btn alt" data-a="back">${t('back')}</button></div></div>`;
@@ -5566,7 +5632,8 @@ function uiScreen(force) {
       : `<button class="btn" data-a="start" ${dis}>${label('play')}</button>`;
     h = `<div class="card glass">${gearBtn}${langBtn}${LOGO_BIG}<h1>Çay Ocağı</h1><p>${t('tagline')}</p>
       <ul class="how"><li><b>1</b><span>${t(TOUCH_UI ? 'how1Touch' : 'how1')}</span></li><li><b>2</b><span>${t(TOUCH_UI ? 'how2Touch' : 'how2')}</span></li><li><b>3</b><span>${t('how3')}</span></li><li><b>4</b><span>${t(TOUCH_UI ? 'how4Touch' : 'how4')}</span></li></ul>
-      <p style="font-size:13px;color:#7a5a44">${bestLine()}</p><div class="col">${main}${window.Arena ? `<button class="btn alt sm" data-a="daily" ${dis}>${t('daily')}</button><small style="font-weight:700;color:var(--ink2)">${dailyLine()}</small>` : ''}<button class="btn alt sm" data-a="regs">${t('regulars')}</button><button class="btn alt sm" data-a="settings">${t('settings')}</button></div>
+      <p style="font-size:13px;color:#7a5a44">${bestLine()}</p><div class="col">${main}${window.Arena ? `<button class="btn alt sm" data-a="daily" ${dis}>${t('daily')}</button><small style="font-weight:700;color:var(--ink2)">${dailyLine()}</small>` : ''}<button class="btn alt sm" data-a="regs">${t('regulars')}</button><button class="btn alt sm" data-a="book">${t('book')}</button><button class="btn alt sm" data-a="settings">${t('settings')}</button></div>
+      <p class="foot"><button class="linkbtn" data-a="news">v${VERSION.n} · ${VERSION[G.lang === 'en' ? 'en' : 'tr']} · ${t('news')}</button> · <a href="https://furkiozknn.github.io/" target="_blank" rel="noopener">${t('allGames')}</a></p>
       <p class="foot"><a href="https://github.com/Furkiozknn" target="_blank" rel="noopener">${t('footer', 'Claude Sonnet 5.5')}</a></p></div>`;
   } else if (st === 'intro') {
     const tip = t('tip' + (1 + ((G.day - 1) % 5)));
@@ -5578,7 +5645,7 @@ function uiScreen(force) {
       <p style="font-size:13px"><b>${t('hint')}:</b> ${tip}</p>${factHTML(G.day - 1)}<button class="btn" data-a="begin">${t('startDay')}</button><br>${menuBtn}</div>`;
   } else if (st === 'summary') {
     const r = G.lastResult;
-    h = `<div class="card glass"><h2>${t('dayDone')}</h2><div class="sumrow">${kitHTML()}${starsHTML(r.stars, true)}</div><p style="font-weight:900;color:var(--amber)">${[, t('stars1'), t('stars2'), t('stars3')][r.stars]}</p>${recHTML()}
+    h = `<div class="card glass"><h2>${t('dayDone')}</h2><div class="sumrow">${kitHTML()}${starsHTML(r.stars, true)}</div><p style="font-weight:900;color:var(--amber)">${[, t('stars1'), t('stars2'), t('stars3')][r.stars]}</p>${recHTML()}${achChips()}
       ${rowk(t('earned'), coinHTML(r.coins) + ' / ' + r.target)}${rowk(t('tips'), coinHTML(r.tips))}${rowk(t('happyC'), r.happy)}${rowk(t('angryC'), r.angry)}
       ${DAILY && DAILY.rec ? `<p style="font-weight:800">${t('daily')} · ${t('dailyLine', DAILY.rec.streak, DAILY.rec.best)}</p>` : ''}
       ${regTodayHTML(r.regulars)}${rankHTML()}${factHTML(G.day + 2)}<button class="btn" data-a="aftersum">${DAILY ? t('menu') : G.day === 7 && !G.won ? t('cont') : t('toShop')}</button>${shareBtn}${DAILY ? '' : menuBtn}</div>`;
@@ -5660,7 +5727,8 @@ const actions = {
   },
   lang() { langSet(G.lang === 'tr' ? 'en' : 'tr'); }, speed() { toggleSpeed(); }, pause() { togglePause(); },
   snd() { sfxInit(); sfxMute(!G.muted); const b = $('#b-snd'); if (b) b.innerHTML = G.muted ? ICON.mute : ICON.snd; },
-  clearq() { clearQueue(); }, gull() { clickGull(); }, regs() { G.panel = 'regulars'; uiScreen(); }
+  clearq() { clearQueue(); }, gull() { clickGull(); }, regs() { G.panel = 'regulars'; uiScreen(); },
+  news() { G.panel = 'news'; uiScreen(); }, book() { G.panel = 'book'; uiScreen(); }
 };
 document.addEventListener('click', e => {
   sfxInit();
