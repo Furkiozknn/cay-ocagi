@@ -22,10 +22,26 @@
 <!-- portals:end -->
 
 <p align="center">
+  <strong>Çay, çay, demli çay! Tepside simit, kahve; masa masa koşmak. Türkçe kolay mı? Oyunda daha kolay.</strong>
+</p>
+
+<p align="center">
+  <strong>Turkish is easy… WITH TEA? The game song asks the question; the game gives you the answer.</strong>
+</p>
+
+<p align="center">
+  Çay Ocağı: İstanbul rıhtımında low-poly bir çay ocağını yedi yoğun gün boyunca işlet: çay demle, simit ısıt, Türk kahvesini taşırmadan pişir ve sabrı bitmeden her masaya servis yap.
+</p>
+
+<p align="center">
   <strong>A 3D time-management game on a low-poly Istanbul quay: run a tiny tea house for seven busy days, brew tea, warm simit, cook Turkish coffee without letting it boil over and serve every table before patience runs out.</strong>
 </p>
 
 <!-- gameplay gif -->
+
+## Şarkı videosu / Song video
+
+**Çay Ocağı · Oyun Şarkısı**: oyunun tanıtım şarkısı videosu, paylaşım videoları deposunda: [social-videos / 2026-11](https://github.com/Furkiozknn/social-videos/blob/master/2026-11/2026-11-20-cay-ocagi-telefon.mp4). Videonun görsel stil notları: [docs/STIL.md](docs/STIL.md).
 
 ## Features
 
