@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://furkiozknn.github.io/cay-ocagi/">
-    <img src="docs/card.jpg" width="100%" alt="Çay Ocağı: run a tiny tea house on an Istanbul quay, brew tea and serve every table. Click to play in your browser.">
+    <img src="docs/card-3d.jpg" width="100%" alt="Çay Ocağı: run a tiny tea house on an Istanbul quay, brew tea and serve every table. Click to play in your browser.">
   </a>
 </p>
 
@@ -29,11 +29,20 @@
 
 ## Features
 
+<p align="center">
+  <img src="docs/features.jpg" width="100%" alt="Çay Ocağı promo image: the tea waiter and a tourist lady behind a tea house counter with a samovar, above five feature tiles: seven-day shift, four items and five stations, shop upgrades, ferry rush and gulls, and 60 fps in the browser.">
+</p>
+
+<details>
+<summary><b>Feature details</b></summary>
+
 - **Seven-day shift & endless mode:** Serve across 7 busy days with coin targets climbing from 65 coins on day 1 to 250 on day 7, unlocking a new menu item each of the first 4 days, special guests (a hurried worker, a party of 3, and a regular tipping double), followed by an endless shift after day 7.
 - **Four items, five busy stations:** Tea brews in 7 s (yielding 4 glasses with a 25 s freshness window), the oven warms 3 simit at a time, Turkish coffee cooks in 4.2 s with a 3.6 s pickup window before boiling over, ayran serves instantly, and dirty glasses head to the sink with up to 6 queued clicks.
 - **Between-day shop & upgrades:** Reinvest earnings between shifts into a second semaver, an expanded tray (3 to 5 slots), a faster oven, up to 3 extra tables, an apprentice table-clearer, and comfy stools (+20% patience per level) to earn 1 to 3 stars.
 - **Ferry rush & living Istanbul quay:** Weather sudden ferry rushes (2 to 3 arriving parties within 10 s, warned 8 s ahead by horn), shoo gull thieves before they snatch simit, serve tavla regulars every 14 to 18 s, and enjoy a living quay with ferry, gulls, cat, and Web Audio Turkish music.
 - **Ultra-lean web performance:** 60 fps on an Intel UHD GPU at 1280x720 with 31 draw calls (34 max) and ~50k triangles on day 6, verified by an automated bot winning 84 of 90 seeded games (and 86 of 90 in v2 benchmark) with 0 JS errors.
+
+</details>
 
 ## What's new in v2.1 (November 2026)
 
@@ -44,12 +53,21 @@
 
 ## How to play
 
+<p align="center">
+  <img src="docs/how-to-play.jpg" width="100%" alt="How to play image: the waiter hurries along an Istanbul quay at dusk, with four order slips (take orders, collect and serve, clear and wash, reach the target) and a controls panel for mouse, touch and keyboard.">
+</p>
+
+<details>
+<summary><b>Goal and steps</b></summary>
+
 > [!TIP]
 > **Goal:** Earn each day's coin target before closing time (65 coins on day 1, 250 on day 7) and clear all seven days. More coins and more happy customers give up to 3 stars; after day 7 the endless shift begins.
 
 1. **Take orders & prepare:** Customers take a free table and show an order bubble with a patience ring. Click a station (`1`–`5`) or its button to brew tea, warm simit, cook Turkish coffee, or pour ayran.
 2. **Collect & serve:** Click ready items to add them to your tray (holds 3 to 5 items), then click the customer's table to serve; the waiter walks to each target in queue (up to 6 clicks).
 3. **Clear & wash:** When a party finishes eating, click the table to clear dirty glasses and take them to the sink before new customers can sit.
+
+</details>
 
 <details>
 <summary><b>Rules and mechanics</b></summary>
