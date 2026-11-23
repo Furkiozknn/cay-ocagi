@@ -1024,6 +1024,13 @@ html, body {
   touch-action: none;
 }
 #c:focus-visible { outline: none; }
+/* stil-3d: a light tilt-shift depth of field like the song video (soft blur at the top and bottom edges of the scene).
+   Desktop pointers only and never in low quality: backdrop blur over WebGL costs too much on phones */
+#dof { display: none; position: fixed; inset: 0; pointer-events: none; }
+@media (pointer: fine) {
+  body:not(.low) #dof { display: block; backdrop-filter: blur(1.6px); -webkit-backdrop-filter: blur(1.6px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 22%, transparent 72%, #000 100%); mask-image: linear-gradient(to bottom, #000 0%, transparent 22%, transparent 72%, #000 100%); }
+}
 
 /* Custom scrollbars */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -1775,6 +1782,12 @@ button { font: inherit; color: inherit; cursor: pointer; border: 0; background: 
   overflow: auto;
 }
 body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
+/* stil-3d: title backdrop = the song video's key frame (3D chibi tea waiter and tourist), a blurred copy fills the sides */
+#screen.kapak { background: #3a2216 url(assets/3d/kapak_bulanik.webp) center / cover no-repeat; }
+#screen.kapak::before { content: ''; position: fixed; inset: 0; background: url(assets/3d/kapak.webp) center bottom / contain no-repeat; pointer-events: none; }
+#screen.kapak::after { content: ''; position: fixed; inset: 0; background: radial-gradient(ellipse at 50% 45%, rgba(30, 14, 6, .08), rgba(30, 14, 6, .55)); pointer-events: none; }
+#screen.kapak > * { position: relative; z-index: 1; }
+@media (min-aspect-ratio: 1/1) { #screen.kapak::before { background-position: left 3% bottom; } }
 
 .card {
   position: relative;
@@ -2840,6 +2853,7 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
 </head>
 <body>
 <canvas id="c" tabindex="0"></canvas>
+<div id="dof" aria-hidden="true"></div>
 <div id="wl"></div>
 <header id="top" class="glass"></header>
 <div id="toasts" role="status" aria-live="polite"><div id="banner" style="display:none"></div></div>
@@ -2943,20 +2957,22 @@ const ICON = {
 const ICON_PNG = ['tea', 'simit', 'coffee', 'ayran', 'sink', 'dirty', 'coin', 'happy', 'angry', 'star', 'person', 'office', 'group', 'regular', 'kettle', 'tray', 'oven', 'apprentice', 'table', 'stool'];
 const pngIcon = (src, style = '') => `<svg viewBox="0 0 24 24"><image href="${src}" width="24" height="24"${style ? ` style="${style}"` : ''}/></svg>`;
 let LOGO_BIG = `<div class="big">${ICON.tea}</div>`;
+// stil-3d: the icons, logo and regulars' portraits are 3D chibi renders in the song video's style (assets/3d, webp)
+const iconSrc = k => `assets/3d/ikon/${k}.webp`, LOGO_SRC = 'assets/3d/ikon/logo.webp';
+const PORTRAIT = new Set(['hasan', 'ayse', 'kemal', 'selin', 'zeynep', 'mert', 'dursun']);
 function useIconPNGs() {
-  for (const k of ICON_PNG) ICON[k] = pngIcon(`assets/ui/icons/${k}.png`);
-  ICON.starOff = pngIcon('assets/ui/icons/star.png', 'opacity:.3'); // grey enough; filter on <image> is not honoured everywhere
-  // keep the stylized Iznik tulip for top HUD brand mark
-  LOGO_BIG = '<img class="biglogo" src="assets/ui/logo.png" alt="">';
+  for (const k of ICON_PNG) ICON[k] = pngIcon(iconSrc(k));
+  ICON.starOff = pngIcon(iconSrc('star'), 'opacity:.3'); // grey enough; filter on <image> is not honoured everywhere
+  LOGO_BIG = `<img class="biglogo" src="${LOGO_SRC}" alt="">`;
   const fav = document.querySelector('link[rel=icon]'); if (fav) fav.href = 'assets/ui/favicon.png';
 }
 // icon PNGs + logo, counted in the title's "Loading… n/N"
 function loadIcons(tick) {
-  const files = ICON_PNG.map(k => `assets/ui/icons/${k}.png`).concat('assets/ui/logo.png');
+  const files = ICON_PNG.map(iconSrc).concat(LOGO_SRC);
   return Promise.all(files.map(src => new Promise(res => {
     const im = new Image(); im.onload = () => { tick(); res(true); }; im.onerror = () => { tick(); res(false); }; im.src = src;
   }))).then(ok => {
-    if (ok.every(Boolean)) { useIconPNGs(); return true; }
+    if (ok.every(Boolean)) { G.iconsOK = true; useIconPNGs(); return true; }
     console.warn('[cay] icon PNGs missing, keeping the drawn icons'); return false;
   });
 }
@@ -4130,7 +4146,7 @@ const _pz = (Q.get('pan') || '0,0').split(',').map(parseFloat);
 const VIEW = { zoom: clamp(parseFloat(Q.get('zoom')) || 1, .8, 1.8), panX: _pz[0] || 0, panY: _pz[1] || 0, w: 1, h: 1, halfH: 8 };
 
 // warm low-key light: a dim amber sky fill, a low golden key, a cool strait rim from behind and two flickering lamp pools
-const hemi = new THREE.HemisphereLight(0xffd6a2, 0x5e4034, 1.12);
+const hemi = new THREE.HemisphereLight(0xffe2b8, 0x6a4a3a, 1.3); // stil-3d: a softer, brighter warm-afternoon fill (was 0xffd6a2 / 0x5e4034, 1.12)
 scene.add(hemi);
 scene.fog = new THREE.Fog(0xdcb58a, 128, 178); // warm haze: the far shore and the sea sink into the dusk
 const rim = new THREE.DirectionalLight(0x7fbac8, .5);
@@ -4147,7 +4163,7 @@ sun.shadow.mapSize.set(1024, 1024);
 { const sc = sun.shadow.camera; sc.left = -15; sc.right = 15; sc.top = 14; sc.bottom = -14; sc.near = 1; sc.far = 50; sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.035; }
 scene.add(sun, sun.target);
 // arena-core v2 render preset: neutral tone mapping, a little room light, CSS vignette + grain (the canvas is transparent)
-const FX = window.ArenaCore ? ArenaCore.render.setup(renderer, scene, cam, { tonlama: 'neutral', pozlama: 1.06, ortam: 0.15, saydam: true, vinyet: 0.28, grain: 0.05, renk: { doygunluk: 1.14, kontrast: 1.07 } }) : null;
+const FX = window.ArenaCore ? ArenaCore.render.setup(renderer, scene, cam, { tonlama: 'neutral', pozlama: 1.12, ortam: 0.15, saydam: true, vinyet: 0.28, grain: 0.05, renk: { doygunluk: 1.14, kontrast: 1.07 } }) : null;
 
 function layoutCamera() {
   const w = window.innerWidth, h = window.innerHeight;
@@ -4225,7 +4241,7 @@ class Merger {
     g.computeBoundingSphere(); return g;
   }
 }
-const matV = () => new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true });
+const matV = () => new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: false });
 // hand-painted look: one tileable brush-stroke canvas texture, sampled by world position (no UVs on merged geometry) and
 // multiplied into the vertex colours; vertical faces get plank/plaster streaks, tops get soft mottling
 const PAINT = (() => {
@@ -4238,7 +4254,7 @@ const PAINT = (() => {
   const tx = new THREE.CanvasTexture(cv); tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 2; return tx;
 })();
 const matPaint = (k = 0.62) => {
-  const m = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true });
+  const m = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: false });
   m.onBeforeCompile = sh => {
     sh.uniforms.tPaint = { value: PAINT }; sh.uniforms.kPaint = { value: k };
     sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vPW; varying vec3 vPN;')
@@ -4250,8 +4266,8 @@ const matPaint = (k = 0.62) => {
   };
   return m;
 };
-const matI = () => new THREE.MeshLambertMaterial({ flatShading: true });
-const matIV = () => new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true });
+const matI = () => new THREE.MeshLambertMaterial({ flatShading: false });
+const matIV = () => new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: false });
 
 const C = { // art direction: walnut #5B3A29, tea amber #B5651D, brass #C9A227, cream #F4E9D8, tile teal #2E7D7A
   wall: 0xecd5a8, wallD: 0xcfae7c, roof: 0xa8492a, wood: 0x6a4630, woodL: 0xb07c4c, stone: 0xbdb09c, stoneD: 0x8e8070, bronze: 0xb5651d, gold: 0xc9a227,
@@ -4559,7 +4575,7 @@ const BULBS = (() => {
 /* ready simit rings on top of the oven */
 {
   const g = new THREE.TorusGeometry(.17, .075, 6, 12).rotateX(Math.PI / 2);
-  const im = new THREE.InstancedMesh(g, new THREE.MeshLambertMaterial({ color: 0xd9983a, flatShading: true }), 3); im.castShadow = !FLAG.low; im.frustumCulled = false;
+  const im = new THREE.InstancedMesh(g, new THREE.MeshLambertMaterial({ color: 0xd9983a, flatShading: false }), 3); im.castShadow = !FLAG.low; im.frustumCulled = false;
   world.add(im); DYN.simitRings = im;
 }
 /* coffee foam (per pot) */
@@ -4616,7 +4632,7 @@ const ITM = (() => {
 // what a finished item leaves on the table, and the tint for used cups
 const ITEM_USED = { tea: 'glass', simit: 'plate', coffee: 'coffee', ayran: 'ayran', dirty: 'glass' };
 const USED_TINT = { coffee: 0x9a9088, ayran: 0xb3aca4 };
-ITM.tea.im.material = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, emissive: 0x6a2208, emissiveIntensity: .4 }); // lit from inside; pulsed in syncVisuals
+ITM.tea.im.material = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: false, emissive: 0x6a2208, emissiveIntensity: .4 }); // lit from inside; pulsed in syncVisuals
 function itemsBegin() { for (const k in ITM) ITM[k].n = 0; }
 function itemPut(kind, x, y, z, ry, tint = 0xffffff) {
   const it = ITM[kind]; if (!it || it.n >= 44) return;
@@ -4645,11 +4661,35 @@ hoverRing.visible = false; hoverRing.position.y = .05; world.add(hoverRing);
 })();
 
 /* ---------- characters ---------- */
+// chibi figures (stil-3d, after the song video): a big round head on a short soft body, dot eyes, rosy cheeks.
+// The instance anchors in syncVisuals stay as they were (head at body +1.02, hair +1.06, cap +1.2), so the head
+// geometry sits a little above its anchor. Vertex colours are multiplied by the instance colour (shirt / skin / hair).
+function chibiHead(m, y, r, skin, cheek) {
+  m.sph(0, y, 0, r, skin, 1, .94, .96, 18, 14, 0);
+  m.sph(-r * .98, y - r * .05, 0, r * .17, skin, .55, 1, 1, 8, 6, 0); m.sph(r * .98, y - r * .05, 0, r * .17, skin, .55, 1, 1, 8, 6, 0);   // ears
+  m.sph(-r * .33, y + r * .06, r * .86, r * .13, 0x16100c, .85, 1.15, .55, 10, 8, 0); m.sph(r * .33, y + r * .06, r * .86, r * .13, 0x16100c, .85, 1.15, .55, 10, 8, 0); // dot eyes
+  m.sph(-r * .29, y + r * .13, r * .93, r * .04, 0xffffff, 1, 1, .5, 6, 4, 0); m.sph(r * .37, y + r * .13, r * .93, r * .04, 0xffffff, 1, 1, .5, 6, 4, 0);       // eye glints
+  m.sph(-r * .56, y - r * .2, r * .76, r * .17, cheek, 1.3, .75, .5, 10, 6, 0); m.sph(r * .56, y - r * .2, r * .76, r * .17, cheek, 1.3, .75, .5, 10, 6, 0);    // rosy cheeks
+  m.sph(0, y - r * .08, r * .97, r * .11, skin, 1.1, .9, .8, 8, 6, 0);                                                                                     // button nose
+  m.sph(0, y - r * .34, r * .9, r * .09, 0x7a2e22, 1.6, .55, .5, 8, 6, 0);                                                                                 // small smile
+}
 function personGeos() {
-  const b = new Merger(); b.cyl(0, 0, 0, .25, .27, .32, 0x5c5c5c, 8, 0); b.cyl(0, .3, 0, .21, .26, .5, 0xffffff, 8, 0); b.cyl(0, .29, 0, .262, .268, .05, 0x777777, 8, 0); b.cyl(0, .74, 0, .17, .21, .07, 0xe2e2e2, 8, 0); b.sph(-.27, .55, 0, .1, 0xffffff, 1, 1.5, 1, 5, 4, 0); b.sph(.27, .55, 0, .1, 0xffffff, 1, 1.5, 1, 5, 4, 0);
-  const h = new Merger(); h.sph(0, 0, 0, .22, 0xffffff, 1, 1, 1, 10, 8, 0); h.box(0, -.04, .22, .07, .09, .08, 0xffffff, 0, 0, 0, 0); h.sph(-.22, 0, 0, .05, 0xf2f2f2, .6, 1, 1, 5, 4, 0); h.sph(.22, 0, 0, .05, 0xf2f2f2, .6, 1, 1, 5, 4, 0); h.box(-.08, .04, .205, .05, .05, .04, 0x1b1410, 0, 0, 0, 0); h.box(.08, .04, .205, .05, .05, .04, 0x1b1410, 0, 0, 0, 0);
-  const hr = new Merger(); hr.add(new THREE.SphereGeometry(1, 10, 6, 0, Math.PI * 2, 0, Math.PI * .55), mat(0, 0, -.02, .245, .245, .245), 0xffffff, 0);
-  const cp = new Merger(); cp.cyl(0, 0, 0, .23, .24, .11, 0xffffff, 10, 0); cp.box(0, .0, .24, .26, .03, .16, 0xffffff, 0, 0, 0, 0);
+  const b = new Merger();
+  b.sph(-.11, .07, .04, .085, 0x3a2a22, 1, .75, 1.35, 8, 6, 0); b.sph(.11, .07, .04, .085, 0x3a2a22, 1, .75, 1.35, 8, 6, 0);     // shoes
+  b.cyl(-.1, .08, 0, .085, .09, .22, 0x6a6a6a, 10, 0); b.cyl(.1, .08, 0, .085, .09, .22, 0x6a6a6a, 10, 0);                        // stubby legs
+  b.sph(0, .5, 0, .27, 0xffffff, 1, 1.12, .9, 16, 12, 0);                                                                           // soft round torso (shirt)
+  b.cyl(0, .26, 0, .245, .25, .07, 0xb8b8b8, 14, 0);                                                                                // belt line
+  b.sph(-.29, .5, .02, .085, 0xffffff, 1, 1.9, 1, 10, 8, 0); b.sph(.29, .5, .02, .085, 0xffffff, 1, 1.9, 1, 10, 8, 0);               // arms
+  b.sph(-.3, .33, .04, .07, 0xf0d2b8, 1, 1, 1, 8, 6, 0); b.sph(.3, .33, .04, .07, 0xf0d2b8, 1, 1, 1, 8, 6, 0);                       // hands
+  b.cyl(0, .76, 0, .12, .16, .06, 0xe6e6e6, 12, 0);                                                                                 // collar
+  const h = new Merger(); chibiHead(h, .07, .32, 0xffffff, 0xffb6a6);
+  const hr = new Merger();
+  hr.add(new THREE.SphereGeometry(1, 18, 10, 0, Math.PI * 2, 0, Math.PI * .5), mat(0, .07, -.02, .345, .33, .345), 0xffffff, 0);  // crown
+  hr.sph(0, .02, -.1, .31, 0xffffff, 1.06, 1, .9, 14, 10, 0);                                                                       // back of the head
+  hr.sph(-.1, .29, .18, .15, 0xffffff, 1.5, .6, 1, 10, 6, 0); hr.sph(.13, .28, .2, .12, 0xffffff, 1.4, .6, 1, 10, 6, 0);              // fringe tufts
+  const cp = new Merger();
+  cp.add(new THREE.SphereGeometry(1, 18, 8, 0, Math.PI * 2, 0, Math.PI * .5), mat(0, .02, 0, .36, .26, .36), 0xffffff, 0);         // soft cap dome
+  cp.cyl(0, -.04, 0, .362, .362, .07, 0xdedede, 18, 0); cp.box(0, -.03, .34, .34, .035, .2, 0xffffff, 0, 0, 0, 0);                 // band, visor
   return { b: b.geometry(), h: h.geometry(), hr: hr.geometry(), cp: cp.geometry() };
 }
 const PG = personGeos();
@@ -4661,25 +4701,37 @@ const PPL_LIST = Object.values(PPL), FLASH_C = new THREE.Color(0xd23a2a);
 const calm = () => !!(window.Arena && Arena.settings && Arena.settings.reducedMotion);   // kit "reduce motion": read live, visuals only (the sim never sees it)
 PPL_LIST.forEach(m => { m.frustumCulled = false; m.castShadow = !FLAG.low; world.add(m); for (let i = 0; i < MAXP; i++) { m.setMatrixAt(i, mat(0, -50, 0, 0, 0, 0)); m.setColorAt(i, new THREE.Color(0xffffff)); } });
 
-function buildWaiter(shirt, vest, apron, hair, scale) {
-  const m = new Merger();
-  m.cyl(0, 0, 0, .27, .3, .5, 0x2b2f3a, 10, 0.02);       // trousers
-  m.cyl(0, .5, 0, .21, .27, .5, shirt, 10, 0.02);         // shirt
-  m.cyl(0, .5, 0, .23, .285, .42, vest, 10, 0.02);        // vest
-  m.cyl(0, .26, .02, .31, .32, .5, apron, 10, 0.02);      // apron
-  m.sph(-.3, .95, 0, .1, shirt, 1, 1.4, 1, 6, 4); m.sph(.3, .95, 0, .1, shirt, 1, 1.4, 1, 6, 4);
-  m.sph(0, 1.28, 0, .23, 0xe9bd96, 1, 1, 1, 10, 8, 0); m.box(0, 1.22, .22, .07, .09, .08, 0xe2b08a, 0, 0, 0, 0);
-  m.box(-.08, 1.32, .21, .05, .05, .04, 0x1b1410, 0, 0, 0, 0); m.box(.08, 1.32, .21, .05, .05, .04, 0x1b1410, 0, 0, 0, 0);
-  m.add(new THREE.SphereGeometry(1, 10, 6, 0, Math.PI * 2, 0, Math.PI * .55), mat(0, 1.29, -.02, .25, .25, .25), hair, 0);
-  m.box(0, 1.2, .1, .3, .06, .09, 0x1b1410, 0, 0, 0, 0);
-  // tray
-  m.cyl(0, 1.0, .5, .42, .42, .04, 0xcfd3d8, 14, 0.02); m.cyl(0, 1.04, .5, .36, .36, .02, 0xe9ecef, 14, 0);
-  m.box(-.3, .95, .3, .08, .06, .4, shirt, .4); m.box(.3, .95, .3, .08, .06, .4, shirt, -.4);
+// the tea waiter of the song video: white shirt, brown apron, dark trousers, big chibi head, swept dark hair, thin
+// moustache, a brass hanging tray (askılı tepsi). The tray disc stays where the item code puts the glasses (y 1.04, z .5).
+function buildWaiter(shirt, apron, hair, scale, moustache) {
+  const m = new Merger(), skin = 0xf1c7a0;
+  m.sph(-.13, .07, .05, .1, 0x5a3420, 1, .7, 1.4, 10, 6, 0); m.sph(.13, .07, .05, .1, 0x5a3420, 1, .7, 1.4, 10, 6, 0);     // brown shoes
+  m.cyl(-.12, .08, 0, .11, .115, .34, 0x2c3550, 12, 0); m.cyl(.12, .08, 0, .11, .115, .34, 0x2c3550, 12, 0);                // navy trousers
+  m.sph(0, .62, 0, .3, shirt, 1, 1.1, .88, 18, 12, 0);                                                                      // shirt
+  m.sph(0, .5, .07, .29, apron, 1.02, 1.05, .82, 18, 12, 0);                                                                // apron front
+  m.cyl(0, .36, 0, .3, .3, .05, apron, 18, 0);                                                                               // apron string
+  m.cyl(0, .9, 0, .13, .17, .06, shirt, 14, 0);                                                                              // collar
+  m.sph(-.31, .66, .14, .09, shirt, 1, 1, 2.1, 10, 8, 0); m.sph(.31, .66, .14, .09, shirt, 1, 1, 2.1, 10, 8, 0);             // forearms out, holding the tray
+  m.sph(-.3, .7, .33, .075, skin, 1, 1, 1, 8, 6, 0); m.sph(.3, .7, .33, .075, skin, 1, 1, 1, 8, 6, 0);                       // hands
+  chibiHead(m, 1.24, .35, skin, 0xf29a86);
+  m.add(new THREE.SphereGeometry(1, 18, 10, 0, Math.PI * 2, 0, Math.PI * .5), mat(0, 1.3, -.03, .375, .33, .375), hair, 0);  // hair crown
+  m.sph(0, 1.22, -.12, .33, hair, 1.06, 1, .9, 14, 10, 0);                                                                  // back of the head
+  m.sph(.06, 1.58, .14, .2, hair, 1.6, .7, 1.1, 12, 8, 0);                                                                  // swept quiff
+  if (moustache) { m.sph(-.08, 1.13, .34, .07, 0x2a1810, 1.5, .45, .5, 8, 6, 0); m.sph(.08, 1.13, .34, .07, 0x2a1810, 1.5, .45, .5, 8, 6, 0); }
+  // brass hanging tray: disc + rim, three rods up to a handle ring
+  const brass = 0xd4a63a;
+  m.cyl(0, 1.0, .5, .42, .4, .04, brass, 20, 0); m.cyl(0, 1.035, .5, .37, .37, .012, 0xe8c25a, 20, 0);
+  for (let k = 0; k < 3; k++) {
+    const a = k * Math.PI * 2 / 3 + .5, lo = new THREE.Vector3(Math.cos(a) * .3, 1.04, .5 + Math.sin(a) * .3), hi = new THREE.Vector3(0, 1.74, .5), d = hi.clone().sub(lo);
+    const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.clone().normalize());
+    m.add(cylGeo(.013, .013, 6), new THREE.Matrix4().compose(lo.clone().add(hi).multiplyScalar(.5), q, new THREE.Vector3(1, d.length(), 1)), brass, 0);
+  }
+  m.add(new THREE.TorusGeometry(.07, .016, 6, 14), mat(0, 1.8, .5), brass, 0);
   const mesh = new THREE.Mesh(m.geometry(), matV()); mesh.castShadow = !FLAG.low; mesh.scale.setScalar(scale);
   const grp = new THREE.Group(); grp.add(mesh); world.add(grp); return grp;
 }
-const waiterObj = buildWaiter(0xf6efe0, 0x3b2a22, 0xC2410C, 0x20150f, 1.0);
-const apprObj = buildWaiter(0x7fa3c9, 0x3a5f8a, 0xf4f0e6, 0x5a3a22, .92); apprObj.visible = false;
+const waiterObj = buildWaiter(0xfbf7ef, 0x7a4a2c, 0x3a2416, 1.0, true);
+const apprObj = buildWaiter(0xbfd8ea, 0xc2602a, 0x5a3a22, .9, false); apprObj.visible = false;
 
 /* ---------- cat, gulls, ferry, waves ---------- */
 const catGrp = (() => {
@@ -5066,6 +5118,7 @@ function starsHTML(n, anim) { let h = ''; for (let i = 0; i < 3; i++) h += `<spa
 /* named regulars: a small drawn portrait (their own colours), 5 hearts (2 affection points each), the tag over their bubble */
 const hex6 = n => '#' + n.toString(16).padStart(6, '0');
 function portraitSVG(c) {
+  if (G.iconsOK && PORTRAIT.has(c.id)) return `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="11.4" fill="#f6ead6" stroke="#c9b18c" stroke-width="1"/><image href="assets/3d/portre/${c.id}.webp" x="1.6" y="1.2" width="20.8" height="20.8"/></svg>`;
   const top = c.cap != null
     ? `<path d="M7.3 8.4q4.7-5.8 9.4 0z" fill="${hex6(c.cap)}"/><rect x="6.6" y="7.7" width="10.8" height="1.5" rx=".75" fill="${hex6(c.cap)}"/>`
     : `<path d="M7.5 9q4.5-6.4 9 0q-1.8-1.9-4.5-1.9T7.5 9z" fill="${hex6(c.hair)}"/>`;
@@ -5601,6 +5654,7 @@ function settingsHTML() {
 function uiScreen(force) {
   const st = G.state, pause = st === 'play' && G.paused;
   scrEl.classList.toggle('day-summary', (st === 'summary' || st === 'gameover') && !G.panel); // stable hook for portal builds: set while the day result is shown
+  scrEl.classList.toggle('kapak', st === 'title' && !NOASSETS); // stil-3d: the song video's tea house behind the title card
   if (st !== 'play') bannerHide();
   if (st === 'play' && !pause && !G.panel) { if (scrEl.style.display !== 'none') { scrEl.style.display = 'none'; scrEl.innerHTML = ''; } C_cache.delete('scr'); return; }
   const sig = st + G.day + G.lang + G.panel + pause + !!DAILY + (st === 'shop' ? G.coins + JSON.stringify(G.up) : '') + (st === 'title' ? assetState.done + '' + !!loadSave() + dailyLine() : '');
@@ -5851,6 +5905,20 @@ function hoverAt(x, y, type) {
 const MODEL_FILES = ['semaver', 'oven', 'coffee', 'ayran', 'sink', 'table', 'window', 'ferry', 'cat'];
 const MODEL_YAW = { oven: Math.PI / 2, coffee: Math.PI / 4, sink: Math.PI / 2, ferry: Math.PI / 2 }; // turns each model to face +X (the sand box was generated at 45°)
 const loadedModels = {}; let groundTex = null;
+// 3D style pass (stil-3d): soft clay look. Non-indexed model geometry only has face normals; average them over
+// vertices that share a position when the faces bend less than ~57 degrees (cos .55), so rounded shapes shade
+// smoothly and hard edges stay crisp
+function smoothNormals(geo, cosMin) {
+  const p = geo.attributes.position.array, n = geo.attributes.normal.array, map = new Map(), out = new Float32Array(n.length);
+  const key = i => Math.round(p[i] * 1e4) + ',' + Math.round(p[i + 1] * 1e4) + ',' + Math.round(p[i + 2] * 1e4);
+  for (let i = 0; i < p.length; i += 3) { const k = key(i); let a = map.get(k); if (!a) map.set(k, a = []); a.push(i); }
+  for (const a of map.values()) for (const i of a) {
+    let x = 0, y = 0, z = 0;
+    for (const j of a) { const d = n[i] * n[j] + n[i + 1] * n[j + 1] + n[i + 2] * n[j + 2]; if (d >= cosMin) { x += n[j]; y += n[j + 1]; z += n[j + 2]; } }
+    const l = Math.hypot(x, y, z) || 1; out[i] = x / l; out[i + 1] = y / l; out[i + 2] = z / l;
+  }
+  geo.setAttribute('normal', new THREE.BufferAttribute(out, 3));
+}
 async function loadAssets() {
   const tick = () => { assetState.loaded++; uiLoading(); };
   assetState.total = ICON_PNG.length + 1 + (USE_MODELS ? MODEL_FILES.length + 1 : 0);
@@ -5882,8 +5950,8 @@ async function loadAssets() {
     geo.computeBoundingBox();
     const b = geo.boundingBox;
     geo.translate(-(b.min.x + b.max.x) / 2, -b.min.y, -(b.min.z + b.max.z) / 2);
-    geo.computeVertexNormals(); geo.computeBoundingBox();
-    loadedModels[name] = { geo, size: geo.boundingBox.getSize(new THREE.Vector3()), mat: new THREE.MeshLambertMaterial({ map, flatShading: true }) };
+    geo.computeVertexNormals(); smoothNormals(geo, .55); geo.computeBoundingBox();
+    loadedModels[name] = { geo, size: geo.boundingBox.getSize(new THREE.Vector3()), mat: new THREE.MeshLambertMaterial({ map, flatShading: false }) };
   }).catch(err => console.warn('[cay] model not loaded, keeping the procedural one:', name, err && err.message || err)).finally(tick);
   const tex = new THREE.TextureLoader().loadAsync('assets/textures/cobblestone.webp').then(tx => {
     tx.colorSpace = THREE.SRGBColorSpace; tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.anisotropy = 4; groundTex = tx;
