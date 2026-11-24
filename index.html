@@ -641,6 +641,58 @@
   };
 })(typeof window !== 'undefined' ? window : globalThis);
 /*ARENA-KIT:END*/</script>
+<script>
+/* saglamlik: shown when WebGL cannot start or the three.js module never loads (CDN blocked / offline). Classic script, runs before the module. */
+(function () {
+  var C = {"play":"[data-a=start]","key":"arena.cay.settings","wrap":"","card":"card","btn":"btn","btn2":"btn alt","bg":"background:rgba(30,14,6,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);"};
+  var S = {
+    tr: { gt: 'WebGL kullanılamıyor', gb: 'Bu oyun WebGL ister ama tarayıcın başlatamadı. Tarayıcı ayarlarından donanım hızlandırmayı aç ya da başka bir tarayıcı dene (Chrome, Edge, Firefox).',
+          lt: '3D motoru yüklenemedi', lb: 'three.js internetten (jsDelivr) indirilemedi. Bağlantını kontrol edip sayfayı yenile; bir reklam veya içerik engelleyici cdn.jsdelivr.net adresini engelliyor olabilir.', rt: 'Yeniden dene', sw: 'English' },
+    en: { gt: 'WebGL is not available', gb: 'This game needs WebGL, but your browser could not start it. Turn on hardware acceleration in the browser settings or try another browser (Chrome, Edge, Firefox).',
+          lt: 'The 3D engine could not load', lb: 'three.js could not be downloaded (jsDelivr). Check your connection and reload; an ad or content blocker may be blocking cdn.jsdelivr.net.', rt: 'Try again', sw: 'Türkçe' }
+  };
+  var G = window.__glGuard = { up: false, kind: null, lang: null, box: null };
+  function pick() {
+    try { var q = new URLSearchParams(location.search).get('lang'); if (q === 'tr' || q === 'en') return q; } catch (e) {}
+    try { var s = JSON.parse(localStorage.getItem(C.key)); if (s && (s.lang === 'tr' || s.lang === 'en')) return s.lang; } catch (e) {}
+    return /^tr/i.test(navigator.language || '') ? 'tr' : 'en';
+  }
+  function paint() {
+    var T = S[G.lang], b = G.box; if (!b) return;
+    b.querySelector('h2').textContent = T[G.kind === 'gl' ? 'gt' : 'lt'];
+    b.querySelector('p').textContent = T[G.kind === 'gl' ? 'gb' : 'lb'];
+    b.querySelector('.gg-r').textContent = T.rt; b.querySelector('.gg-s').textContent = T.sw;
+    document.documentElement.setAttribute('data-glguard', G.kind);
+    try { if (C.play && G.pd === undefined) { var pb = document.querySelector(C.play); if (pb) { G.pd = pb.disabled; pb.disabled = true; } } } catch (e) {}
+  }
+  function show(kind, lang) {
+    if (G.kind === 'gl' && kind !== 'gl') return;
+    G.kind = kind; G.lang = G.lang || lang || pick();
+    if (!G.box) {
+      var w = document.createElement('div'); w.id = 'glGuard'; w.className = C.wrap; w.setAttribute('role', 'alert');
+      w.style.cssText = 'display:flex;position:fixed;top:0;left:0;right:0;bottom:0;z-index:2147483000;align-items:center;justify-content:center;padding:14px;overflow:auto;' + (C.bg || '');
+      w.innerHTML = '<div class="' + C.card + '" style="' + (C.cardStyle || '') + '"><h2 style="' + (C.h2 || '') + '"></h2><p style="margin:10px 0 16px;line-height:1.45;' + (C.p || '') + '"></p>' +
+        '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button type="button" class="' + C.btn + ' gg-r"></button><button type="button" class="' + C.btn2 + ' gg-s"></button></div></div>';
+      w.querySelector('.gg-r').onclick = function () { location.reload(); };
+      w.querySelector('.gg-s').onclick = function () { G.lang = G.lang === 'tr' ? 'en' : 'tr'; paint(); };
+      (document.body || document.documentElement).appendChild(w); G.box = w;
+    }
+    paint();
+  }
+  G.fail = function (kind, lang) { show(kind, lang); };
+  G.started = function () { G.up = true; if (G.box && G.kind === 'load') { G.box.remove(); G.box = null; G.kind = null; document.documentElement.removeAttribute('data-glguard'); try { var pb = C.play && document.querySelector(C.play); if (pb && G.pd !== undefined) pb.disabled = G.pd; } catch (e) {} G.pd = undefined; } };
+  /* a Proxy that swallows every call/property so top-level code can finish without a real renderer; boot() then stops at glFail */
+  G.stub = function (canvas) {
+    var f = function () {}, p = new Proxy(f, {
+      get: function (t, k) { if (k === 'domElement') return canvas; if (k === Symbol.toPrimitive) return function () { return 0; }; if (k === 'then') return undefined; return p; },
+      set: function () { return true; }, apply: function () { return p; }, construct: function () { return p; }
+    });
+    return p;
+  };
+  window.addEventListener('error', function (e) { var t = e.target; if (!G.up && t && t.tagName === 'SCRIPT' && t.type === 'module') show('load'); }, true);
+  setTimeout(function () { if (!G.up) show('load'); }, 20000);
+})();
+</script>
 <script type="importmap">
 {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"},"integrity":{"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js":"sha384-GY5FqjttLCFRt/McQbyaVdCk2O1IQtOeX8Py6NfD89BIAsIyJFRl4UgSXrk2vXAk","https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/GLTFLoader.js":"sha384-Lq1Wl94so5JCKGDvezrdVMJhdeKQkwb8iwRo59QrPPd61CnrCJZLxYmFlQ8ZuOKR","https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/utils/BufferGeometryUtils.js":"sha384-wOjwauvHlJO7K6APr7FmMGH2nupQa3Ndzas9bJZhsAMOK055efJud8ns4aYmASKv"}}
 </script>
@@ -2375,19 +2427,6 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
   pointer-events: none;
 }
 #dbg .err { color: #c00; font-weight: 700; }
-#fatal {
-  position: fixed;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 30px;
-  font-weight: 800;
-  background: #fbe3c3;
-  z-index: 50;
-}
-
 /* ============================================================
    RESPONSIVE & MOBILE ADAPTATION
    ============================================================ */
@@ -2860,14 +2899,14 @@ body.low #screen { backdrop-filter: none; -webkit-backdrop-filter: none; }
 <div id="dock"></div>
 <div id="screen" role="dialog" aria-modal="true"></div>
 <div id="dbg"></div>
-<div id="fatal">Three.js could not be loaded (internet connection needed for the CDN). Please reload when online.</div>
 <script type="module">
 /* ============================================================
    Çay Ocağı - single file 3D tea house time-management game
    ============================================================ */
 let THREE;
 try { THREE = await import('three'); }
-catch (e) { document.getElementById('fatal').style.display = 'flex'; throw e; }
+catch (e) { __glGuard.fail('load'); throw e; }
+__glGuard.started(); // three.js loaded: the load-failure watchdog (head guard script) stands down
 
 const Q = new URLSearchParams(location.search);
 const store = {
@@ -4133,7 +4172,9 @@ function startMusic() {
    THREE: renderer, camera, lights
    ============================================================ */
 const canvas = $('#c');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+let renderer, glFail = false;
+try { renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' }); }
+catch (e) { glFail = true; renderer = __glGuard.stub(canvas); } // no WebGL: the title keeps its texts, Play stays disabled, a notice is shown
 const PR = Math.min(window.devicePixelRatio || 1, FLAG.low ? 1 : 1.5);
 renderer.setPixelRatio(PR);
 renderer.shadowMap.enabled = !FLAG.low;
@@ -4163,7 +4204,7 @@ sun.shadow.mapSize.set(1024, 1024);
 { const sc = sun.shadow.camera; sc.left = -15; sc.right = 15; sc.top = 14; sc.bottom = -14; sc.near = 1; sc.far = 50; sun.shadow.bias = -0.0006; sun.shadow.normalBias = 0.035; }
 scene.add(sun, sun.target);
 // arena-core v2 render preset: neutral tone mapping, a little room light, CSS vignette + grain (the canvas is transparent)
-const FX = window.ArenaCore ? ArenaCore.render.setup(renderer, scene, cam, { tonlama: 'neutral', pozlama: 1.12, ortam: 0.15, saydam: true, vinyet: 0.28, grain: 0.05, renk: { doygunluk: 1.14, kontrast: 1.07 } }) : null;
+const FX = window.ArenaCore && !glFail ? ArenaCore.render.setup(renderer, scene, cam, { tonlama: 'neutral', pozlama: 1.12, ortam: 0.15, saydam: true, vinyet: 0.28, grain: 0.05, renk: { doygunluk: 1.14, kontrast: 1.07 } }) : null;
 
 function layoutCamera() {
   const w = window.innerWidth, h = window.innerHeight;
@@ -5679,8 +5720,8 @@ function uiScreen(force) {
       <div class="col"><button class="btn" data-a="pause">${t('resume')}</button><button class="btn alt" data-a="restart">${t('restart')}</button>
       <button class="btn alt" data-a="settings">${t('settings')}</button><button class="btn alt" data-a="regs">${t('regulars')}</button><button class="btn alt" data-a="menu">${t('menu')}</button></div></div>`;
   } else if (st === 'title') {
-    const sv = loadSave(), dis = assetState.done ? '' : 'disabled';
-    const label = k => assetState.done ? t(k) : t('loading', assetState.loaded, assetState.total);
+    const sv = loadSave(), dis = assetState.done && !glFail ? '' : 'disabled';
+    const label = k => assetState.done || glFail ? t(k) : t('loading', assetState.loaded, assetState.total);
     const main = sv
       ? `<button class="btn" data-a="cont" ${dis}>${label('cont2')}</button><small style="font-weight:700;color:var(--ink2)">${t('savedAt', sv.day, sv.coins)}</small><button class="btn alt" data-a="newgame" ${dis}>${t('newGame')}</button>`
       : `<button class="btn" data-a="start" ${dis}>${label('play')}</button>`;
@@ -6202,12 +6243,13 @@ if (FLAG.bench) { try { window.cayBench(FLAG.bench, 1); } catch (e) { G.errors.p
 if (FLAG.sim > 0) { try { window.caySim(FLAG.sim); } catch (e) { G.errors.push('sim: ' + e.message + ' ' + (e.stack || '').split('\n')[1]); } }
 // arena-core v2 test contract: window.__game.read() / step(seconds) for bots, gates and ?capture recordings
 if (window.ArenaCore) ArenaCore.test.kur({ read: () => ({ fps: G.fps, paused: G.paused, drawCalls: G.drawCalls, errors: G.errors.slice(), assetsReady: !!G.assetsReady, fx: FX && FX.info }), step: s => window.caySim(s) });
-requestAnimationFrame(frame);
+if (!glFail) requestAnimationFrame(frame);
+else { G.errors.push('WebGL unavailable'); uiScreen(true); __glGuard.fail('gl', G.lang); }
 // the title screen waits for the models (Play disabled); after 15 s the game goes on with whatever has loaded.
 // ?auto starts at once as before and the models swap in when they arrive, so bot runs stay comparable.
 // G.assetsReady / G.assets: test hooks (which generated assets replaced their procedural part)
 G.assets = [];
-if (!NOASSETS) Promise.race([loadAssets(), new Promise(r => setTimeout(r, 15000))]).then(() => {
+if (!NOASSETS && !glFail) Promise.race([loadAssets(), new Promise(r => setTimeout(r, 15000))]).then(() => {
   try { applyAssets(); } catch (e) { G.errors.push('assets: ' + e.message); }
   if (window.ArenaCore) ArenaCore.kabuk.onceDerle(renderer, scene, cam); // shader warm-up (Intel: no parallel compile)
   assetState.done = true; G.assetsReady = true;
